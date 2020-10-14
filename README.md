@@ -1,0 +1,1 @@
+This will be my personal portfolio, where I will note all the projects I am involved in, my personal interests and other aspects of life I am engaged in.
