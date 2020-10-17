@@ -21,6 +21,32 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/styles.css') }}">
 {% endblock %}
 
+
+<!-- Navbar Section -->
+{% block navbar %}
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Gitau Harrison</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">            
+            <ul class="nav navbar-nav navbar-right">                                 
+                <li><a href="#">About Me</a></li>            
+                <li><a href="#">Portfolio</a></li>          
+                <li><a href="#">Hire Me</a></li>            
+                <li><a href="#">My Interests</a></li> 
+            </ul>                       
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
 <!-- Blog Content Goes Here -->
 {% block content %}
 
