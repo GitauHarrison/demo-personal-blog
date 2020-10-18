@@ -87,3 +87,15 @@ a:visited{
 a:active{
     color: orangered;
 }
+/* HOVER EFFECTS */
+.translate-hover:hover + .translate-info{
+    display: block;
+    border-radius: 7px;
+    margin-bottom: 3px;
+}
+.translate-info{
+    color: #ad7a37;
+    background-color:#faf8f6;
+    padding: 10px;
+    display: none;
+}
