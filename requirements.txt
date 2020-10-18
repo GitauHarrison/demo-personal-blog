@@ -6,6 +6,7 @@ email-validator==1.1.1
 Flask==1.1.2
 Flask-Bootstrap==3.3.7.1
 Flask-Migrate==2.5.3
+Flask-Moment==0.10.0
 Flask-SQLAlchemy==2.4.4
 Flask-WTF==0.14.3
 idna==2.10
