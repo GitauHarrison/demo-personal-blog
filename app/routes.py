@@ -12,3 +12,7 @@ def hire_me():
 @app.route('/my_interests')
 def my_interests():
     return render_template('my_interests.html', title = 'My Interests')
+
+@app.route('/web_development')
+def web_development():
+    return render_template('web_development.html', title = 'Web Development')
