@@ -13,12 +13,15 @@ body{
     font-weight: 400;
     padding: 0px;
 }
+p{
+    padding-bottom: 10px;
+}
 
 /* Custom styles */
 .my-name{
     text-align: center;
 }
-.about-me{
+.about-me, .hire-me{
     background-color: #f7f5f3;
     padding: 20px;
     border-radius: 7px;
@@ -27,4 +30,17 @@ body{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+/* BUTTONS */
+.btn{
+    border-radius: 7px;
+    padding: 10px;
+    background-color: #ede8e5;
+    font-size: 20px;
+    color: #706d6c;
+}
+.btn:hover{
+    background-color: #dbd9d8;
+    color:  #706d6c;
 }
