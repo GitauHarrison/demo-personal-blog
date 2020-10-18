@@ -1,0 +1,17 @@
+<table class="table table-hover">
+    <tr valign='top'>
+        <td width='70px'>
+            <img src=" {{ post.author.avatar(36) }} ">
+        </td>
+        <td>
+            <span style="color: #6a8af5;">
+                {{ post.author.username }}
+            </span>
+            said
+            <span style="background-color: #faf8f6;">
+            {{ moment(post.timestamp).fromNow() }}
+            </span>
+            {{ post.body }}
+        </td>
+    </tr>
+</table>

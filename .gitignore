@@ -152,3 +152,6 @@ app.db
 
 # configuration
 config.py
+
+# Flask migrations
+migrations/

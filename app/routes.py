@@ -1,6 +1,7 @@
-from app import app
+from app import app, db
 from flask import render_template, url_for, flash, redirect
 from app.forms import CommentForm
+from app.models import User
 
 @app.route('/about_me')
 def about_me():
@@ -22,6 +23,9 @@ def web_development():
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
+        user = User(username = form.usernme.data, email = form.email.data)
+        db.session.add(user)
+        db.session.commit()
         flash('Your comment is now live!')  
         return redirect(url_for('personal_blog', _anchor='translate-hover'))  
     return render_template('personal_blog.html', title = 'Personal Blog', form = form)
