@@ -1,5 +1,6 @@
 from app import app
-from flask import render_template, url_for
+from flask import render_template, url_for, flash
+from app.forms import CommentForm
 
 @app.route('/about_me')
 def about_me():
@@ -17,6 +18,9 @@ def my_interests():
 def web_development():
     return render_template('web_development.html', title = 'Web Development')
 
-@app.route('/personal_blog')
+@app.route('/personal_blog', methods = ['GET', 'POST'])
 def personal_blog():
-    return render_template('personal_blog.html', title = 'Personal Blog')
+    form = CommentForm()
+    if form.validate_on_submit():
+        flash('Your comment is now live!')        
+    return render_template('personal_blog.html', title = 'Personal Blog', form = form)
