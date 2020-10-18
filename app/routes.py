@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, url_for, flash
+from flask import render_template, url_for, flash, redirect
 from app.forms import CommentForm
 
 @app.route('/about_me')
@@ -22,5 +22,6 @@ def web_development():
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
-        flash('Your comment is now live!')        
+        flash('Your comment is now live!')  
+        return redirect(url_for('personal_blog', _anchor='translate-hover'))  
     return render_template('personal_blog.html', title = 'Personal Blog', form = form)
