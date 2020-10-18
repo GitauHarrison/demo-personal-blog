@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block content %}
+<div class="container">
+    <div class="row about-me">
+        <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 align-self-center">
+            <img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = 'images/me.svg') }} " alt="Instructor">
+            <p class="my-name"><a href="#">Gitau Harrison</a></p>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9 col-xl-9">
+            <p>
+                Hi, I am a software engineer, but I am also a workout and wellness instructor. When I have time, 
+                I do capentry and general plumbing in my city. I expend my energies on speed bikes and motor racing during the weekends. 
+                Whenever I can, I fly aircrafts for fun.                                                                                                            
+            </p>
+            <p>
+                I am from Nairobi, Kenya, but currently, I live in Seoul, South Korea. Topics that I will be blogging about are going to be
+                mostly on programming and capentry. 
+    
+                Thank you for stopping by, and I hope you find something useful or interesting here. Be sure to leave a comment whenever
+                you can.
+            </p>
+            <p>
+                I have a few video conference consultation slots each week for those who want one-on-one time with me. 
+                I'm happy to assist you on any of the topics I cover on this blog, in conference talks, or in my books, videos or open source projects. 
+                My fee for a one hour consultation is $200 USD, payable via PayPal.
+            </p>        
+        </div>
+    </div>
+</div>
+{% endblock %}
