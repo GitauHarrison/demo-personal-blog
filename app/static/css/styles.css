@@ -76,3 +76,14 @@ p{
 .card:hover{
     box-shadow: 5px 10px 18px #ebe6e3;
 }
+
+/* LINKS */
+a:link{
+    text-decoration: none;
+}
+a:visited{
+    color: #c9712f;    
+}
+a:active{
+    color: orangered;
+}
