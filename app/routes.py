@@ -16,3 +16,7 @@ def my_interests():
 @app.route('/web_development')
 def web_development():
     return render_template('web_development.html', title = 'Web Development')
+
+@app.route('/personal_blog')
+def personal_blog():
+    return render_template('personal_blog.html', title = 'Personal Blog')
