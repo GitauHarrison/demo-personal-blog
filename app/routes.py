@@ -8,3 +8,7 @@ def about_me():
 @app.route('/hire_me')
 def hire_me():
     return render_template('hire_me.html', title = 'Hire Me')
+
+@app.route('/my_interests')
+def my_interests():
+    return render_template('my_interests.html', title = 'My Interests')
