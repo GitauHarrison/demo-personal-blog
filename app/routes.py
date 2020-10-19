@@ -23,8 +23,8 @@ def web_development():
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
-        user = User(username = form.username.data, email = form.email.data)
-        post = Post(body = form.comment.data, author = user.username)
+        user = User(username = form.username.data, email = form.email.data)        
+        post = Post(body = form.comment.data, author = user)
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
