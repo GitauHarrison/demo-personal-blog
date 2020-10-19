@@ -36,7 +36,16 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <h3 class="translate-hover" id="translate-hover">Comments</h3>
             <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
             {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Comment Form Goes Here -->
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 {{ wtf.quick_form(form) }}
             </div>
