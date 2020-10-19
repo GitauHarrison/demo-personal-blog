@@ -88,7 +88,7 @@ a:active{
     color: orangered;
 }
 /* HOVER EFFECTS */
-.translate-hover:hover + .translate-info{
+#comments:hover + .translate-info{
     display: block;
     border-radius: 7px;
     margin-bottom: 3px;
