@@ -3,23 +3,23 @@ from flask import render_template, url_for, flash, redirect, request
 from app.forms import CommentForm
 from app.models import User, Post
 
-@app.route('/about_me')
+@app.route('/about-me')
 def about_me():
     return render_template('about_me.html', title = 'About Me')
 
-@app.route('/hire_me')
+@app.route('/hire-me')
 def hire_me():
     return render_template('hire_me.html', title = 'Hire Me')
 
-@app.route('/my_interests')
+@app.route('/my-interests')
 def my_interests():
     return render_template('my_interests.html', title = 'My Interests')
 
-@app.route('/web_development')
+@app.route('/web-development')
 def web_development():
     return render_template('web_development.html', title = 'Web Development')
 
-@app.route('/personal_blog', methods = ['GET', 'POST'])
+@app.route('/personal-blog', methods = ['GET', 'POST'])
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
