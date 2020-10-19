@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Page not found</h1>
+                <p>
+                    Sorry, the page you have requested cannot be found.
+                </p>
+                <p>
+                    Return safely to the <a href=" {{ url_for('hire_me') }} ">home page</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
