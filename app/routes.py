@@ -34,8 +34,8 @@ def personal_blog():
     posts = Post.query.order_by(Post.timestamp.desc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('personal_blog', page = posts.next_num) \
+    next_url = url_for('personal_blog', _anchor='translate-hover', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('personal_blog', page = posts.prev_num) \
+    prev_url = url_for('personal_blog', _anchor='translate-hover', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
