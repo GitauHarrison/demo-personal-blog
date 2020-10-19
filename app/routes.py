@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 from app.forms import CommentForm
 from app.models import User, Post
 
@@ -30,5 +30,12 @@ def personal_blog():
         db.session.commit()
         flash('Your comment is now live!')  
         return redirect(url_for('personal_blog', _anchor='translate-hover'))  
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('personal_blog.html', title = 'Personal Blog', form = form, posts = posts)
+    page = request.args.get('page', type = int)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('personal_blog', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('personal_blog', page = posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
