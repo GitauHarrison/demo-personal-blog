@@ -3,6 +3,10 @@ from flask import render_template, url_for, flash, redirect, request
 from app.forms import CommentForm
 from app.models import User, Post
 
+@app.route('/home')
+def home():
+    return render_template('home.html', title = 'Home')
+
 @app.route('/about-me')
 def about_me():
     return render_template('about_me.html', title = 'About Me')

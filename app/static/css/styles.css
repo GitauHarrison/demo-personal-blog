@@ -17,7 +17,7 @@ body{
     padding: 0px;
 }
 p{
-    padding-bottom: 10px;
+    padding-bottom: 5px;
 }
 h1{
     text-align: center;
@@ -27,7 +27,7 @@ h1{
 .my-name{
     text-align: center;
 }
-.about-me, .hire-me, .portfolio{
+.about-me, .hire-me, .portfolio, .updates{
     background-color: #f7f5f3;
     padding: 20px;
     border-radius: 7px;
