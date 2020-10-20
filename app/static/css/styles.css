@@ -103,3 +103,8 @@ a:active{
     padding: 10px;
     display: none;
 }
+
+/* FORMS */
+.my-form{
+    margin-bottom: 5px;
+}
