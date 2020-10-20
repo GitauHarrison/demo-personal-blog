@@ -19,20 +19,24 @@ body{
 p{
     padding-bottom: 10px;
 }
+h1{
+    text-align: center;
+}
 
 /* Custom styles */
 .my-name{
     text-align: center;
 }
-.about-me, .hire-me{
+.about-me, .hire-me, .portfolio{
     background-color: #f7f5f3;
     padding: 20px;
     border-radius: 7px;
+    margin-bottom: 5px;
     /* center item in viewport */
-    position: absolute;
+    /* position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
     /* 
     Also, consider this:
     https://stackoverflow.com/questions/19026884/flexbox-center-horizontally-and-vertically

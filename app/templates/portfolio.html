@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Portfolio</h1>                
+            </div>
+        </div>
+        <div class="row portfolio">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <img src=" {{ url_for('static', filename = 'images/tinker_chat_app.png') }} " class="img-fluid" style="max-width: 100%; height: auto;" alt="Chat App">
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <h3>Tinker Chat App</h3>
+                <p>
+                    Tinker Chat App is a simple microblog which allows for registered users to communicate with each other.
+                    Anonymous users are requested to sign up so that they can find other platform users with whom they can chat.
+                    It is built using Python and Flask.
+                </p>
+                <p><a href="https://work-gossip-chat-app.herokuapp.com/main/home" target="_blank">View Project</a></p>
+            </div>
+        </div>
+        <div class="row portfolio">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <img src=" {{ url_for('static', filename = 'images/somasoma_blog.png') }} " class="img-fluid" style="max-width: 100%; height: auto;" alt="Chat App">
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                <h3>Somasoma Blog</h3>
+                <p>
+                    This is a blogging platform that an admin can use to share ideas or knowledge that he or she has. Featured items include the admin's
+                    personal interests and courses they find most interesting. Users can check out general information about available courses 
+                    but will need to log in before they can view specific course information. It has been built using Python and Flask.
+                </p>
+                <p><a href="https://somasoma-blog.herokuapp.com/home" target="_blank">View Project</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
