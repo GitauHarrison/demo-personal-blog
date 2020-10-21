@@ -4,6 +4,7 @@ from app.forms import CommentForm
 from app.models import User, Post
 import stripe
 from guess_language import guess_language
+from app.translate import translate
 
 @app.route('/')
 @app.route('/home')
@@ -106,3 +107,13 @@ def success():
 def cancelled():
     flash('Sorry, your payment was not successful. Please try making another payment')
     return render_template('stripe_cancel.html', title = 'Payment Cancelled')
+
+@app.route('/translate')
+def translate_text():
+    return jsonify({
+        'text': translate(
+            request.form['text'],
+            request.form['source_language'],
+            request.form['dest_language']
+        )
+    })
