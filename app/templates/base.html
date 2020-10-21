@@ -92,7 +92,7 @@
             }).done(function(response) {
                 $(destElem).text(response['text'])
             }).fail(function() {
-                $(destElem).text("{{ 'Error: Could not contact server' }}");
+                $(destElem).text("Error: Could not contact server");
             });
         }
     </script>
