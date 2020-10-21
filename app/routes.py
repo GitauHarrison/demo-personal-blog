@@ -3,6 +3,7 @@ from flask import render_template, url_for, flash, redirect, request, jsonify
 from app.forms import CommentForm
 from app.models import User, Post
 import stripe
+from guess_language import guess_language
 
 @app.route('/')
 @app.route('/home')
@@ -29,8 +30,11 @@ def web_development():
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) < 5:
+            language = ''
         user = User(username = form.username.data, email = form.email.data)        
-        post = Post(body = form.comment.data, author = user)
+        post = Post(body = form.comment.data, author = user, language = language)
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
