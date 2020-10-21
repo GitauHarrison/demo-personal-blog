@@ -108,6 +108,30 @@ def cancelled():
     flash('Sorry, your payment was not successful. Please try making another payment')
     return render_template('stripe_cancel.html', title = 'Payment Cancelled')
 
+@app.route("/webhook", methods=["POST"])
+def stripe_webhook():
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get("Stripe-Signature")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, stripe_keys["endpoint_secret"]
+        )
+
+    except ValueError as e:
+        # Invalid payload
+        return "Invalid payload", 400
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return "Invalid signature", 400
+
+    # Handle the checkout.session.completed event
+    if event["type"] == "checkout.session.completed":
+        print("Payment was successful")
+        # TODO: you can run some custom code here
+
+    return "Success", 200
+
 @app.route('/translate')
 def translate_text():
     return jsonify({

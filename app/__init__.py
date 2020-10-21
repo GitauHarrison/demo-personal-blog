@@ -18,7 +18,8 @@ moment = Moment(app)
 
 stripe_keys = {
     "secret_key": app.config["STRIPE_SECRET_KEY"],
-    "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"]
+    "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
+    "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
 }
 
 from app import routes, models, errors
