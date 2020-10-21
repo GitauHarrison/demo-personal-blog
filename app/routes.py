@@ -82,10 +82,10 @@ def create_checkout_session():
             mode="payment",
             line_items=[
                 {
-                    "name": "Web Development",
+                    "name": "Consultation",
                     "quantity": 1,
                     "currency": "usd",
-                    "amount": "3900",
+                    "amount": "20000",
                 }
             ]
         )
