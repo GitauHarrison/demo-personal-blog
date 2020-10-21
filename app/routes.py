@@ -75,7 +75,8 @@ def create_checkout_session():
 
         # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
         checkout_session = stripe.checkout.Session.create(
-            success_url=domain_url + "success?session_id={CHECKOUT_SESSION_ID}",
+            # success_url=domain_url + "success?session_id={CHECKOUT_SESSION_ID}",
+            success_url=domain_url + "success",
             cancel_url=domain_url + "cancelled",
             payment_method_types=["card"],
             mode="payment",
@@ -91,3 +92,13 @@ def create_checkout_session():
         return jsonify({"sessionId": checkout_session["id"]})
     except Exception as e:
         return jsonify(error=str(e)), 403
+
+@app.route('/success')
+def success():
+    flash('You have successfuly made your payment. Check out more course contents')
+    return render_template('stripe_success.html', title = 'Payment Success')
+
+@app.route('/cancelled')
+def cancelled():
+    flash('Sorry, your payment was not successful. Please try making another payment')
+    return render_template('stripe_cancel.html', title = 'Payment Cancelled')
