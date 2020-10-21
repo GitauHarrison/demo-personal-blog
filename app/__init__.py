@@ -7,6 +7,7 @@ from flask_moment import Moment
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
+import stripe
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,6 +15,11 @@ bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 moment = Moment(app)
+
+stripe_keys = {
+    "secret_key": app.config["STRIPE_SECRET_KEY"],
+    "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"]
+}
 
 from app import routes, models, errors
 
