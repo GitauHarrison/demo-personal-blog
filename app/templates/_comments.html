@@ -12,14 +12,13 @@
             {{ moment(post.timestamp).fromNow() }}
             </span><br>
             <span id="post {{ post.id }}"> {{ post.body }} </span>
-            <br><br>
             {% if post.language %}
+                <br><br>
                 <span id="translation{{ post.id }}">
                     <a href="javascript:translate(
                                 '#post{{ post.id }}',
                                 '#translation{{ post.id }}',
-                                '{{ post.language }}',
-                                '{{ g.locale }}');">Translate</a>
+                                '{{ post.language }}');">Translate</a>
                 </span>
             {% endif %}
         </td>
