@@ -48,3 +48,7 @@ def personal_blog():
 @app.route('/portfolio')
 def portfolio():
     return render_template('portfolio.html', title = 'Portfolio')
+
+@app.route('/schedule')
+def schedule():
+    return render_template('schedule_call.html', title = 'Schedule Call')

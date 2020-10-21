@@ -43,6 +43,12 @@ h1{
     
     */
 }
+.calendar{
+    margin-bottom: 5 px;
+}
+.calendly-inline-widget{
+    border-radius: 7px;    
+}
 
 /* BUTTONS */
 .btn{
@@ -56,7 +62,7 @@ h1{
     background-color: #dbd9d8;
     color:  #706d6c;
 }
-.schedule-btn{
+.schedule-btn, #payment-btn{
     font-size: 20px;
     padding: 10px;
     border-radius: 7px;
@@ -64,7 +70,7 @@ h1{
     color: #706d6c;
     border: 1px solid #ede8e5;
 }
-.schedule-btn:hover{
+.schedule-btn:hover, #payment-btn:hover{
     background-color: #dbd9d8;
     color:  #706d6c;
     border: 1px solid #dbd9d8;
