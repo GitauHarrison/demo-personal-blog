@@ -32,7 +32,7 @@ def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
         language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) < 5:
+        if language == 'UNKNOWN' or len(language) > 5:
             language = ''
         user = User(username = form.username.data, email = form.email.data)        
         post = Post(body = form.comment.data, author = user, language = language)
