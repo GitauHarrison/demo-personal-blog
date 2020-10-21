@@ -8,7 +8,7 @@ fetch("/config")
   const stripe = Stripe(data.publicKey);
 
   // Add Event handler
-  document.querySelector("#submitBtn").addEventListener("click", () => {
+  document.querySelector("#payment-btn").addEventListener("click", () => {
     // Get Checkout Session ID
     fetch("/create-checkout-session")
     .then((result) => { return result.json(); })
