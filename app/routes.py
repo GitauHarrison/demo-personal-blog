@@ -1,5 +1,5 @@
-from app import app, db
-from flask import render_template, url_for, flash, redirect, request
+from app import app, db, stripe_keys
+from flask import render_template, url_for, flash, redirect, request, jsonify
 from app.forms import CommentForm
 from app.models import User, Post
 
@@ -52,3 +52,8 @@ def portfolio():
 @app.route('/schedule')
 def schedule():
     return render_template('schedule_call.html', title = 'Schedule Call')
+
+@app.route("/config")
+def get_publishable_key():
+    stripe_config = {"publicKey": stripe_keys["publishable_key"]}
+    return jsonify(stripe_config)
