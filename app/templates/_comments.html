@@ -11,7 +11,7 @@
             <span style="background-color: #f9fcf6;padding: 2px; border-radius: 3px;">
             {{ moment(post.timestamp).fromNow() }}
             </span><br>
-            <span id="post {{ post.id }}"> post.body }} </span>
+            <span id="post {{ post.id }}"> {{ post.body }} </span>
             <br><br>
             {% if post.language %}
                 <span id="translation{{ post.id }}">
