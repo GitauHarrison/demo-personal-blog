@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <!-- Display Flash Messages Here -->
+        {% include '_flash_message.html' %}
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Schedule Consultation</h1>
+            </div>
+        </div>
+        <div class="row calendar">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <!-- Calendly inline widget begin -->
+                <div class="calendly-inline-widget" data-url="https://calendly.com/gitauharrison/60min?background_color=7f7f7" style="min-width:250px;height:630px;"></div>                
+                <!-- Calendly inline widget end -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <p>
+                    I have a few video conference consultation slots each week for those who want one-on-one time with me. 
+                    I'm happy to assist you on any of the topics I cover on this blog, in conference talks, or in my books, 
+                    videos or open source projects. My fee for a one hour consultation is $200 USD, payable via Stripe.
+                </p>                 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">                
+                <!-- Payment Button -->
+                <a><button id="payment-btn" type="button">Enroll Now</button></a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
