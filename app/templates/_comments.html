@@ -11,10 +11,16 @@
             <span style="background-color: #f9fcf6;padding: 2px; border-radius: 3px;">
             {{ moment(post.timestamp).fromNow() }}
             </span><br>
-            {{ post.body }}
+            <span id="post {{ post.id }}"> post.body }} </span>
             <br><br>
             {% if post.language %}
-                <a href="#">Translate</a>
+                <span id="translation{{ post.id }}">
+                    <a href="javascript:translate(
+                                '#post{{ post.id }}',
+                                '#translation{{ post.id }}',
+                                '{{ post.language }}',
+                                '{{ g.locale }}');">{{ _('Translate') }}</a>
+                </span>
             {% endif %}
         </td>
     </tr>
