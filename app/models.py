@@ -6,7 +6,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    posts = db.relationship('PersonalBlogPost', backref='author', lazy='dynamic')
+    vagrant_posts = db.relationship('VagrantPost', backref='author', lazy='dynamic')
+    virtualenvwrapper_posts = db.relationship('VirtualenvwrapperPost', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return 'User <>'.format(self.username)
@@ -15,7 +17,27 @@ class User(db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
-class Post(db.Model):
+class PersonalBlogPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    language = db.Column(db.String(5))
+
+    def __repr__(self):
+        return 'Post <>'.format(self.body)
+
+class VagrantPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    language = db.Column(db.String(5))
+
+    def __repr__(self):
+        return 'Post <>'.format(self.body)
+
+class VirtualenvwrapperPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
