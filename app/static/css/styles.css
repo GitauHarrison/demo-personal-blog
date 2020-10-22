@@ -22,6 +22,12 @@ p{
 h1{
     text-align: center;
 }
+h1{
+    padding-bottom: 15px;
+}
+h2, h3, h4, h5, h6{
+    padding-top: 30px;
+}
 
 /* Custom styles */
 .my-name{
@@ -48,6 +54,20 @@ h1{
 }
 .calendly-inline-widget{
     border-radius: 7px;    
+}
+code{
+    color: black;       
+}
+/* This adds a code title */
+.code-title{
+    margin-bottom: -4px;
+    font-size: 90%;
+    background-color: #ccc;
+    padding-left: 10px;
+    padding-bottom: 4px;
+}
+.hljs-comment{
+    color: #b3b3b3;
 }
 
 /* BUTTONS */
