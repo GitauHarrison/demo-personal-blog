@@ -1,10 +1,11 @@
 from app import app, db, stripe_keys
-from flask import render_template, url_for, flash, redirect, request, jsonify
+from flask import render_template, url_for, flash, redirect, request, jsonify, g
 from app.forms import CommentForm
 from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
+from flask_babel import get_locale
 
 @app.route('/')
 @app.route('/home')
@@ -26,6 +27,10 @@ def my_interests():
 @app.route('/web-development')
 def web_development():
     return render_template('web_development.html', title = 'Web Development')
+
+@app.before_request
+def before_request():
+    g.locale = str(get_locale())
 
 @app.route('/personal-blog', methods = ['GET', 'POST'])
 def personal_blog():

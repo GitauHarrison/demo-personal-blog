@@ -8,6 +8,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 import stripe
+from flask_babel import Babel
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,14 +16,13 @@ bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 moment = Moment(app)
+babel = Babel(app)
 
 stripe_keys = {
     "secret_key": app.config["STRIPE_SECRET_KEY"],
     "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
     "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
 }
-
-from app import routes, models, errors
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
@@ -56,3 +56,10 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('Gitau Harrison Blog')
+
+@babel.localeselector
+def get_locale():
+    # return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return 'en'
+
+from app import routes, models, errors
