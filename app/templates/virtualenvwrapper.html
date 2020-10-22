@@ -107,7 +107,7 @@ source ~/.local/bin/virtualenvwrapper.sh
                 <!-- Comments Go Here -->
                 {% for post in posts %}
                     {% include '_comments.html' %}
-                {% endfor %}
+                {% endfor %}                
 
                 <!-- Pagination Links -->
                 <nav aria-label="...">
@@ -128,7 +128,7 @@ source ~/.local/bin/virtualenvwrapper.sh
                 <!-- Comment Form Goes Here -->
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
                     {{ wtf.quick_form(form) }}
-                </div>
+                </div>               
             </div>
         </div>
     </div>
