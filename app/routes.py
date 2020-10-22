@@ -59,6 +59,7 @@ def portfolio():
 def schedule():
     return render_template('schedule_call.html', title = 'Schedule Call')
 
+# START OF STRIPE PAYMENT INTEGRATION
 @app.route("/config")
 def get_publishable_key():
     stripe_config = {"publicKey": stripe_keys["publishable_key"]}
@@ -131,7 +132,9 @@ def stripe_webhook():
         # TODO: you can run some custom code here
 
     return "Success", 200
+# END OF STRIPE PAYMENT INTEGRATION
 
+# START OF LIVE TRANSLATION
 @app.route('/translate')
 def translate_text():
     return jsonify({
@@ -141,3 +144,9 @@ def translate_text():
             request.form['dest_language']
         )
     })
+# END OF LIVE TRANSLATION
+
+# START OF TUTORIALS
+@app.route('/virtualenvwrapper')
+def virtualenvwrapper():
+    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper')
