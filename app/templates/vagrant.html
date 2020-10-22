@@ -33,7 +33,7 @@
 <pre><code class="has-line-data" data-line-start="38" data-line-end="40" class="language-python3">$ which virtualbox
 </code></pre>
 <p class="has-line-data" data-line-start="41" data-line-end="42">Successful installation will show you a PATH to <code>VirtualBox</code>.</p>
-<h4 class="code-line" data-line-start=44 data-line-end=45 ><a id="Installing_Vagrant_44"></a>Installing Vagrant</h4>
+<h5 class="code-line" data-line-start=44 data-line-end=45 ><a id="Installing_Vagrant_44"></a>Installing Vagrant</h5>
 <p class="has-line-data" data-line-start="46" data-line-end="47">There are two ways you can follow to install <code>vagrant</code>:</p>
 <h5 class="code-line" data-line-start=48 data-line-end=49 ><a id="Option_1_48"></a>Option 1:</h5>
 <pre><code class="has-line-data" data-line-start="50" data-line-end="52" class="language-python3">$ sudo apt install vagrant
@@ -99,7 +99,7 @@ end
 <p class="has-line-data" data-line-start="136" data-line-end="137">What exactly is <code>&lt;ubuntu/bionic64&gt;</code>?</p>
 <p class="has-line-data" data-line-start="138" data-line-end="139"><a href="https://www.vagrantup.com/docs/boxes">Vagrant boxes</a> are the package formats for <code>vagrant</code> environments. Factually, the list is endless on available boxes, as seen <a href="https://app.vagrantup.com/boxes/search">here</a>. You can search for a box of your choice. In this guide, I am using the disk image of Ubuntu 18.04 LTS.</p>
 <p class="has-line-data" data-line-start="140" data-line-end="141">Here are the <a href="https://cloud-images.ubuntu.com/">official Ubuntu Cloud Images</a> that have been customized to run on public clouds that provide Ubuntu Certified Images, Openstack and more.</p>
-<h4 class="code-line" data-line-start=145 data-line-end=146 ><a id="Using_SSH_Client_145"></a>Using SSH Client</h4>
+<h5 class="code-line" data-line-start=145 data-line-end=146 ><a id="Using_SSH_Client_145"></a>Using SSH Client</h5>
 <p class="has-line-data" data-line-start="147" data-line-end="148">Thing is, you do not have an app on your desktop to connect to your server. You will need to work through the command-line/terminal  and connect to your server through an <code>SSH</code> client.</p>
 <p class="has-line-data" data-line-start="149" data-line-end="150">If you are using a Vagrant machine, (which you are now) you can simply run:</p>
 <pre><code class="has-line-data" data-line-start="151" data-line-end="153" class="language-python3">$ vagrant ssh
@@ -117,7 +117,7 @@ $ sudo su ubuntu
 <p class="has-line-data" data-line-start="165" data-line-end="166">Alternatively, you can just run this command to get to your new user:</p>
 <pre><code class="has-line-data" data-line-start="167" data-line-end="169" class="language-python3">$ vagrant ssh -c &quot;/home/ubuntu; sudo su ubuntu&quot;
 </code></pre>
-<h4 class="code-line" data-line-start=171 data-line-end=172 ><a id="Secure_your_Server_171"></a>Secure your Server</h4>
+<h5 class="code-line" data-line-start=171 data-line-end=172 ><a id="Secure_your_Server_171"></a>Secure your Server</h5>
 <p class="has-line-data" data-line-start="173" data-line-end="174">To minimize the risk of your server being compromised, you need to tighten available loopholes an attacker might use to gain access. We will use the inbuilt <code>vim</code> editor (or another of your choice) to help us modify our <code>config</code> file as follows:</p>
 <pre><code class="has-line-data" data-line-start="175" data-line-end="177" class="language-python3">$ sudo vim /etc/ssh/sshd_config
 </code></pre>
@@ -128,7 +128,7 @@ PasswordAuthentication no
 <p class="has-line-data" data-line-start="183" data-line-end="184">After you are done editing the <code>ssh</code> configuration, the service needs to be restarted of the changes to take effect:</p>
 <pre><code class="has-line-data" data-line-start="185" data-line-end="187" class="language-python3">$ sudo service ssh restart
 </code></pre>
-<h4 class="code-line" data-line-start=187 data-line-end=188 ><a id="Install_a_firewall_187"></a>Install a firewall</h4>
+<h5 class="code-line" data-line-start=187 data-line-end=188 ><a id="Install_a_firewall_187"></a>Install a firewall</h5>
 <p class="has-line-data" data-line-start="189" data-line-end="190">Block access to the server on any ports that are not explictly enabled:</p>
 <pre><code class="has-line-data" data-line-start="191" data-line-end="198" class="language-python3">$ sudo apt-get install -y ufw
 $ sudo ufw allow ssh

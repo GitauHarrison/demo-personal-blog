@@ -25,7 +25,7 @@ h1{
 h1{
     padding-bottom: 15px;
 }
-h2, h3, h4, h5, h6{
+h2, h3, h5, h6{
     padding-top: 30px;
 }
 
@@ -49,12 +49,14 @@ h2, h3, h4, h5, h6{
     
     */
 }
+/* Calendly */
 .calendar{
     margin-bottom: 5 px;
 }
 .calendly-inline-widget{
     border-radius: 7px;    
 }
+/* CODE STYLING */
 code{
     color: black;       
 }
@@ -68,6 +70,13 @@ code{
 }
 .hljs-comment{
     color: #b3b3b3;
+}
+/* Article Post */
+.article-date{
+    border: 1px solid #cccccc;
+    text-align: center;
+    border-radius: 3px;
+    padding: 0px;
 }
 
 /* BUTTONS */
