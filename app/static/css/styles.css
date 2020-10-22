@@ -23,7 +23,7 @@ h1{
     text-align: center;
 }
 h1{
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 h2, h3, h5, h6{
     padding-top: 30px;
@@ -36,7 +36,7 @@ h2, h3, h5, h6{
 .about-me, .hire-me, .portfolio, .updates{
     background-color: #f7f5f3;
     padding: 20px;
-    border-radius: 7px;
+    border-radius: 3px;
     margin: 5px;
     /* center item in viewport */
     /* position: absolute;
@@ -54,7 +54,7 @@ h2, h3, h5, h6{
     margin-bottom: 5 px;
 }
 .calendly-inline-widget{
-    border-radius: 7px;    
+    border-radius: 3px;    
 }
 /* CODE STYLING */
 code{
@@ -81,7 +81,7 @@ code{
 
 /* BUTTONS */
 .btn{
-    border-radius: 7px;
+    border-radius: 3px;
     padding: 5px;
     background-color: #ede8e5;
     font-size: 15px;
@@ -94,7 +94,7 @@ code{
 .schedule-btn, #payment-btn{
     font-size: 20px;
     padding: 10px;
-    border-radius: 7px;
+    border-radius: 3px;
     background-color: #ede8e5;
     color: #706d6c;
     border: 1px solid #ede8e5;
@@ -107,7 +107,7 @@ code{
 /* CARDS */
 .card{
     border: 1px solid #d6d4d3;
-    border-radius: 7px;
+    border-radius: 3px;
     padding:5px;
     text-align: center;
     margin: 15px;
@@ -129,7 +129,7 @@ a:active{
 /* HOVER EFFECTS */
 #comments:hover + .translate-info{
     display: block;
-    border-radius: 7px;
+    border-radius: 3px;
     margin-bottom: 3px;
 }
 .translate-info{
