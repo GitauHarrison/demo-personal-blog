@@ -150,3 +150,7 @@ def translate_text():
 @app.route('/virtualenvwrapper')
 def virtualenvwrapper():
     return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper')
+
+@app.route('/vagrant')
+def vagrant():
+    return render_template('vagrant.html', title = 'Vagrant')

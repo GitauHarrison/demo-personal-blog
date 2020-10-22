@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="Vagrant_How_to_Download_and_Install_the_Right_Way_0"></a>Vagrant: How to Download and Install the Right Way</h1>
+<h5 class="code-line" data-line-start=2 data-line-end=3 ><a id="Background_2"></a>Background</h5>
+<p class="has-line-data" data-line-start="4" data-line-end="5">One of the reasons why you would consider Vagrant is because you seek to deploy your application so that other users can have access to it. It is a traditional method of deployment in the sense that it you need to install your application manually or through a scripted installer on a stock server machine.</p>
+<p class="has-line-data" data-line-start="6" data-line-end="7">There are other servers that can be used for deployment. Vagrant, unlike the rest, is free.</p>
+<h5 class="code-line" data-line-start=8 data-line-end=9 ><a id="Requirements_8"></a>Requirements</h5>
+<p class="has-line-data" data-line-start="10" data-line-end="11">To have vagrant running on your machine, you will need two tools:</p>
+<ul>
+<li class="has-line-data" data-line-start="11" data-line-end="12">VirtualBox and</li>
+<li class="has-line-data" data-line-start="12" data-line-end="14">Vagrant (itself)</li>
+</ul>
+<p class="has-line-data" data-line-start="14" data-line-end="15">You will also need:</p>
+<ul>
+<li class="has-line-data" data-line-start="15" data-line-end="16">Root previlidges (<code>sudo</code>) and</li>
+<li class="has-line-data" data-line-start="16" data-line-end="17">A terminal window</li>
+</ul>
+<h3 class="code-line" data-line-start=20 data-line-end=21 ><a id="Creating_an_Ubuntu_Server_20"></a>Creating an Ubuntu Server</h3>
+<p class="has-line-data" data-line-start="22" data-line-end="23">If you are not sure whether you have vagrant or not, run this command on your terminal:</p>
+<pre><code class="has-line-data" data-line-start="24" data-line-end="26">$ vagrant --version
+</code></pre>
+<h5 class="has-line-data" data-line-start="27" data-line-end="28">Installing a VirtualBox</h5>
+<p class="has-line-data" data-line-start="29" data-line-end="30"><code>VirtualBox</code> is a software utility that allows you to run an operating system inside an operating system. It does this by creating a virtual environment. Since Vagrant creates virtual operating systems, it needs a tool like <code>VirtualBox</code> to manage the virtual operating systems.</p>
+<p class="has-line-data" data-line-start="31" data-line-end="32">To install <code>VirtualBox</code>, run:</p>
+<pre><code class="has-line-data" data-line-start="33" data-line-end="35">$ sudo apt install virtualbox
+</code></pre>
+<p class="has-line-data" data-line-start="36" data-line-end="37">To check that you actually have <code>VirtualBox</code> installed, run:</p>
+<pre><code class="has-line-data" data-line-start="38" data-line-end="40" class="language-python3">$ which virtualbox
+</code></pre>
+<p class="has-line-data" data-line-start="41" data-line-end="42">Successful installation will show you a PATH to <code>VirtualBox</code>.</p>
+<h4 class="code-line" data-line-start=44 data-line-end=45 ><a id="Installing_Vagrant_44"></a>Installing Vagrant</h4>
+<p class="has-line-data" data-line-start="46" data-line-end="47">There are two ways you can follow to install <code>vagrant</code>:</p>
+<h5 class="code-line" data-line-start=48 data-line-end=49 ><a id="Option_1_48"></a>Option 1:</h5>
+<pre><code class="has-line-data" data-line-start="50" data-line-end="52" class="language-python3">$ sudo apt install vagrant
+</code></pre>
+<p class="has-line-data" data-line-start="52" data-line-end="53">Your system will download and install the software. However, the challenge with this is that there is a likelihood your system is not up to date with the latest version of the software.</p>
+<p class="has-line-data" data-line-start="54" data-line-end="55">To check for the latest update, visit the official <a href="https://www.vagrantup.com/downloads.html">vagrant download page</a> and download the appropriate one for your OS.</p>
+<p class="has-line-data" data-line-start="56" data-line-end="57">To check the version installed in your system, run:</p>
+<pre><code class="has-line-data" data-line-start="58" data-line-end="60" class="language-python3">$ vagrant --version
+</code></pre>
+<h5 class="code-line" data-line-start=61 data-line-end=62 ><a id="Option_2_61"></a>Option 2:</h5>
+<p class="has-line-data" data-line-start="63" data-line-end="64">From the official HashiCorp Download Page, you can find the latest version of <code>vagrant</code>. Before you download the latest version of <code>vagrant</code>, it is good practice to look for any updates you might have. Then download your version by running these two commands:</p>
+<pre><code class="has-line-data" data-line-start="65" data-line-end="68" class="language-python3">$ sudo apt update
+$ curl -O https://releases.hashicorp.com/vagrant/2.2.x/vagrant_2.2.x_x86_64.deb
+</code></pre>
+<p class="has-line-data" data-line-start="68" data-line-end="69"><em>Note: Change the 2.2.x to the appropriate version you are downloading</em></p>
+<p class="has-line-data" data-line-start="70" data-line-end="71">We are using <code>curl</code> to get the file and download it. For more information on <code>curl</code>, visit:</p>
+<ul>
+<li class="has-line-data" data-line-start="71" data-line-end="73"><a href="https://ec.haxx.se/">https://ec.haxx.se/</a>.</li>
+</ul>
+<p class="has-line-data" data-line-start="73" data-line-end="74">Further reading on:</p>
+<ul>
+<li class="has-line-data" data-line-start="74" data-line-end="76"><a href="https://linuxize.com/post/curl-command-examples/">https://linuxize.com/post/curl-command-examples/</a>.</li>
+</ul>
+<p class="has-line-data" data-line-start="76" data-line-end="77">To install <code>vagrant</code>, you need to run:</p>
+<pre><code class="has-line-data" data-line-start="78" data-line-end="80" class="language-python3">$ sudo apt install ./vagrant_2.2.X_x86_64.deb
+</code></pre>
+<h5 class="code-line" data-line-start=80 data-line-end=81 ><a id="Verify_Vagrant_Installation_80"></a>Verify Vagrant Installation</h5>
+<p class="has-line-data" data-line-start="82" data-line-end="83">To verify that the installation was successful, run:</p>
+<pre><code class="has-line-data" data-line-start="84" data-line-end="86" class="language-python3">$ vagrant --version
+</code></pre>
+<p class="has-line-data" data-line-start="86" data-line-end="87">You should be able to see the exact version you downloaded and installed.</p>
+<h3 class="code-line" data-line-start=90 data-line-end=91 ><a id="Getting_started_with_Vagrant_90"></a>Getting started with Vagrant</h3>
+<p class="has-line-data" data-line-start="92" data-line-end="93">Since you are going to use <code>vagrant</code> to run your project locally, the first thing you want to do is to create a directory that will host your application. To do this, you can:</p>
+<pre><code class="has-line-data" data-line-start="94" data-line-end="97" class="language-python3">$ mkdir my_new_project
+$ cd my_new_project
+</code></pre>
+<p class="has-line-data" data-line-start="98" data-line-end="99">Now that you are inside your new project, you need to initialize <code>vagrant</code>. You can accomplish this in two ways:</p>
+<p class="has-line-data" data-line-start="100" data-line-end="101"><em>First,</em></p>
+<pre><code class="has-line-data" data-line-start="102" data-line-end="104" class="language-python3">$ vagrant init ubuntu/bionic64
+</code></pre>
+<p class="has-line-data" data-line-start="104" data-line-end="105">This will create an <em>Ubuntu disk image</em> within your current working directory.</p>
+<p class="has-line-data" data-line-start="108" data-line-end="109">Alternatively, you can choose to create a <code>vagrant</code> configuration file before running Vagrant. This can be accomplished by creating an empty file:</p>
+<pre><code class="has-line-data" data-line-start="110" data-line-end="112" class="language-python3">$ touch Vagrantfile
+</code></pre>
+<p class="has-line-data" data-line-start="112" data-line-end="113">Using your favorite text editor, you can populate the file with your configurations. For example,</p>
+<pre><code class="has-line-data" data-line-start="114" data-line-end="122">Vagrant.configure(&quot;2&quot;) do |config|
+    config.vm.box = &quot;ubuntu/bionic64&quot;
+    config.vm.network &quot;private_network&quot;, ip: &quot;192.168.33.10&quot;
+    config.vm.provider &quot;virtualbox&quot; do |vb|
+        vb.memory = &quot;1024&quot;
+    end
+end
+</code></pre>
+<p class="has-line-data" data-line-start="122" data-line-end="123">This file will be useful when you try to create and configure the virtual machine as specified in your config file.</p>
+<p class="has-line-data" data-line-start="124" data-line-end="125">Now that you have a configuration file, run:</p>
+<pre><code class="has-line-data" data-line-start="126" data-line-end="128" class="language-python3">$ vagrant up
+</code></pre>
+<p class="has-line-data" data-line-start="128" data-line-end="129">After completion, <code>vagrant</code> will mount the project directory at /vagrant in the virtual machine which allows you to work on your project’s files on your host machine.</p>
+<h5 class="has-line-data" data-line-start="130" data-line-end="131">What are vagrant boxes?</h5>
+<p class="has-line-data" data-line-start="132" data-line-end="133">You have seen me use:</p>
+<pre><code class="has-line-data" data-line-start="134" data-line-end="136" class="language-python3">$ vagrant init ubuntu/bionic64
+</code></pre>
+<p class="has-line-data" data-line-start="136" data-line-end="137">What exactly is <code>&lt;ubuntu/bionic64&gt;</code>?</p>
+<p class="has-line-data" data-line-start="138" data-line-end="139"><a href="https://www.vagrantup.com/docs/boxes">Vagrant boxes</a> are the package formats for <code>vagrant</code> environments. Factually, the list is endless on available boxes, as seen <a href="https://app.vagrantup.com/boxes/search">here</a>. You can search for a box of your choice. In this guide, I am using the disk image of Ubuntu 18.04 LTS.</p>
+<p class="has-line-data" data-line-start="140" data-line-end="141">Here are the <a href="https://cloud-images.ubuntu.com/">official Ubuntu Cloud Images</a> that have been customized to run on public clouds that provide Ubuntu Certified Images, Openstack and more.</p>
+<h4 class="code-line" data-line-start=145 data-line-end=146 ><a id="Using_SSH_Client_145"></a>Using SSH Client</h4>
+<p class="has-line-data" data-line-start="147" data-line-end="148">Thing is, you do not have an app on your desktop to connect to your server. You will need to work through the command-line/terminal  and connect to your server through an <code>SSH</code> client.</p>
+<p class="has-line-data" data-line-start="149" data-line-end="150">If you are using a Vagrant machine, (which you are now) you can simply run:</p>
+<pre><code class="has-line-data" data-line-start="151" data-line-end="153" class="language-python3">$ vagrant ssh
+</code></pre>
+<p class="has-line-data" data-line-start="153" data-line-end="154">You can also choose to create a user to connect to your server. To do this, you will need to log into your server’s root account using <code>ssh</code> and do the following:</p>
+<pre><code class="has-line-data" data-line-start="155" data-line-end="159" class="language-python3">$ adduser --gecos &quot;&quot; ubuntu
+$ usermod -aG sudo ubuntu
+$ su ubuntu
+</code></pre>
+<p class="has-line-data" data-line-start="159" data-line-end="160">This creates an <em>ubuntu</em> user. What you should note is, at this point, if you ever <code>logout</code> of your server, you will need to repeat the above steps (summarized below) to get to your user:</p>
+<pre><code class="has-line-data" data-line-start="161" data-line-end="165" class="language-python3">$ vagrant up
+$ vagrant ssh
+$ sudo su ubuntu
+</code></pre>
+<p class="has-line-data" data-line-start="165" data-line-end="166">Alternatively, you can just run this command to get to your new user:</p>
+<pre><code class="has-line-data" data-line-start="167" data-line-end="169" class="language-python3">$ vagrant ssh -c &quot;/home/ubuntu; sudo su ubuntu&quot;
+</code></pre>
+<h4 class="code-line" data-line-start=171 data-line-end=172 ><a id="Secure_your_Server_171"></a>Secure your Server</h4>
+<p class="has-line-data" data-line-start="173" data-line-end="174">To minimize the risk of your server being compromised, you need to tighten available loopholes an attacker might use to gain access. We will use the inbuilt <code>vim</code> editor (or another of your choice) to help us modify our <code>config</code> file as follows:</p>
+<pre><code class="has-line-data" data-line-start="175" data-line-end="177" class="language-python3">$ sudo vim /etc/ssh/sshd_config
+</code></pre>
+<p class="has-line-data" data-line-start="177" data-line-end="178">Make the following changes by editing the original file to:</p>
+<pre><code class="has-line-data" data-line-start="179" data-line-end="182">PermitRootLogin no
+PasswordAuthentication no
+</code></pre>
+<p class="has-line-data" data-line-start="183" data-line-end="184">After you are done editing the <code>ssh</code> configuration, the service needs to be restarted of the changes to take effect:</p>
+<pre><code class="has-line-data" data-line-start="185" data-line-end="187" class="language-python3">$ sudo service ssh restart
+</code></pre>
+<h4 class="code-line" data-line-start=187 data-line-end=188 ><a id="Install_a_firewall_187"></a>Install a firewall</h4>
+<p class="has-line-data" data-line-start="189" data-line-end="190">Block access to the server on any ports that are not explictly enabled:</p>
+<pre><code class="has-line-data" data-line-start="191" data-line-end="198" class="language-python3">$ sudo apt-get install -y ufw
+$ sudo ufw allow ssh
+$ sudo ufw allow http
+$ sudo ufw allow 443/tcp
+$ sudo ufw --force enable
+$ sudo ufw status
+</code></pre>
+        </div>
+    </div>
+{% endblock %}
+
