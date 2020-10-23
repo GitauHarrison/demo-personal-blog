@@ -4,6 +4,7 @@
 {% block head %}
     {{ super() }}
     <link rel="icon" type="image/png" href="{{ url_for('static', filename = 'images/hash-48.png') }}">
+    {{ pagedown.html_head() }}
 {% endblock %}
 
 <!-- Title Section -->

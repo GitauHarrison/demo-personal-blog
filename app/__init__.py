@@ -9,6 +9,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 import stripe
 from flask_babel import Babel
+from flask_pagedown import PageDown
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -17,6 +18,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 moment = Moment(app)
 babel = Babel(app)
+pagedown = PageDown(app)
 
 stripe_keys = {
     "secret_key": app.config["STRIPE_SECRET_KEY"],
