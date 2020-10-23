@@ -4,8 +4,8 @@ from hashlib import md5
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    username = db.Column(db.String(64), index=True)
+    email = db.Column(db.String(120), index=True)
     posts = db.relationship('PersonalBlogPost', backref='author', lazy='dynamic')
     vagrant_posts = db.relationship('VagrantPost', backref='author', lazy='dynamic')
     virtualenvwrapper_posts = db.relationship('VirtualenvwrapperPost', backref='author', lazy='dynamic')
