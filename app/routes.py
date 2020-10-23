@@ -1,7 +1,7 @@
 from app import app, db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g
 from app.forms import CommentForm
-from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost
+from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -208,14 +208,14 @@ def reCaptcha():
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
         user = User(username = form.username.data, email = form.email.data)        
-        post = VagrantPost(body = form.comment.data, author = user, language = language)
+        post = reCaptchaPost(body = form.comment.data, author = user, language = language)
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
         return redirect(url_for('reCaptcha', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = VagrantPost.query.order_by(VagrantPost.timestamp.desc()).paginate(
+    posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.desc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('reCaptcha', _anchor='comments', page = posts.next_num) \
