@@ -7,7 +7,7 @@ class CommentForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     comment = TextAreaField('Comment', validators=[DataRequired()])
-    recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField('Captcha')
     submit = SubmitField('Post')
 
     # def validate_username(self, username):
