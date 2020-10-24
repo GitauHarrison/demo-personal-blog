@@ -5,7 +5,520 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="How_to_Integrate_Google_reCaptcha_into_your_Flask_Web_App_0"></a>How to Integrate Google reCaptcha into your Flask Web App</h1>
+<h5 class="code-line" data-line-start=6 data-line-end=7 ><a id="Overview_6"></a>Overview</h5>
+<p class="has-line-data" data-line-start="8" data-line-end="9">To start using reCAPTCHA, you need to sign up for an API key pair for your site. The key pair consists of a site key and secret key. The site key is used to invoke reCAPTCHA service on your site or mobile application. The secret key authorizes communication between your application backend and the reCAPTCHA server to verify the user’s response. The secret key needs to be kept safe for security purposes.</p>
+<p class="has-line-data" data-line-start="4" data-line-end="5"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = 'images/recaptcha_logo.png') }} " alt="reCaptcha"></p>
+<h5 class="code-line" data-line-start=10 data-line-end=11 ><a id="Things_You_Will_Do_10"></a>Things You Will Do:</h5>
+<ol>
+<li class="has-line-data" data-line-start="12" data-line-end="13">Build a simple flask form</li>
+<li class="has-line-data" data-line-start="13" data-line-end="14">Sign Up for an API key pair</li>
+<li class="has-line-data" data-line-start="14" data-line-end="15">Choose the type of reCAPTCHA and fill in authorized domains or package names</li>
+<li class="has-line-data" data-line-start="15" data-line-end="17">Integrate reCAPTCHA into the form</li>
+</ol>
+<h3 class="code-line" data-line-start=17 data-line-end=18 ><a id="Build_a_Simple_Flask_Form_17"></a>Build a Simple Flask Form</h3>
+<p class="has-line-data" data-line-start="19" data-line-end="20">During this tutorial, you will learn how to integrat reCAPTCHA to a form, because that is where you want to manage user interactions with your app. We will use the structure below to guide us on how to create our simple flask form:</p>
+<p class="has-line-data" data-line-start="21" data-line-end="22"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/reCaptcha_project_structure.png') }}" alt="reCaptcha Project Structure"></p>
+<h5 class="code-line" data-line-start=24 data-line-end=25 ><a id="Project_Structure_24"></a>Project Structure</h5>
+<p class="has-line-data" data-line-start="26" data-line-end="27">So let us go ahead and create this project structure:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkdir reCaptcha<span style="color: #333333">-</span>Project <span style="color: #888888"># create project folder</span>
+<span style="color: #ff8080; ">$</span> cd reCaptcha<span style="color: #333333">-</span>Project <span style="color: #888888"># move into the new folder you have created</span>
+<span style="color: #ff8080; ">$</span> touch <span style="color: #333333">.</span>flaskenv <span style="color: #888888"># will hold our environment variables</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">.</span>py <span style="color: #888888"># makes our app to run</span>
+<span style="color: #ff8080; ">$</span> touch config<span style="color: #333333">.</span>py <span style="color: #888888"># will hold all our configuration variables used in the app</span>
+<span style="color: #ff8080; ">$</span> touch requirements<span style="color: #333333">.</span>txt
+    
+<span style="color: #888888"># alternatively, you can create all the files above by running:</span>
+<span style="color: #888888"># touch .flaskenv app.py config.py requirements.txt</span>
+    
+<span style="color: #ff8080; ">$</span> mkdir app <span style="color: #888888"># subdirectory to hold key app resources</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>__init__<span style="color: #333333">.</span>py <span style="color: #888888"># application is initialized here</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>routes<span style="color: #333333">.</span>py <span style="color: #888888"># will hold all our view functions</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>models<span style="color: #333333">.</span>py <span style="color: #888888"># will define our database tables</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>form<span style="color: #333333">.</span>py <span style="color: #888888"># we will define our form here</span>
+<span style="color: #ff8080; ">$</span> mkdir app<span style="color: #333333">/</span>templates <span style="color: #888888"># subdirectory to hold all templates</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>base<span style="color: #333333">.</span>html <span style="color: #888888"># defines all our base features</span>
+<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>index<span style="color: #333333">.</span>html <span style="color: #888888"># form will be displayed here</span>
+    
+<span style="color: #888888"># Note you can also combine the commands to create </span>
+<span style="color: #888888">#all files in a directory as shown in the example above.</span>
+</pre>
+<p class="has-line-data" data-line-start="52" data-line-end="53">Now that we have our structure set up, we are going to start building our simple reCaptcha project. We will use <code>flask</code> and all its dependancies to achieve this. Things we will need include:</p>
+<ul>
+<li class="has-line-data" data-line-start="54" data-line-end="55"><a href="https://flask.palletsprojects.com/en/1.1.x/">flask server</a></li>
+<li class="has-line-data" data-line-start="55" data-line-end="56"><a href="https://flask-wtf.readthedocs.io/en/stable/">flask-wtf</a></li>
+<li class="has-line-data" data-line-start="56" data-line-end="57"><a href="https://flask-sqlalchemy.palletsprojects.com/en/2.x/">flask-sqlalchemy</a></li>
+<li class="has-line-data" data-line-start="57" data-line-end="58"><a href="https://flask-migrate.readthedocs.io/en/latest/">flask migrate</a></li>
+<li class="has-line-data" data-line-start="58" data-line-end="59"><a href="https://pythonhosted.org/Flask-Bootstrap/">flask-bootstrap</a></li>
+<li class="has-line-data" data-line-start="59" data-line-end="61"><a href="https://pypi.org/project/python-dotenv/">python-dotenv</a></li>
+</ul>
+<p class="has-line-data" data-line-start="61" data-line-end="62">In order for us to install all these packages and the dependancies, it is recommended that you create a virtual environment to isolate your app from your computer’s ecosystem or possible future dependancies upgrade.</p>
+<p class="has-line-data" data-line-start="63" data-line-end="64">We will use <code>pip</code> to install all our dependancies. Learn what <code>pip</code> is <a href="https://pip.pypa.io/en/stable/">here</a>.</p>
+<h5 class="code-line" data-line-start=65 data-line-end=66 ><a id="Create_Virtual_Environment_65"></a>Create Virtual Environment</h5>
+<p class="has-line-data" data-line-start="67" data-line-end="68">To create a virtual environment, we will use a virtual environment wrapper to not only create but also to activate it.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv recaptcha_project
 
+<span style="color: #888888"># Your output</span>
+created virtual environment CPython3<span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">8.5</span><span style="color: #333333">.</span>final<span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">64</span> <span style="color: #000000; font-weight: bold">in</span> <span style="color: #0000DD; font-weight: bold">307</span>ms
+  creator CPython3Posix(dest<span style="color: #333333">=/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project, clear<span style="color: #333333">=</span><span style="color: #007020">False</span>, <span style="color: #008800; font-weight: bold">global</span><span style="color: #333333">=</span><span style="color: #007020">False</span>)
+  seeder FromAppData(download<span style="color: #333333">=</span><span style="color: #007020">False</span>, pip<span style="color: #333333">=</span>bundle, setuptools<span style="color: #333333">=</span>bundle, wheel<span style="color: #333333">=</span>bundle, via<span style="color: #333333">=</span>copy, app_data_dir<span style="color: #333333">=/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>local<span style="color: #333333">/</span>share<span style="color: #333333">/</span>virtualenv)
+    added seed packages: pip<span style="color: #333333">==</span><span style="color: #6600EE; font-weight: bold">20.2</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">3</span>, setuptools<span style="color: #333333">==</span><span style="color: #6600EE; font-weight: bold">50.2</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>, wheel<span style="color: #333333">==</span><span style="color: #6600EE; font-weight: bold">0.35</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">1</span>
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+virtualenvwrapper<span style="color: #333333">.</span>user_scripts creating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>predeactivate
+virtualenvwrapper<span style="color: #333333">.</span>user_scripts creating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>postdeactivate
+virtualenvwrapper<span style="color: #333333">.</span>user_scripts creating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>preactivate
+virtualenvwrapper<span style="color: #333333">.</span>user_scripts creating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>postactivate
+virtualenvwrapper<span style="color: #333333">.</span>user_scripts creating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/.</span>virtualenvs<span style="color: #333333">/</span>recaptcha_project<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>get_env_details
+
+<span style="color: #888888"># Your environment is already activated, seen by (recaptcha_project)</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span>
+</pre>
+<p class="has-line-data" data-line-start="88" data-line-end="89">If you are not familiar with <code>virtualenvwrapper</code>, learn how you can install it in your computer <a href="http://127.0.0.1:5000/virtualenvwrapper">here</a>.</p>
+<p class="has-line-data" data-line-start="90" data-line-end="91">From now, we will be working within our new virtual environment to really isolate our app during development.</p>
+<h5 class="code-line" data-line-start=92 data-line-end=93 ><a id="Install_Flask_92"></a>Install Flask</h5>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip3 install flask
+</pre>
+<p class="has-line-data" data-line-start="100" data-line-end="101">The first time you use <code>pip</code>, you may get the soft warning message:</p>
+<pre style="margin: 30; line-height: 125%">WARNING: You are using pip version <span style="color: #6600EE; font-weight: bold">20.2</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">3</span>; however, version <span style="color: #6600EE; font-weight: bold">20.2</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">4</span> <span style="color: #000000; font-weight: bold">is</span> available<span style="color: #333333">.</span>
+You should consider upgrading via the <span style="background-color: #fff0f0">&#39;/home/gitau/.virtualenvs/recaptcha_project/bin/python -m pip install --upgrade pip&#39;</span> command<span style="color: #333333">.</span>
+</pre>
+<p class="has-line-data" data-line-start="107" data-line-end="108">This should not scare you, rather you should take your time to read the warning message to find out what you can do to solve the issue. From the message we can see that all we need to do is to run the command below to upgrade our <code>pip</code>:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip install <span style="color: #333333">--</span>upgrade pip 
+<span style="color: #888888"># this will upgrade to the latest pip version</span>
+</pre>
+<p class="has-line-data" data-line-start="114" data-line-end="115">As soon as <code>flask</code> is installed, we need to register it in our application.</p>
+<p class="code-title has-line-data" data-line-start="116" data-line-end="117">app/__init__.py: Create application instance</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+
+app <span style="color: #333333">=</span> Flask(__name__)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p class="has-line-data" data-line-start="125" data-line-end="126">We have imported our <code>routes</code> module at the bottom of our app as a walkaround to <em>circular imports</em> which is a common problem in Flask. Let us now create a <em>view function</em> which will handle the URL to our form.:</p>
+<p class="code-title has-line-data" data-line-start="127" data-line-end="128">app/routes.py: Form Page</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+    
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/comments&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">comments</span>():
+<span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;comments.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Comment&#39;</span>)   
+</pre>
+<p class="has-line-data" data-line-start="138" data-line-end="139"><code>render_template</code> from flask is used to help us display our html page, which we will create next. In order to make our simple app look beautiful and consistent across all web browsers, we will need to install <code>flask-bootstrap</code>.</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>bootstrap
+
+<span style="color: #888888"># Flask moment helps to format time</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color:  #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>moment
+</pre>
+<p class="has-line-data" data-line-start="147" data-line-end="148">We need to register these two dependancies in our application instance as below:</p>
+<p class=" code-title has-line-data" data-line-start="149" data-line-end="150">app/__init__.py: Register Bootstrap</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #888888"># new</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_bootstrap</span> <span style="color: #008800; font-weight: bold">import</span> Bootstrap
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_moment</span> <span style="color: #008800; font-weight: bold">import</span> Moment
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+    
+<span style="color: #888888"># new</span>
+bootstrap <span style="color: #333333">=</span> Bootstrap(app)
+moment <span style="color: #333333">=</span> Moment(app)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<h5 class="code-line" data-line-start=165 data-line-end=166 ><a id="Create_Page_Templates_165"></a>Create Page Templates</h5>
+<p class="has-line-data" data-line-start="167" data-line-end="168">Now we can create our base template for the application:</p>
+<p class="code-title has-line-data" data-line-start="169" data-line-end="170">app/templates/base.html: Base template</p>
+
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;bootstrap/base.html&#39;</span> <span style="color: #333333">%</span>}
+
+
+    <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> Title Section <span style="color: #333333">--&gt;</span>
+
+    {<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span>Your tab title will look something like: reCaptcha <span style="color: #333333">|</span> Comments<span style="color: #333333">--&gt;</span>
+            reCaptcha <span style="color: #333333">|</span> {{ title }} 
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+            reCaptcha
+        {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+
+    <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> Navbar Section <span style="color: #333333">--&gt;</span>
+    
+    {<span style="color: #333333">%</span> block navbar <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>nav class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar navbar-default&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+            
+        <span style="color:  #8c8c8c; ">#... check code on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/base.html">GitHub</a> for the full NavBar</span>
+
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>nav<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+
+    <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> Flash Messages Are Here <span style="color: #333333">--&gt;</span>
+
+    {<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">with</span> messages <span style="color: #333333">=</span> get_flashed_messages() <span style="color: #333333">%</span>}
+            {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> messages <span style="color: #333333">%</span>}
+                {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> message <span style="color: #000000; font-weight: bold">in</span> messages <span style="color: #333333">%</span>}
+                    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert alert-warning&quot;</span> role<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert&quot;</span><span style="color: #333333">&gt;</span> {{ message }} <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+                {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+            {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> endwith <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+
+    <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> Scripts Section <span style="color: #333333">--&gt;</span>
+    
+    {<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+        
+        <span style="color:  #8c8c8c; ">#... Check code on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/base.html">GitHub</a> for the scripts</span>
+        
+        <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> reCaptcha Integration Will Come Here <span style="color: #333333">--&gt;</span>
+    
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="224" data-line-end="225">With the base template set up, we can now import all the styles and presentation to our comments form template using <code>extends</code> from flask:</p>
+<p class="code-title has-line-data" data-line-start="226" data-line-end="227">app/templates/comments.html: Display comments form</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+    
+    {<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12&quot;</span><span style="color: #333333">&gt;</span>
+                
+            <span style="color:  #8c8c8c; ">#... see how to use flask-bootstrap form on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html">GitHub</a></span>
+
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<h5 class="code-line" data-line-start=242 data-line-end=243 ><a id="Create_a_Form_242"></a>Create a Form</h5>
+<p class="has-line-data" data-line-start="244" data-line-end="245">First and foremost, we need to configure our app to protect it from an attack called <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF</a> (Cross-Site Request Forgery), pronounced as ‘seasurf’. The Flask-WTF extension uses it to protect web forms against this nasty attack.</p>
+<p class="code-title has-line-data" data-line-start="246" data-line-end="247">app/config.py: Create secret key</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    SECRET_KEY <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;SECRET_KEY&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&#39;you-will-never-guess&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="254" data-line-end="255">Flask and some of its extensions use the value of the secret key as a cryptographic key, useful to generate signatures or tokens. As its name implies, the secret key is supposed to be secret, as the strength of the tokens and signatures generated with it depends on no person outside of the trusted maintainers of the application knowing it.</p>
+<p class="has-line-data" data-line-start="256" data-line-end="257">We need to tell Flask to apply and use SECRET_KEY. To do this, we will register our configuration in the application instance:</p>
+<p class="code-title has-line-data" data-line-start="258" data-line-end="259">app/__init__.py: Register Configurations</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># previous imports</span>
+
+<span style="color: #888888"># new</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+<span style="color: #888888">#new</span>
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+    
+<span style="color: #888888"># previous code</span>
+</pre>
+<p class="has-line-data" data-line-start="272" data-line-end="273">Flask provides <code>flask-wtf</code> which handles all the form requirements. We need to install it in order to create our form:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span #ff8080 ">$</span> pip3 install flask<span style="color: #333333">-</span>wtf
+</pre>
+<p class="has-line-data" data-line-start="278" data-line-end="279">We will use attributes from <code>flask-wtf</code> to create all aspects of our form:</p>
+<p class="code-title has-line-data" data-line-start="280" data-line-end="281">app/forms.py: Make form</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_wtf</span> <span style="color: #008800; font-weight: bold">import</span> FlaskForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms</span> <span style="color: #008800; font-weight: bold">import</span> StringField, TextAreaField, SubmitField
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms.validators</span> <span style="color: #008800; font-weight: bold">import</span> DataRequired, Email
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">CommentForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired(), Email()])
+    comment <span style="color: #333333">=</span> TextAreaField(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Post&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="292" data-line-end="293">Due to the email field in our form, flask expects us to install <code>email-validator</code> for email validation support:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span #ff8080 ">$</span> pip3 install email<span style="color: #333333">-</span>validator
+</pre>
+<p class="has-line-data" data-line-start="298" data-line-end="299">We need to register the form we have created in the <code>comments</code> view function which will be responsible of displaying the form:</p>
+<p class="code-title has-line-data" data-line-start="300" data-line-end="301">app/routes.py: Register form in view function</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.forms</span> <span style="color: #008800; font-weight: bold">import</span> CommentForm
+
+    <span style="color: #888888"># previous code </span>
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">comments</span>():
+        form <span style="color: #333333">=</span> CommentForm()
+        <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+            user <span style="color: #333333">=</span> User(username <span style="color: #333333">=</span> form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data, email <span style="color: #333333">=</span> form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>data)        
+            post <span style="color: #333333">=</span> Comment(body <span style="color: #333333">=</span> form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>data, author <span style="color: #333333">=</span> user)
+            db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(user)
+            db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(post)
+            db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+            flash(<span style="background-color: #fff0f0">&#39;Your comment is now live!&#39;</span>)  
+            <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;comments&#39;</span>))  
+        posts <span style="color: #333333">=</span> Comment<span style="color: #333333">.</span>query<span style="color: #333333">.</span>order_by(Comment<span style="color: #333333">.</span>timestamp<span style="color: #333333">.</span>desc())<span style="color: #333333">.</span>all()
+        <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;comments.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Comment&#39;</span>, form <span style="color: #333333">=</span> form, posts <span style="color: #333333">=</span> posts)
+</pre>
+<p class="has-line-data" data-line-start="320" data-line-end="321">From our view function above, you can see that I have introduced two new things:</p>
+<ul>
+<li class="has-line-data" data-line-start="321" data-line-end="322">user</li>
+<li class="has-line-data" data-line-start="322" data-line-end="324">post</li>
+</ul>
+<p class="has-line-data" data-line-start="324" data-line-end="325">These two variables are responsible for handling the input data from the form and updating our database tables. In a subsequent section below, I will explain how to work with databases.</p>
+<h5 class="code-line" data-line-start=326 data-line-end=327 ><a id="Adding_Flask_Environment_Variables_326"></a>Adding Flask Environment Variables</h5>
+<p class="has-line-data" data-line-start="328" data-line-end="329">Flask requires us to create our appication  in the <code>app.py</code> file. We need to provide the FLASK_APP environment variable which stores the <code>app.py</code> file. Update the file as below:</p>
+<p class="code-title has-line-data" data-line-start="330" data-line-end="331">app.py: Location of Flask application</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<p class="has-line-data" data-line-start="335" data-line-end="336">Then install the <code>python-dotenv</code> dependancy to help us handle all the flask environment variables:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span #ff8080 ">$</span> pip3 install python<span style="color: #333333">-</span>dotenv
+</pre>
+<p class="has-line-data" data-line-start="339" data-line-end="340">We will store all the flask environment variables in the <code>.flaskenv</code> file we had created ealier. Add these variables to the file:</p>
+<p class="code-title code-line has-line-data" data-line-start="341" data-line-end="342">.flaskenv: Flask environment variables</p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py <span style="color: #888888"># this is where our application runs</span>
+FLASK_ENV<span style="color: #333333">=</span>development <span style="color: #888888"># we set our environment to development</span>
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span> <span style="color: #888888"># capture changes on the go</span>
+</pre>
+<h4 class="code-line" data-line-start=348 data-line-end=349 ><a id="Working_with_Databases_348"></a>Working with Databases</h4>
+<p class="has-line-data" data-line-start="350" data-line-end="351">For the purposes of this simple project, I will resort to use the SQLite database. There are other databases that can be used but for simplicity and for being light, I will use SQLite. There are two dependancies we will need in order to work with SQLite. Go ahead and install them:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>sqlalchemy
+<span style="color: #888888"># flask-sqlalchemy will help us work with the SQL database</span>
+    
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>migrate
+<span style="color: #888888"># flask migrate will help us update our databases every time there is a change</span>
+</pre>
+<p class="has-line-data" data-line-start="360" data-line-end="361">As seen before during each import of a dependancy, we need to register the dependancy to the app:</p>
+<p class="code-title has-line-data" data-line-start="362" data-line-end="363">app/__init__.py: Register extensions</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># previous imports</span>
+
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_migrate</span> <span style="color: #008800; font-weight: bold">import</span> Migrate
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_sqlalchemy</span> <span style="color: #008800; font-weight: bold">import</span> SQLAlchemy
+    
+<span style="color: #888888"># previous code</span>
+db   <span style="color: #333333">=</span> SQLAlchemy(app)
+migrate <span style="color: #333333">=</span> Migrate(app, db)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes, models
+</pre>
+<p class="has-line-data" data-line-start="376" data-line-end="377">We need to update our configurations to effect this new change:</p>
+<p class="code-title has-line-data" data-line-start="378" data-line-end="379">config.py: Flask SQLAlchemy configuration</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+basedir <span style="color: #333333">=</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>abspath(os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>dirname(__file__))
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    <span style="color: #888888"># ...</span>
+    SQLALCHEMY_DATABASE_URI <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;DATABASE_URL&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> \
+        <span style="background-color: #fff0f0">&#39;sqlite:///&#39;</span> <span style="color: #333333">+</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>join(basedir, <span style="background-color: #fff0f0">&#39;app.db&#39;</span>)
+    SQLALCHEMY_TRACK_MODIFICATIONS <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">False</span>
+</pre>
+<h5 class="code-line" data-line-start=391 data-line-end=392 ><a id="Database_Models_391"></a>Database Models</h5>
+<p class="has-line-data" data-line-start="393" data-line-end="394">Now, we will create two tables that will handle user input plus their actual comment. This comment will be displayed within the app right above our comments form.</p>
+<p class="code-title has-line-data" data-line-start="395" data-line-end="396">app/models.py: Create user table</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">hashlib</span> <span style="color: #008800; font-weight: bold">import</span> md5
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+    username <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>, unique<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+    email <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">120</span>), index<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>, unique<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;&lt;User {}&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username) 
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">avatar</span>(<span style="color: #007020">self</span>, size):
+        digest <span style="color: #333333">=</span> md5(<span style="color: #007020">self</span><span style="color: #333333">.</span>email<span style="color: #333333">.</span>lower()<span style="color: #333333">.</span>encode(<span style="background-color: #fff0f0">&#39;utf-8&#39;</span>))<span style="color: #333333">.</span>hexdigest()
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;https://www.gravatar.com/avatar/{}?d=identicon&amp;s={}&#39;</span><span style="color: #333333">.</span>format(digest, size)
+</pre>
+<p class="has-line-data" data-line-start="414" data-line-end="415">SQLite saves the database tables locally in a disk by creating a <em>migration directory</em> which stores all the <em>migration scripts</em>. The <code>flask db</code> sub-command is added by Flask-Migrate to manage everything related to database migrations. So let’s create the migration repository and update our database:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># create migration repository</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> flask db init
+    
+<span style="color: #888888"># create user tables migration</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;user table&#39;</span>
+    
+<span style="color: #888888"># Apply the changes to the database</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> flask db upgrade
+</pre>
+<p class="has-line-data" data-line-start="427" data-line-end="428">We now have a <code>user</code> table which will store a user’s <em>username</em> and <em>email</em> information. Next, we need to store the user’s comment. We will create a <code>comment</code> table:</p>
+<p class="code-title has-line-data" data-line-start="429" data-line-end="430">app/models.py: Create comment table</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># previous code</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Comment</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+    body <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">140</span>))
+    timestamp <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>DateTime, index<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>, default<span style="color: #333333">=</span>datetime<span style="color: #333333">.</span>utcnow)
+    user_id <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, db<span style="color: #333333">.</span>ForeignKey(<span style="background-color: #fff0f0">&#39;user.id&#39;</span>))
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;&lt;Post {}&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>body)
+</pre>
+<p class="has-line-data" data-line-start="443" data-line-end="444">Because a comment belongs to a user, we need to show the relationship between the <code>Comment</code> table and <code>User</code> table. Relational databases excel at creating relationships hence this makes it easier for us to implement relationships between tables:</p>
+<p class="code-title has-line-data" data-line-start="445" data-line-end="446">app/models.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #888888"># previous code </span>
+
+    posts <span style="color: #333333">=</span> db<span style="color: #333333">.</span>relationship(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, backref<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;author&#39;</span>, lazy<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;dynamic&#39;</span>)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;&lt;User {}&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username)
+
+<span style="color: #888888"># Comment Table</span>
+</pre>
+<p class="has-line-data" data-line-start="459" data-line-end="460">We need to update these changes to our database:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># create comment migration script</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;comment table&#39;</span>
+    
+<span style="color: #888888"># Apply the changes to the database</span>
+(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> flask db upgrade
+</pre>
+<p class="has-line-data" data-line-start="469" data-line-end="470">Phew! That was a lot of new stuff put down right there. To understand what is doing on, take your time to go over your scripts to know how everything work together.</p>
+<p class="has-line-data" data-line-start="471" data-line-end="472">Make sure you update your <code>routes.py</code> file to include the form and database tables:</p>
+<p class="code-title has-line-data" data-line-start="473" data-line-end="474">app/routes.py: Updated view function</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app, db
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template, flash, redirect, url_for
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.form</span> <span style="color: #008800; font-weight: bold">import</span> CommentForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User, Comment
+    
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/&#39;</span>, methods <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/comments&#39;</span>, methods <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">comments</span>():
+    form <span style="color: #333333">=</span> CommentForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User(username <span style="color: #333333">=</span> form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data, email <span style="color: #333333">=</span> form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>data)        
+        post <span style="color: #333333">=</span> Comment(body <span style="color: #333333">=</span> form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>data, author <span style="color: #333333">=</span> user)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(user)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(post)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+        flash(<span style="background-color: #fff0f0">&#39;Your comment is now live!&#39;</span>)  
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;comments&#39;</span>))  
+    posts <span style="color: #333333">=</span> Comment<span style="color: #333333">.</span>query<span style="color: #333333">.</span>order_by(Comment<span style="color: #333333">.</span>timestamp<span style="color: #333333">.</span>desc())<span style="color: #333333">.</span>all()
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;comments.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Comment&#39;</span>, form <span style="color: #333333">=</span> form, posts <span style="color: #333333">=</span> posts)  
+</pre>
+<p class="has-line-data" data-line-start="497" data-line-end="498">At this point, this is what we have:</p>
+<p class="has-line-data"  data-line-start="499" data-line-end="500"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/recaptcha_form_display.png') }}" alt="Form Page"></p>
+<h5 class="code-line" data-line-start=501 data-line-end=502 ><a id="Show_User_Post_501"></a>Show User Post</h5>
+<p class="has-line-data" data-line-start="503" data-line-end="504">We have all we need for our reCaptcha app to work. Just a few more things to go:</p>
+<ul>
+<li class="has-line-data" data-line-start="505" data-line-end="506">Creating a post subtemplate</li>
+<li class="has-line-data" data-line-start="506" data-line-end="508">Including the comments subtemplate in the comments template</li>
+</ul>
+<p class="has-line-data" data-line-start="508" data-line-end="509">Let us add a <code>_comments.html</code> subtemplate which we will include in our <code>comments.html</code> template to display user posts:</p>
+<pre style="margin: 30; line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>_comments<span style="color: #333333">.</span>html
+</pre>
+<p class="code-title has-line-data" data-line-start="514" data-line-end="515">app/templates/_comments.html: Posts table</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #007700">&lt;table</span> <span style="color: #0000CC">class=</span><span style="background-color: #fff0f0">&quot;table table-hover&quot;</span><span style="color: #007700">&gt;</span>
+    <span style="color: #007700">&lt;tr</span> <span style="color: #0000CC">valign=</span><span style="background-color: #fff0f0">&#39;top&#39;</span><span style="color: #007700">&gt;</span>
+        <span style="color: #007700">&lt;td</span> <span style="color: #0000CC">width=</span><span style="background-color: #fff0f0">&#39;70px&#39;</span><span style="color: #007700">&gt;</span>
+            <span style="color: #007700">&lt;img</span> <span style="color: #0000CC">src=</span><span style="background-color: #fff0f0">&quot; # ... see how to add an avatar of a post's author on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html"> GitHub</a> &quot;</span><span style="color: #007700">&gt;</span>
+        <span style="color: #007700">&lt;/td&gt;</span>
+        <span style="color: #007700">&lt;td&gt;</span>
+            <span style="color: #007700">&lt;span</span> <span style="color: #0000CC">style=</span><span style="background-color: #fff0f0">&quot;color: #6a8af5;&quot;</span><span style="color: #007700">&gt;</span>
+                
+            <span style="color:  #8c8c8c; ">#... see how to add a post author's username on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html">GitHub</a></span>
+
+            <span style="color: #007700">&lt;/span&gt;</span>
+            said
+            <span style="color: #007700">&lt;span</span> <span style="color: #0000CC">style=</span><span style="background-color: #fff0f0">&quot;background-color: #f9fcf6;padding: 2px; border-radius: 3px;&quot;</span><span style="color: #007700">&gt;</span>
+                
+            <span style="color:  #8c8c8c; ">#... see how to add a post timestamp on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html">GitHub</a></span>
+
+            <span style="color: #007700">&lt;/span&gt;&lt;br&gt;</span>
+            <span style="color: #007700">&lt;br&gt;</span>
+            
+            <span style="color:  #8c8c8c; ">#... see how to get the content of a post on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html"> GitHub</a></span>
+
+        <span style="color: #007700">&lt;/td&gt;</span>
+    <span style="color: #007700">&lt;/tr&gt;</span>
+<span style="color: #007700">&lt;/table&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="536" data-line-end="537">Add <code>_comments.html</code> to your main <code>comments.html</code> template as below:</p>
+<p class="code-title has-line-data" data-line-start="538" data-line-end="539">app/templates/comments.html</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+        
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12&quot;</span><span style="color: #333333">&gt;</span>
+                    
+            <span style="color: #888888">#... see how to display all users' posts on <a href="https://github.com/GitauHarrison/flask-google-reCaptcha-Integration/blob/master/app/templates/comments.html">GitHub</a></span>
+    
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="561" data-line-end="562">At this point all our posts can be seen in our simple app:</p>
+<p class="has-line-data" data-line-start="563" data-line-end="564"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/display_recaptcha_posts.png') }}" alt="Display Post"></p>
+<h3 class="code-line" data-line-start=565 data-line-end=566 ><a id="Integrate_Google_reCaptcha_565"></a>Integrate Google reCaptcha</h3>
+<p class="has-line-data" data-line-start="567" data-line-end="568">In order to integrate Google reCAPTCHA in our app, we need to register a site and get an API key pair. Google provides four types of reCAPTCHA.</p>
+<ol>
+<li class="has-line-data" data-line-start="569" data-line-end="570">reCAPTCHA v3</li>
+<li class="has-line-data" data-line-start="570" data-line-end="571">reCAPTCHA v2</li>
+<li class="has-line-data" data-line-start="571" data-line-end="572">Invisible reCAPTCHA</li>
+<li class="has-line-data" data-line-start="572" data-line-end="574">reCAPTCHA Android</li>
+</ol>
+<blockquote>
+<p class="has-line-data" data-line-start="574" data-line-end="575">reCAPTCHA v3 validates requests with a score whilst v2 validates request with the “I am not a robot” checkbox.</p>
+</blockquote>
+<blockquote>
+<p class="has-line-data" data-line-start="576" data-line-end="577">The Invisible reCAPTCHA does not need the user to click on a check box instead it is called upon when a user clicks on a button on a site.</p>
+</blockquote>
+<p class="has-line-data" data-line-start="578" data-line-end="579">For now, we will make use of reCAPTCHA v2 to validate requests in our app. If you do not have a <a href="https://accounts.google.com/signup/v2/webcreateaccount?flowName=GlifWebSignIn&amp;flowEntry=SignUp">Google Account</a>, you need to create one.</p>
+<h5 class="code-line" data-line-start=580 data-line-end=581 ><a id="Things_You_Need_To_Do_580"></a>Things You Need To Do</h5>
+<ol>
+<li class="has-line-data" data-line-start="582" data-line-end="583">Visit <a href="https://www.google.com/recaptcha/about/">reCaptcha Home Page</a></li>
+<li class="has-line-data" data-line-start="583" data-line-end="584">Click on <a href="https://www.google.com/recaptcha/admin/create">Admin Console</a></li>
+<li class="has-line-data" data-line-start="584" data-line-end="585">Fill in your details</li>
+</ol>
+<ul>
+<li class="has-line-data" data-line-start="585" data-line-end="586">Label: provide any name that will be easy for you to remember</li>
+<li class="has-line-data" data-line-start="586" data-line-end="587">Choose <em>reCAPTCHA v2</em></li>
+<li class="has-line-data" data-line-start="587" data-line-end="588">Domains: if you have an actual domain, add it here. If you are using localhost, consider adding: <strong>127.0.0.1</strong></li>
+<li class="has-line-data" data-line-start="588" data-line-end="589">Check all boxes</li>
+<li class="has-line-data" data-line-start="589" data-line-end="591">Submit your information</li>
+</ul>
+<p class="has-line-data" data-line-start="591" data-line-end="592"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/reCaptcha_form.png') }}" alt="reCaptcha Form"></p>
+<p class="has-line-data" data-line-start="593" data-line-end="594">Upon creation, you will get the registered site API keys. We will add these two keys to our <code>config.py</code> file:</p>
+<p class="code-title has-line-data" data-line-start="595" data-line-end="596">config.py: reCaptcha Keys</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    <span style="color: #888888"># previous configurations</span>
+
+    <span style="color: #888888"># reCAPTCHA configuration</span>
+    RECAPTCHA_PUBLIC_KEY <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;&lt;your_site_key&gt;&#39;</span>
+    RECAPTCHA_PRIVATE_KEY<span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;&lt;your_secret_key&gt;&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="606" data-line-end="607">Note that you need to name your variables as RECAPTCHA_PUBLIC_KEY and RECAPTCHA_PRIVATE_KEY. Any other names would give you an error.</p>
+<p class="has-line-data" data-line-start="608" data-line-end="609">You will then need to add the reCaptcha js file in <code>base.html</code> as done below:</p>
+<p class="code-title has-line-data" data-line-start="610" data-line-end="611">app/templates/base.html: Add reCaptcha JS file</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Scripts Section <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span>Your previous code<span style="color: #333333">--&gt;</span>
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> reCaptcha Integration <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>script src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;https://www.google.com/recaptcha/api.js&#39;</span> async defer<span style="color: #333333">&gt;&lt;/</span>script<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="622" data-line-end="623">Since reCaptcha is part of our from, we need to update our <code>form.py</code> file to include reCaptcha:</p>
+<p class="code-title has-line-data" data-line-start="624" data-line-end="625">app/form.py: Add reCaptcha to form</p>
+<pre style="margin: 30; line-height: 125%">from flask_wtf <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">FlaskForm</span><span style="color: #333333">,</span> <span style="color: #0e84b5; font-weight: bold">RecaptchaField</span>
+<span style="color: #888888"># previous imports</span>
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">CommentForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired(), Email()])
+    <span style="color: #888888"># new</span>
+    comment <span style="color: #333333">=</span> TextAreaField(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    recaptcha <span style="color: #333333">=</span> RecaptchaField()
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Post&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="639" data-line-end="640">And that is it!! You have reCaptcha as part of your application.</p>
+<p class="has-line-data" data-line-start="641" data-line-end="642"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/successful_reCaptcha.png') }}" alt="Successful reCaptcha"></p>
+<p class="has-line-data" data-line-start="643" data-line-end="644">You can update the strength of your reCaptcha in the settings.</p>
+<p class="has-line-data" data-line-start="645" data-line-end="646"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/strong_reCaptcha.png') }}" alt="Strong reCaptcha"></p>
+<h5 class="code-line" data-line-start=647 data-line-end=648 ><a id="Update_your_requirementstxt_647"></a>Update your requirements.txt</h5>
+<p class="has-line-data" data-line-start="649" data-line-end="650">With all that work, remember to update your requirements.txt file to include all the dependancies you have used while building this app</p>
+<pre  line-height: 125%">(recaptcha_project) gitau<span style="color: #555555; font-weight: bold">@harry</span>:<span style="color: #333333">~/</span>recaptcha_project<span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+<p class="has-line-data" data-line-start="655" data-line-end="657">NOTE:<br>
+    I have ignored certain files from <code>git</code> version control because they have sensitive data such as private keys. All I did was to create a <code>.gitignore</code> file in the root directory of this app and added the invisible files.</p>
         </div>
     </div>
     <!-- Comments Section -->

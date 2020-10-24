@@ -1,9 +1,13 @@
+/* ------------------------------------------ */
 /* Images */
+/* ------------------------------------------ */
 .web-dev{
     width: 48px;
     height: 48px;
 }
+/* ------------------------------------------ */
 /* General styles */
+/* ------------------------------------------ */
 html, body{
     height: 100%;
     width: 100%;
@@ -28,20 +32,18 @@ h1{
 h2, h3, h5, h6{
     padding-top: 30px;
 }
-img, blockquote{
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
+/* ------------------------------------------ */
 /* Custom styles */
+/* ------------------------------------------ */
 .my-name{
     text-align: center;
 }
 .about-me, .hire-me, .portfolio, .updates{
-    background-color: #f7f5f3;
+    background-color:#fff;
     padding: 20px;
     border-radius: 3px;
     margin: 5px;
+    box-shadow: 5px 10px 18px #ebe6e3;
     /* center item in viewport */
     /* position: absolute;
     top: 50%;
@@ -53,18 +55,24 @@ img, blockquote{
     
     */
 }
+/* ------------------------------------------ */
 /* Calendly */
+/* ------------------------------------------ */
 .calendar{
     margin-bottom: 5 px;
 }
 .calendly-inline-widget{
     border-radius: 3px;    
 }
+/* ------------------------------------------ */
 /* CODE STYLING */
+/* ------------------------------------------ */
 code{
     color: black;       
 }
+
 /* This adds a code title */
+
 .code-title{
     margin-bottom: -4px;
     font-size: 90%;
@@ -75,15 +83,22 @@ code{
 .hljs-comment{
     color: #b3b3b3;
 }
+blockquote{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+/* ------------------------------------------ */
 /* Article Post */
+/* ------------------------------------------ */
 .article-date{
     border: 1px solid #cccccc;
     text-align: center;
     border-radius: 3px;
     padding: 0px;
 }
-
+/* ------------------------------------------ */
 /* BUTTONS */
+/* ------------------------------------------ */
 .btn{
     border-radius: 3px;
     padding: 5px;
@@ -108,7 +123,9 @@ code{
     color:  #706d6c;
     border: 1px solid #dbd9d8;
 }
+/* ------------------------------------------ */
 /* CARDS */
+/* ------------------------------------------ */
 .card{
     border: 1px solid #d6d4d3;
     border-radius: 3px;
@@ -119,8 +136,9 @@ code{
 .card:hover{
     box-shadow: 5px 10px 18px #ebe6e3;
 }
-
+/* ------------------------------------------ */
 /* LINKS */
+/* ------------------------------------------ */
 a:link{
     text-decoration: none;
 }
@@ -130,7 +148,9 @@ a:visited{
 a:active{
     color: orangered;
 }
+/* ------------------------------------------ */
 /* HOVER EFFECTS */
+/* ------------------------------------------ */
 #comments:hover + .translate-info{
     display: block;
     border-radius: 3px;
@@ -142,8 +162,9 @@ a:active{
     padding: 10px;
     display: none;
 }
-
+/* ------------------------------------------ */
 /* FORMS */
+/* ------------------------------------------ */
 .my-form{
     margin-bottom: 5px;
 }
