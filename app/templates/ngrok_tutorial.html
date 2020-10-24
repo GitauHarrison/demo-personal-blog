@@ -10,28 +10,28 @@
 <p>It is also possible to access your Flask application running on localhost from another device or location for the purposees of testing. Below, I will show you how to use <a href="https://pyngrok.readthedocs.io/en/latest/">pyngrok</a> package to provision a temporary public URL for your application that works on your phone or from anywhere in the world.</p>
 <h3 id="ngrok">Ngrok</h3>
 <p>In order to use this package, make sure that you go into your project directory and activate your virtual environment.</p>
-<pre style="margin: 0; line-height: 125%"><span style="color:#ff8080;">$</span> cd your_project_directory
+<pre style="margin: 30; line-height: 125%"><span style="color:#ff8080;">$</span> cd your_project_directory
 <span style="color: #ff8080;">$</span> workon your_virtual_env
 </pre>
 <p>I have used virtualenvwrapper to activate an existing virtual environment using the <code>workon</code> command. If you do not know what virtualenvwrapper is and how to use it, learn it <a href="{{ url_for('virtualenvwrapper') }}">here</a>.</p>
 <p>Install pyngrok into your virtual environment:</p>
-<pre style="margin: 0; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> pip3 install pyngrok
+<pre style="margin: 30; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> pip3 install pyngrok
 </pre>
 <blockquote>
 <p><code>pyngrok</code> is a Python wrapper for <code>ngrok</code> that manages its own binary and puts it on your path, making ngrok readily available from anywhere on the command line and via a convenient Python API.</p>
 </blockquote>
 <p>Run <code>ngrok --help</code> in your virtual environment to confirm that it is installed and working:</p>
-<pre style="margin: 0; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> ngrok <span style="color: #333333">--</span>help
+<pre style="margin: 30; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> ngrok <span style="color: #333333">--</span>help
 </pre>
 </code></pre>
 <h5 id="how-it-works">How it Works</h5>
 <p>We will make use of two terminal windows for this, both with your virtual environment activated. If you are using VS Code, you can simpley split your terminal window to get two windows. If you are using your default Ubuntu terminal window, you may want to consider <a href="https://www.byobu.org/">byobu</a>, an open source text-based window manager and terminal multiplexer.</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/terminal_windows.png') }}" alt="Terminal Windows"></p>
 <p>On your first terminal, start your application, either by running a Python script or you can run <code>flask run</code> command. The important thing is your application listens to requests at <a href="http://localhost:5000">http://localhost:5000</a>.</p>
-<pre style="margin: 0; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> flask run <span style="color: #888888"># start your application</span>
+<pre style="margin: 30; line-height: 125%">(your_virtualenv)<span style="color: #ff8080;">$</span> flask run <span style="color: #888888"># start your application</span>
 </pre>
 <p>On your second terminal, start ngrok:</p>
-<pre style="margin: 0; line-height: 125%">your_virtualenv)<span style="color: #ff8080;">$</span> ngrok http <span style="color: #0000DD; font-weight: bold">5000</span> <span style="color: #888888"># or any other port you have used</span>
+<pre style="margin: 30; line-height: 125%">your_virtualenv)<span style="color: #ff8080;">$</span> ngrok http <span style="color: #0000DD; font-weight: bold">5000</span> <span style="color: #888888"># or any other port you have used</span>
 </pre>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/run_ngrok_windows.png') }}" alt="Running Flask and Ngrok"></p>
 <p>You can open your localhost in your browser by clicking on the link in your first terminal (as seen in the image above). On the second terminal window, look at the two lines that begin with the word <em>Forwarding</em> to know your <code>ngrok</code> URL. These two lines show the <code>http://</code> and <code>https://</code> versions of your URL. In my example above, I have <em><a href="http://23ebfb1baa7e.ngrok.io">http://23ebfb1baa7e.ngrok.io</a></em>.</p>
@@ -41,7 +41,7 @@
 <p>By now, you must be excited about all the possibilities it opens. Below, I will show you an improved workflow that allows you to access Ngrok automatically every time you start your Flask application.</p>
 <p>To open the tunnel add the script below anywhere in your application. For my case, I have added it to <code>__init__.py</code> file:</p>
 <p class="code-title">app/__init__.py: Create ngrok tunnel</p>
-<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">start_ngrok</span>():
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">start_ngrok</span>():
     <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">pyngrok</span> <span style="color: #008800; font-weight: bold">import</span> ngrok
 
     url <span style="color: #333333">=</span> ngrok<span style="color: #333333">.</span>connect(<span style="color: #0000DD; font-weight: bold">5000</span>)
@@ -50,23 +50,23 @@
 <p>This script performs the same function as the <code>ngrok http 5000</code> command. <code>ngrok.connect()</code> function returns the public URL that was assigned to the tunnel. <code>start_ngrok()</code> function prints this URL to the terminal, from where you can copy and paste it to a phone.</p>
 <p>We will add a <code>ngrok</code> configuration to our app such that when it is enabled, we can call the <code>start_ngrok()</code> function to get a tunnel set up. </p>
 <p class="code-title">config.py: Create ngrok configuration</p>
-<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>:
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>:
     <span style="color: #888888"># previous code</span>
     START_NGROK <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>
 </pre>
 <p>Add the script below to your application instance to register your <code>ngrok</code> configuration:</p>
 <p class="code-title">app/__init__.py: Register your ngrok configuration</p>
-<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>]
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>]
 </pre>
 <p>Since we want this variable to be set to True, such that when the application starts it creates a tunnel for us, we will update our envrionment variables to include it:</p>
 <p class="code-title">.flaskenv: Set ngrok variable to True</p>
-<pre style="margin: 0; line-height: 125%">START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
+<pre style="margin: 30; line-height: 125%">START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
 </pre>
 <p>If you use the Flask reloader and enable the ngrok tunnel you will notice that two tunnels are started. This is because the reloader runs two processes: a parent process that monitors files for changes, and a child process that runs the actual server. The parent process kills and restarts the child process every time it detects changes to a source file.</p>
 <p>It would be better if the tunnel could be created only in the parent process, which is the process that has a longer life. That would mean that a reload event would preserve the tunnel URL, since it is associated with the parent reloader process. So a nice improvement would be to make sure the START_NGROK configuration variable is always False in the child process.</p>
 <p>We will update our configration to accommodate these scenarios such that when the main Flask process starts it will set up the tunnel. If the reloader is enabled, then a child process will be launched with WERKZEUG_RUN_MAIN=true in the environment, so there will be no second tunnel started. And every time the child process is recycled the tunnel set up in the parent process will be unaffected, so the same tunnel URL will remain valid for as long as the reloader process is running, up to a maximum of eight hours.</p>
 <p class="code-title">config.py: Working with Flask reloader</p>
-<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>:
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>:
     <span style="color: #888888"># previous code</span>
     START_NGROK <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>
 </pre>
