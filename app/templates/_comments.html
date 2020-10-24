@@ -11,7 +11,13 @@
             <span style="background-color: #f9fcf6;padding: 2px; border-radius: 3px;">
             {{ moment(post.timestamp).fromNow() }}
             </span><br>
-            <span id="post {{ post.id }}"> {{ post.body }} </span>
+            <span id="post {{ post.id }}"> 
+                {% if post.body_html %}
+                    {{ post.body_html | safe }}
+                {% else %}
+                    {{ post.body }}     
+                {% endif %}                
+            </span>
             {% if post.language and post.language != g.locale %}
                 <br><br>
                 <span id="translation{{ post.id }}">
