@@ -28,7 +28,7 @@ h1{
 h2, h3, h5, h6{
     padding-top: 30px;
 }
-img{
+img, blockquote{
     margin-top: 10px;
     margin-bottom: 10px;
 }
