@@ -25,6 +25,14 @@ stripe_keys = {
     "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
     "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
 }
+def start_ngrok():
+     from pyngrok import ngrok
+
+     url = ngrok.connect(5000)
+     print(' * Tunnel URL: ', url)
+     
+if app.config['START_NGROK']:
+    start_ngrok()
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
