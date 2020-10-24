@@ -23,22 +23,46 @@ class User(db.Model):
 class PersonalBlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))    
 
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
     def __repr__(self):
         return 'Post <>'.format(self.body)
+        
+db.event.listen(PersonalBlogPost.body, 'set', PersonalBlogPost.on_changed_body)
 
 class VagrantPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
     def __repr__(self):
         return 'Post <>'.format(self.body)
+        
+db.event.listen(VagrantPost.body, 'set', VagrantPost.on_changed_body)
 
 class VirtualenvwrapperPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,9 +89,21 @@ db.event.listen(VirtualenvwrapperPost.body, 'set', VirtualenvwrapperPost.on_chan
 class reCaptchaPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
     def __repr__(self):
         return 'Post <>'.format(self.body)
+        
+db.event.listen(reCaptchaPost.body, 'set', reCaptchaPost.on_changed_body)
