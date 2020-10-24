@@ -1,7 +1,7 @@
 from app import app, db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g
 from app.forms import CommentForm
-from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost
+from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -223,5 +223,29 @@ def reCaptcha():
     prev_url = url_for('reCaptcha', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('reCaptcha.html', title = 'reCaptcha', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+
+@app.route('/rich-text', methods = ['GET', 'POST'])
+def rich_text():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username = form.username.data, email = form.email.data)        
+        post = richTextPost(body = form.comment.data, author = user, language = language)
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')  
+        return redirect(url_for('rich_text', _anchor='comments'))  
+    page = request.args.get('page', type = int)
+    posts = richTextPost.query.order_by(richTextPost.timestamp.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('rich_text', _anchor='comments', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('rich_text', _anchor='comments', page = posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('rich_text.html', title = 'Rich Text', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 # END OF TUTORIALS

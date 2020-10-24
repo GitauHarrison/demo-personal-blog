@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+        </div>
+    </div>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">Comments</h3>
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
