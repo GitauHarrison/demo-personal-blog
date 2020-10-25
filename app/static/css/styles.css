@@ -56,6 +56,14 @@ h3{
         height: 150px;
     }
 }
+@media all and (min-width: 768px) {
+    body::after {
+        height: 50px; /* Set same as footer's height */
+    }
+    .my-footer{
+        height: 50px;
+    }
+}
 @media all and (min-width: 992px) {
     body::after {
         height: 50px; /* Set same as footer's height */
@@ -118,6 +126,7 @@ code{
 blockquote{
     margin-top: 10px;
     margin-bottom: 10px;
+    color: #b3b3b3;
 }
 /* ------------------------------------------ */
 /* Article Post */
