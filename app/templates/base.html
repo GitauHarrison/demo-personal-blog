@@ -53,24 +53,22 @@
     {% block app_content %}
 
     {% endblock %}
-{% endblock %}
 
-<!-- Footer -->
-{% block footer %}
-    {super()}}
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">            
-                <ul class="nav navbar-nav navbar-left">                                                                 
-                    <li><a href="https://www.patreon.com/" target="_blank">Become A Patreon</a></li> 
-                </ul> 
-                <ul class="nav navbar-nav navbar-right">                                                         
-                    <li><a href="https://www.youtube.com/" target="_blank">YouTube</a></li>            
-                    <li><a href="https://github.com/GitauHarrison" target="_blank">GitHub</a></li> 
-                </ul>                       
+    {% block footer %}    
+        <nav class="my-footer navbar navbar-default">
+            <div class="container">   
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">                         
+                    <ul class="nav navbar-nav">                
+                        <li><a href="https://www.patreon.com/" target="_blank">Become A Patreon</a></li>                 
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">                                 
+                        <li><a href="https://www.youtube.com/" target="_blank">YouTube</a></li>            
+                        <li><a href="https://github.com/GitauHarrison" target="_blank">GitHub</a></li>                      
+                    </ul> 
+                </div>                                  
             </div>
-        </div>
-    </nav>
+        </nav>
+    {% endblock %}
 {% endblock %}
 
 <!-- Scripts Section -->
