@@ -174,7 +174,7 @@ def virtualenvwrapper():
         if posts.has_next else None
     prev_url = url_for('virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @app.route('/vagrant', methods = ['GET', 'POST'])
 def vagrant():
@@ -198,7 +198,7 @@ def vagrant():
         if posts.has_next else None
     prev_url = url_for('vagrant', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('vagrant.html', title = 'Vagrant', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @app.route('/reCaptcha', methods = ['GET', 'POST'])
 def reCaptcha():
@@ -222,7 +222,7 @@ def reCaptcha():
         if posts.has_next else None
     prev_url = url_for('reCaptcha', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('reCaptcha.html', title = 'reCaptcha', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @app.route('/rich-text', methods = ['GET', 'POST'])
 def rich_text():
@@ -246,7 +246,7 @@ def rich_text():
         if posts.has_next else None
     prev_url = url_for('rich_text', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('rich_text.html', title = 'Rich Text', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @app.route('/ngrok', methods = ['GET', 'POST'])
 def ngrok():

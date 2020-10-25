@@ -7,6 +7,116 @@
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
 
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="Working_with_Rich_Text_0"></a>Working with Rich Text</h1>
+<p class="has-line-data" data-line-start="2" data-line-end="3">If you have been to <a href="https://stackoverflow.com/">Stack Overflow</a>, and at one point asked or answered a question, you have probaly noticed that the form used allows for markdown editing, which has a nice preview at the bottom.</p>
+<p class="has-line-data" data-line-start="4" data-line-end="5"><img class="img-fluid" style="max-width: 100%; height: auto;"  src="{{ url_for('static', filename = 'images/so_md_preview.png') }}" alt="SO md preview"></p>
+<p class="has-line-data" data-line-start="6" data-line-end="7">You can achieve this same feature in your Flask web app. Below, you will learn how to integrate markdown preview on the client side and also how to handle rich text in the server.</p>
+<h3 class="code-line" data-line-start=8 data-line-end=9 ><a id="Create_Your_Form_8"></a>Create Your Form</h3>
+<p class="has-line-data" data-line-start="10" data-line-end="11">Since we want to have the ability to edit a post or comment in markdown, we will need to create a Flask form. If you are not aware of how to do this, check out how you can <a href="http://127.0.0.1:5000/reCaptcha">create one here</a>.</p>
+<p class="has-line-data" data-line-start="12" data-line-end="13"><img class="img-fluid" style="max-width: 100%; height: auto;"  src="{{ url_for('static', filename = 'images/successful_reCaptcha.png') }}" alt="Flask Form"></p>
+<h5 class="code-line" data-line-start=14 data-line-end=15 ><a id="Rich_Text_Client_Preview_14"></a>Rich Text Client Preview</h5>
+<blockquote>
+<p class="has-line-data" data-line-start="16" data-line-end="17"><code>Rich</code> is a Python library for writing rich text (with color and style) to the terminal, and for displaying advanced content such as tables, markdown, and syntax highlighted code.</p>
+</blockquote>
+<p class="has-line-data" data-line-start="18" data-line-end="19">With our form set up, there is no way that you can style your comment before it is posted. What we want to show users as they are typing their comments is something like this:</p>
+<p class="has-line-data" data-line-start="20" data-line-end="21"><img class="img-fluid" style="max-width: 100%; height: auto;"  src="{{ url_for('static', filename = 'images/rich_text_preview.png') }}" alt="Rich Text Preview"></p>
+<p class="has-line-data" data-line-start="22" data-line-end="23">There is a <code>flask-pagedown</code> extension we can use to enable client side markdown preview. Let us go ahead and install it:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>pagedown
+</pre>
+<p class="has-line-data" data-line-start="28" data-line-end="29">The <code>flask-pagedown</code> extension needs to be registered in our application instance:</p>
+<p class="code-title has-line-data" data-line-start="30" data-line-end="31">app/__init__.py: Register pagedown extension</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_pagedown</span> <span style="color: #008800; font-weight: bold">import</span> PageDown
+
+app <span style="color: #333333">=</span> Flask(__name__)
+pagedown <span style="color: #333333">=</span> PageDown(app)
+</pre>
+<p class="has-line-data" data-line-start="38" data-line-end="39">The Editor is supported through two Javascript files. To include these files in your HTML document, you will need to call <code>pagedown.html_head()</code> from inside the <code>&lt;head&gt;</code> element of your page:</p>
+<p class="code-title has-line-data" data-line-start="40" data-line-end="41">app/templates/base.html: Include pagedown in template</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> block head <span style="color: #333333">%</span>}
+    <span style="color: #888888">\{\{ super() \}\}  # remove the back slashes to have two pairs of double curly braces</span>
+    <span style="color: #888888">\{\{ pagedown.html_head() \}\}  # remove the back slashes to have two pairs of double curly braces</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="47" data-line-end="48">The Javascript files are loaded from a CDN, the files do not need to be hosted by your application.</p>
+<h5 class="code-line" data-line-start=49 data-line-end=50 ><a id="Updating_Our_Form_with_PageDownField_49"></a>Updating Our Form with <code>PageDownField</code></h5>
+<p class="has-line-data" data-line-start="51" data-line-end="52">The extesion exports a <code>PagDownField</code> which is very similar to and works exactly as <code>TextAreaField</code>:</p>
+<p class="code-title has-line-data" data-line-start="30" data-line-end="31">app/forms.py: Register pagedown extension</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_wtf</span> <span style="color: #008800; font-weight: bold">import</span> FlaskForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_pagedown.fields</span> <span style="color: #008800; font-weight: bold">import</span> PageDownField <span style="color: #888888">#&lt;---------------New</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms</span> <span style="color: #008800; font-weight: bold">import</span> SubmitField
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">CommentForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired(), Email()])
+    comment <span style="color: #333333">=</span> PageDownField(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()]) <span style="color: #888888">#&lt;----------Edited</span>
+    recaptcha <span style="color: #333333">=</span> RecaptchaField(<span style="background-color: #fff0f0">&#39;Captcha&#39;</span>)
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Post&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="65" data-line-end="66">That’s it! You should be able to have a client-side comment preview right below the Comment box.</p>
+<h3 class="code-line" data-line-start=67 data-line-end=68 ><a id="Handling_Rich_Text_in_the_Server_67"></a>Handling Rich Text in the Server</h3>
+<p class="has-line-data" data-line-start="69" data-line-end="70">When the form is submitted, only the raw Markdown text is sent with the POST request; the HTML preview that is shown on the page is discarded. Sending the generated HTML preview is a security risk as an attacker can easily construct HTML sequences which don’t match the markdown source and submit them. To avoid any risks, only the Markdown source text is submitted, and once in the server it is converted again to HTML using Markdown, a Python Markdown-to-HTML converter.</p>
+<p class="has-line-data" data-line-start="71" data-line-end="72">There are two more extensions that we can use to help us achieve this. Go ahead and install them:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install markdown bleach
+</pre>
+<p class="has-line-data" data-line-start="77" data-line-end="78"><code>bleach</code> allows us to sanitize the resulting HTML to ensure that only a few HTML tags are allowed.</p>
+<p class="has-line-data" data-line-start="79" data-line-end="80">Comment conversion can be done in the <code>_comments.html</code> subtemplate, but it is inefficient to do it here as all comments will have to be converted every time they are rendered to a page. We get rid of this repetition by making the coversion when the data is in our database.</p>
+<p class="has-line-data" data-line-start="81" data-line-end="82">The HTML code for the rendered blog post is cached in a new field added to the Comment model that the template can access directly. The original Markdown source is also kept in the database in case the post needs to be edited.</p>
+<h5 class="code-line" data-line-start=83 data-line-end=84 ><a id="Update_the_Comment_Table_83"></a>Update the Comment Table</h5>
+<p class="code-title has-line-data" data-line-start="30" data-line-end="31">app/models.py: </p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Comment</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)
+    body <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">140</span>))
+    body_html <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">140</span>)) <span style="color: #888888"># &lt;----------------------------------- new</span>
+    timestamp <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>DateTime, index<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>, default<span style="color: #333333">=</span>datetime<span style="color: #333333">.</span>utcnow)
+    user_id <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, db<span style="color: #333333">.</span>ForeignKey(<span style="background-color: #fff0f0">&#39;user.id&#39;</span>))
+
+    <span style="color: #888888"># new function</span>
+    <span style="color: #555555; font-weight: bold">@staticmethod</span>
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">on_changed_body</span>(target, value, oldvalue, initiator):
+        allowed_tags <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;a&#39;</span>, <span style="background-color: #fff0f0">&#39;abbr&#39;</span>, <span style="background-color: #fff0f0">&#39;acronym&#39;</span>, <span style="background-color: #fff0f0">&#39;b&#39;</span>, <span style="background-color: #fff0f0">&#39;blockquote&#39;</span>, <span style="background-color: #fff0f0">&#39;code&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;em&#39;</span>, <span style="background-color: #fff0f0">&#39;i&#39;</span>, <span style="background-color: #fff0f0">&#39;li&#39;</span>, <span style="background-color: #fff0f0">&#39;ol&#39;</span>, <span style="background-color: #fff0f0">&#39;pre&#39;</span>, <span style="background-color: #fff0f0">&#39;strong&#39;</span>, <span style="background-color: #fff0f0">&#39;ul&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;h1&#39;</span>, <span style="background-color: #fff0f0">&#39;h2&#39;</span>, <span style="background-color: #fff0f0">&#39;h3&#39;</span>, <span style="background-color: #fff0f0">&#39;p&#39;</span>]
+        target<span style="color: #333333">.</span>body_html <span style="color: #333333">=</span> bleach<span style="color: #333333">.</span>linkify(bleach<span style="color: #333333">.</span>clean(
+        markdown(value, output_format<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;html&#39;</span>),
+        tags<span style="color: #333333">=</span>allowed_tags, strip<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>))
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;&lt;Post {}&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>body)
+
+db<span style="color: #333333">.</span>event<span style="color: #333333">.</span>listen(Comment<span style="color: #333333">.</span>body, <span style="background-color: #fff0f0">&#39;set&#39;</span>, Comment<span style="color: #333333">.</span>on_changed_body) <span style="color: #888888"># &lt;------------------new</span>
+</pre>
+<p class="has-line-data" data-line-start="109" data-line-end="110">The <code>on_changed_body()</code> function is registered as a listener of SQLAlchemy’s <code>“set”</code> event for body , which means that it will be automatically invoked whenever the body field is set to a new value. The handler function renders the HTML version of the body and stores it in <code>body_html</code> , effectively making the conversion of the Markdown text to HTML fully automatic.</p>
+<p class="has-line-data" data-line-start="111" data-line-end="112">The actual conversion is done in 3 steps:</p>
+<ul>
+<li class="has-line-data" data-line-start="112" data-line-end="113"><code>markdown()</code> function does an initial conversion to HTML. The result is passed to <code>clean()</code> function with a list of approved HTML tags</li>
+<li class="has-line-data" data-line-start="113" data-line-end="114"><code>clean()</code> function removes any tags that are not in the whitelist.</li>
+<li class="has-line-data" data-line-start="114" data-line-end="116"><code>linkify()</code> function from <code>bleach</code> converts any URLs written in plain text into proper <code>&lt;a&gt;</code> links. Automatic link generation is not officially in the Markdown specification, but is a very convenient feature. On the client side, PageDown supports this feature as an optional extension, so linkify() matches that functionality on the server.</li>
+</ul>
+<p class="has-line-data" data-line-start="116" data-line-end="117">After these changes, we need to apply them to our database:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;Add new field to Comment table&#39;</span>
+<span style="color: #ff8080; ">$</span> flask db upgrade
+</pre>
+<p class="has-line-data" data-line-start="123" data-line-end="124">With our database updated, we will now replace <code>comment.body</code> with <code>comment.body_html</code> in the template when available:</p>
+<p class="code-title has-line-data" data-line-start="125" data-line-end="126">app/templates/_comments.html: Use HTML version in post body</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>span<span style="color: #333333">&gt;</span> 
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> post<span style="color: #333333">.</span>body_html <span style="color: #333333">%</span>}
+        \{\{ post<span style="color: #333333">.</span>body_html <span style="color: #333333">|</span> safe \}\} <span style="color: #888888"># remove the back slashes to have two pairs of double curly braces</span>
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+        \{\{ post<span style="color: #333333">.</span>body \}\}   <span style="color: #888888"># remove the back slashes to have two pairs of double curly braces  </span>
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}                
+<span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="136" data-line-end="137">The <code>| safe</code> suffix when rendering the HTML body is there to tell Jinja2 not to escape the HTML elements. Jinja2 escapes all template variables by default as a security measure, but the Markdown-generated HTML was generated by the server, so it is safe to render directly as HTML.</p>
+<p class="has-line-data" data-line-start="138" data-line-end="139">Reload your page and try to post a new comment with markdown syntax:</p>
+<p class="has-line-data" data-line-start="140" data-line-end="141"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/enabled_md_styling.png') }}" alt="Enabled Markdown Styling"></p>
+<h5 class="code-line" data-line-start=142 data-line-end=143 ><a id="Update_Your_Requirements_142"></a>Update Your Requirements</h5>
+<p class="has-line-data" data-line-start="144" data-line-end="145">Run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+
+
+
+
 
         </div>
     </div><hr>
