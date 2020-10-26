@@ -146,14 +146,16 @@ blockquote{
 /* ------------------------------------------ */
 .btn{
     border-radius: 3px;
+    border: 1px solid #e6e6e6;
     padding: 5px;
-    background-color: #ede8e5;
+    background-color: #fff;
     font-size: 15px;
     color: #706d6c;
 }
 .btn:hover{
-    background-color: #dbd9d8;
+    background-color: #f2f2f2;
     color:  #706d6c;
+    border: 1px solid  #f2f2f2;
 }
 .schedule-btn, #payment-btn{
     font-size: 20px;
