@@ -143,7 +143,7 @@ def personal_blog():
         flash('Your comment is now live!')  
         return redirect(url_for('personal_blog', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = PersonalBlogPost.query.order_by(PersonalBlogPost.timestamp.desc()).paginate(
+    posts = PersonalBlogPost.query.order_by(PersonalBlogPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('personal_blog', _anchor='comments', page = posts.next_num) \
@@ -167,7 +167,7 @@ def virtualenvwrapper():
         flash('Your comment is now live!')  
         return redirect(url_for('virtualenvwrapper', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = VirtualenvwrapperPost.query.order_by(VirtualenvwrapperPost.timestamp.desc()).paginate(
+    posts = VirtualenvwrapperPost.query.order_by(VirtualenvwrapperPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('virtualenvwrapper', _anchor='comments', page = posts.next_num) \
@@ -191,7 +191,7 @@ def vagrant():
         flash('Your comment is now live!')  
         return redirect(url_for('vagrant', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = VagrantPost.query.order_by(VagrantPost.timestamp.desc()).paginate(
+    posts = VagrantPost.query.order_by(VagrantPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('vagrant', _anchor='comments', page = posts.next_num) \
@@ -215,7 +215,7 @@ def reCaptcha():
         flash('Your comment is now live!')  
         return redirect(url_for('reCaptcha', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.desc()).paginate(
+    posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('reCaptcha', _anchor='comments', page = posts.next_num) \
@@ -239,7 +239,7 @@ def rich_text():
         flash('Your comment is now live!')  
         return redirect(url_for('rich_text', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = richTextPost.query.order_by(richTextPost.timestamp.desc()).paginate(
+    posts = richTextPost.query.order_by(richTextPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('rich_text', _anchor='comments', page = posts.next_num) \
@@ -263,7 +263,7 @@ def ngrok():
         flash('Your comment is now live!')  
         return redirect(url_for('ngrok', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = ngrokPost.query.order_by(ngrokPost.timestamp.desc()).paginate(
+    posts = ngrokPost.query.order_by(ngrokPost.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('ngrok', _anchor='comments', page = posts.next_num) \
@@ -280,14 +280,14 @@ def install_docker():
         if language == 'UNKNOWN' or len(language) > 5:
             language = ''
         user = User(username = form.username.data, email = form.email.data)        
-        post = ngrokPost(body = form.comment.data, author = user, language = language)
+        post = installDocker(body = form.comment.data, author = user, language = language)
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('ngrok', _anchor='comments'))  
+        return redirect(url_for('install_docker', _anchor='comments'))  
     page = request.args.get('page', type = int)
-    posts = installDocker.query.order_by(installDocker.timestamp.desc()).paginate(
+    posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
         page, app.config['POSTS_PER_PAGE'], False
     )
     next_url = url_for('install_docker', _anchor='comments', page = posts.next_num) \

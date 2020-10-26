@@ -47,6 +47,9 @@ h2, h5, h6{
 h3{
     padding-top: 0px;
 }
+h4{
+    padding-top: 15px;
+}
 /* MEDIA QUIERIES */
 @media all and (max-width: 992px) {
     body::after {
