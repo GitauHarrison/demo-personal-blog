@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="How_to_install_Docker_in_Ubuntu_2004_0"></a>How to install Docker in Ubuntu 20.04</h1>
+<p class="has-line-data" data-line-start="2" data-line-end="3"><a href="https://www.docker.com/">Docker</a> is an application that simplifies the process of managing application processes in <em>containers</em>. Containers let you run your applications in resource-isolated processes. They’re similar to virtual machines, but containers are more portable, more resource-friendly, and more dependent on the host operating system.</p>
+<p class="has-line-data" data-line-start="4" data-line-end="5">In other words, containers are built on a lightweight virtualization technology that allows an application, along with its dependencies and configuration to run in complete isolation, but without the need to use a full blown virtualization solution such as virtual machines, which need a lot more resources and can sometimes have a significant performance degradation in comparison to the host.</p>
+<p class="has-line-data" data-line-start="6" data-line-end="7">A system configured as a container host can execute many containers, all of them sharing the host’s kernel and direct access to the host’s hardware. This is in contrast to virtual machines, which have to emulate a complete system, including CPU, disk, other hardware, kernel, etc.</p>
+<h3 class="code-line" data-line-start=8 data-line-end=9 ><a id="Installing_Docker_CE_8"></a>Installing Docker CE</h3>
+<p class="has-line-data" data-line-start="10" data-line-end="11">There are two editions of Docker, a free community edition (CE) and a subscription based enterprise edition (EE). I will show you how to install the Docker CE.</p>
+<p class="has-line-data" data-line-start="12" data-line-end="13">The Docker installation package available in the official Ubuntu repository may not be the latest version. To ensure we get the latest version, we’ll install Docker from the official Docker repository. To do that, we’ll:</p>
+<ul>
+<li class="has-line-data" data-line-start="14" data-line-end="15">add a new package source</li>
+<li class="has-line-data" data-line-start="15" data-line-end="16">add the GPG key from Docker to ensure the downloads are valid</li>
+<li class="has-line-data" data-line-start="16" data-line-end="18">install the package</li>
+</ul>
+<p class="has-line-data" data-line-start="18" data-line-end="19">Update your existing list of packages:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt update
+</pre>
+<p class="has-line-data" data-line-start="24" data-line-end="25">Install a few prerequisite packages which let <code>apt</code> use packages over <code>HTTPS</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install apt<span style="color: #333333">-</span>transport<span style="color: #333333">-</span>https ca<span style="color: #333333">-</span>certificates curl software<span style="color: #333333">-</span>properties<span style="color: #333333">-</span>common
+</pre>
+<p class="has-line-data" data-line-start="30" data-line-end="31">Add the GPS key for the official Docker repository to your system:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> curl <span style="color: #333333">-</span>fsSL https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu<span style="color: #333333">/</span>gpg <span style="color: #333333">|</span> sudo apt<span style="color: #333333">-</span>key add <span style="color: #333333">-</span>
+</pre>
+<p class="has-line-data" data-line-start="36" data-line-end="37">Add Docker repository to APT sources:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo add<span style="color: #333333">-</span>apt<span style="color: #333333">-</span>repository <span style="background-color: #fff0f0">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable&quot;</span>
+</pre>
+<p class="has-line-data" data-line-start="42" data-line-end="43">Update the package database with the Docker packages from the newly added repo:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo add<span style="color: #333333">-</span>apt<span style="color: #333333">-</span>repository <span style="background-color: #fff0f0">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable&quot;</span>
+</pre>
+<p class="has-line-data" data-line-start="48" data-line-end="49">Make sure to install from the Docker repo instead of the the default Ubuntu repo:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> apt<span style="color: #333333">-</span>cache policy docker<span style="color: #333333">-</span>ce
+
+<span style="color: #888888"># Output</span>
+docker<span style="color: #333333">-</span>ce:
+    Installed: (none)
+    Candidate: <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">13</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal
+    Version table:
+         <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">13</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal <span style="color: #0000DD; font-weight: bold">500</span>
+            <span style="color: #0000DD; font-weight: bold">500</span> https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu focal<span style="color: #333333">/</span>stable amd64 Packages
+         <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">12</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal <span style="color: #0000DD; font-weight: bold">500</span>
+            <span style="color: #0000DD; font-weight: bold">500</span> https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu focal<span style="color: #333333">/</span>stable amd64 Packages
+         <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">11</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal <span style="color: #0000DD; font-weight: bold">500</span>
+            <span style="color: #0000DD; font-weight: bold">500</span> https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu focal<span style="color: #333333">/</span>stable amd64 Packages
+         <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">10</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal <span style="color: #0000DD; font-weight: bold">500</span>
+            <span style="color: #0000DD; font-weight: bold">500</span> https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu focal<span style="color: #333333">/</span>stable amd64 Packages
+         <span style="color: #0000DD; font-weight: bold">5</span>:<span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">9</span><span style="color: #333333">~</span><span style="color: #0000DD; font-weight: bold">3</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">~</span>ubuntu<span style="color: #333333">-</span>focal <span style="color: #0000DD; font-weight: bold">500</span>
+            <span style="color: #0000DD; font-weight: bold">500</span> https:<span style="color: #333333">//</span>download<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>linux<span style="color: #333333">/</span>ubuntu focal<span style="color: #333333">/</span>stable amd64 Packages
+</pre>
+<p class="has-line-data" data-line-start="69" data-line-end="70">Notice that docker-ce is not installed, but the candidate for installation is from the Docker repository for Ubuntu 20.04 (focal).</p>
+<h3 class="code-line" data-line-start=71 data-line-end=72 ><a id="Install_Docker_Engine_71"></a>Install Docker Engine</h3>
+<p class="has-line-data" data-line-start="73" data-line-end="74">Update the <code>apt</code> package index, and install the latest version of Docker Engine and <code>containerd</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt<span style="color: #333333">-</span>get update
+<span style="color: #ff8080; ">$</span> sudo apt<span style="color: #333333">-</span>get install docker<span style="color: #333333">-</span>ce docker<span style="color: #333333">-</span>ce<span style="color: #333333">-</span>cli containerd<span style="color: #333333">.</span>io
+</pre>
+<h5 class="code-line" data-line-start=80 data-line-end=81 ><a id="Configure_Docker_to_start_on_boot_80"></a>Configure Docker to start on boot</h5>
+<p class="has-line-data" data-line-start="82" data-line-end="83">Most current Linux distributions (RHEL, CentOS, Fedora, Ubuntu 16.04 and higher) use <code>systemd</code> to manage which services start when the system boots. Ubuntu 14.10 and below use <code>upstart</code>.</p>
+<p class="has-line-data" data-line-start="84" data-line-end="85">Enable docker when the computer boots:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl enable docker
+
+<span style="color: #888888"># Output</span>
+Synchronizing state of docker<span style="color: #333333">.</span>service <span style="color: #008800; font-weight: bold">with</span> SysV service script <span style="color: #008800; font-weight: bold">with</span> <span style="color: #333333">/</span>lib<span style="color: #333333">/</span>systemd<span style="color: #333333">/</span>systemd<span style="color: #333333">-</span>sysv<span style="color: #333333">-</span>install<span style="color: #333333">.</span>
+Executing: <span style="color: #333333">/</span>lib<span style="color: #333333">/</span>systemd<span style="color: #333333">/</span>systemd<span style="color: #333333">-</span>sysv<span style="color: #333333">-</span>install enable docker
+</pre>
+<p class="has-line-data" data-line-start="93" data-line-end="94">To disable this behavior, use <code>disable</code> instead:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl disable docker
+</pre>
+<p class="has-line-data" data-line-start="99" data-line-end="100">Docker should now be installed, the daemon started, and the process enabled to start on boot. Check that it’s running:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl status docker
+
+<span style="color: #888888"># Output</span>
+<span style="color: #ff8080; ">●</span> docker<span style="color: #333333">.</span>service <span style="color: #333333">-</span> Docker Application Container Engine
+    Loaded: loaded (<span style="color: #333333">/</span>lib<span style="color: #333333">/</span>systemd<span style="color: #333333">/</span>system<span style="color: #333333">/</span>docker<span style="color: #333333">.</span>service; enabled; vendor preset: enabled)
+    Active: active (running) since Sat <span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">10</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> EAT; <span style="color: #0000DD; font-weight: bold">3</span><span style="color: #007020">min</span> <span style="color: #0000DD; font-weight: bold">47</span>s ago
+TriggeredBy: <span style="color: #ff8080; ">●</span> docker<span style="color: #333333">.</span>socket
+        Docs: https:<span style="color: #333333">//</span>docs<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com
+    Main PID: <span style="color: #0000DD; font-weight: bold">366577</span> (dockerd)
+        Tasks: <span style="color: #0000DD; font-weight: bold">14</span>
+        Memory: <span style="color: #6600EE; font-weight: bold">37.8</span>M
+        CGroup: <span style="color: #333333">/</span>system<span style="color: #333333">.</span>slice<span style="color: #333333">/</span>docker<span style="color: #333333">.</span>service
+            <span style="color: #ff8080; ">└─</span><span style="color: #0000DD; font-weight: bold">366577</span> <span style="color: #333333">/</span>usr<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>dockerd <span style="color: #333333">-</span>H fd:<span style="color: #333333">//</span> <span style="color: #333333">--</span>containerd<span style="color: #333333">=/</span>run<span style="color: #333333">/</span>containerd<span style="color: #333333">/</span>containerd<span style="color: #333333">.</span>sock
+    
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">00</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:00.940348825+03:00&quot;</span> level<span style="color: #333333">=</span>warni<span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">00</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:00.940355380+03:00&quot;</span> level<span style="color: #333333">=</span>warni<span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">00</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:00.940362377+03:00&quot;</span> level<span style="color: #333333">=</span>warni<span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">00</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:00.940542982+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:01.044364957+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:01.078308607+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:01.121180654+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:01.121317249+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry dockerd[<span style="color: #0000DD; font-weight: bold">366577</span>]: time<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;2020-10-17T04:40:01.137864732+03:00&quot;</span> level<span style="color: #333333">=</span>info <span style="color: #333333">&gt;</span>
+Oct <span style="color: #0000DD; font-weight: bold">17</span> <span style="color: #0000DD; font-weight: bold">04</span>:<span style="color: #0000DD; font-weight: bold">40</span>:<span style="color: #0000DD; font-weight: bold">01</span> harry systemd[<span style="color: #0000DD; font-weight: bold">1</span>]: Started Docker Application Container Engine<span style="color: #333333">.</span>
+</pre>
+<p class="has-line-data" data-line-start="128" data-line-end="129">Verify that Docker Engine is installed correctly by running the hello-world image:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo docker run hello<span style="color: #333333">-</span>world
+
+<span style="color: #888888"># Output</span>
+Hello <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">Docker</span><span style="color: #ff8080; ">!</span>
+This message shows that your installation appears to be working correctly<span style="color: #333333">.</span>
+    
+To generate this message, Docker took the following steps:
+    <span style="color: #6600EE; font-weight: bold">1.</span> The Docker client contacted the Docker daemon<span style="color: #333333">.</span>
+    <span style="color: #6600EE; font-weight: bold">2.</span> The Docker daemon pulled the <span style="background-color: #fff0f0">&quot;hello-world&quot;</span> image <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">the</span> Docker Hub<span style="color: #333333">.</span>
+        (amd64)
+    <span style="color: #6600EE; font-weight: bold">3.</span> The Docker daemon created a new container <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">that</span> image which runs the
+        executable that produces the output you are currently reading<span style="color: #333333">.</span>
+    <span style="color: #6600EE; font-weight: bold">4.</span> The Docker daemon streamed that output to the Docker client, which sent it
+        to your terminal<span style="color: #333333">.</span>
+    
+To <span style="color: #008800; font-weight: bold">try</span> something more ambitious, you can run an Ubuntu container <span style="color: #008800; font-weight: bold">with</span>:
+    <span style="color: #ff8080; ">$</span> docker run <span style="color: #333333">-</span>it ubuntu bash
+    
+Share images, automate workflows, <span style="color: #000000; font-weight: bold">and</span> more <span style="color: #008800; font-weight: bold">with</span> a free Docker ID:
+https:<span style="color: #333333">//</span>hub<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>
+    
+For more examples <span style="color: #000000; font-weight: bold">and</span> ideas, visit:
+https:<span style="color: #333333">//</span>docs<span style="color: #333333">.</span>docker<span style="color: #333333">.</span>com<span style="color: #333333">/</span>get<span style="color: #333333">-</span>started<span style="color: #333333">/</span>
+</pre>
+<p class="has-line-data" data-line-start="156" data-line-end="157">To check the Docker version installed, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> docker <span style="color: #333333">--</span>version
+</pre>
+<p class="has-line-data" data-line-start="162" data-line-end="163">Also, for more information on your installed Docker version, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> docker version <span style="color: #888888"># running as non-root user</span>
+
+<span style="color: #888888"># Output</span>
+Client: Docker Engine <span style="color: #333333">-</span> Community
+    Version:           <span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">13</span>
+    API version:       <span style="color: #6600EE; font-weight: bold">1.40</span>
+    Go version:        go1<span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">13.15</span>
+    Git commit:        <span style="color: #0000DD; font-weight: bold">4484</span>c46d9d
+    Built:             Wed Sep <span style="color: #0000DD; font-weight: bold">16</span> <span style="color: #0000DD; font-weight: bold">17</span>:<span style="color: #0000DD; font-weight: bold">02</span>:<span style="color: #0000DD; font-weight: bold">52</span> <span style="color: #0000DD; font-weight: bold">2020</span>
+    OS<span style="color: #333333">/</span>Arch:           linux<span style="color: #333333">/</span>amd64
+    Experimental:      false
+Got permission denied <span style="color: #008800; font-weight: bold">while</span> trying to connect to the Docker daemon socket at unix:<span style="color: #333333">///</span>var<span style="color: #333333">/</span>run<span style="color: #333333">/</span>docker<span style="color: #333333">.</span>sock: Get http:<span style="color: #333333">//%</span><span style="color: #0000DD; font-weight: bold">2</span>Fvar<span style="color: #333333">%</span><span style="color: #0000DD; font-weight: bold">2</span>Frun<span style="color: #333333">%</span><span style="color: #0000DD; font-weight: bold">2</span>Fdocker<span style="color: #333333">.</span>sock<span style="color: #333333">/</span>v1<span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">40</span><span style="color: #333333">/</span>version: dial unix <span style="color: #333333">/</span>var<span style="color: #333333">/</span>run<span style="color: #333333">/</span>docker<span style="color: #333333">.</span>sock: connect: permission denied
+</pre>
+<p class="has-line-data" data-line-start="179" data-line-end="180">What this means is that you do not have the persion to connect to the Docker daemon socket. Basically, you are not the <code>root</code> user with access to connect to the Docker daemon socket. Run <code>docker version</code> as root:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo docker version
+
+<span style="color: #888888"># Output</span>
+Client: Docker Engine <span style="color: #333333">-</span> Community
+     Version:           <span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">13</span>
+     API version:       <span style="color: #6600EE; font-weight: bold">1.40</span>
+     Go version:        go1<span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">13.15</span>
+     Git commit:        <span style="color: #0000DD; font-weight: bold">4484</span>c46d9d
+     Built:             Wed Sep <span style="color: #0000DD; font-weight: bold">16</span> <span style="color: #0000DD; font-weight: bold">17</span>:<span style="color: #0000DD; font-weight: bold">02</span>:<span style="color: #0000DD; font-weight: bold">52</span> <span style="color: #0000DD; font-weight: bold">2020</span>
+     OS<span style="color: #333333">/</span>Arch:           linux<span style="color: #333333">/</span>amd64
+     Experimental:      false
+    
+Server: Docker Engine <span style="color: #333333">-</span> Community
+     Engine:
+      Version:          <span style="color: #6600EE; font-weight: bold">19.03</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">13</span>
+      API version:      <span style="color: #6600EE; font-weight: bold">1.40</span> (minimum version <span style="color: #6600EE; font-weight: bold">1.12</span>)
+      Go version:       go1<span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">13.15</span>
+      Git commit:       <span style="color: #0000DD; font-weight: bold">4484</span>c46d9d
+      Built:            Wed Sep <span style="color: #0000DD; font-weight: bold">16</span> <span style="color: #0000DD; font-weight: bold">17</span>:<span style="color: #0000DD; font-weight: bold">01</span>:<span style="color: #0000DD; font-weight: bold">20</span> <span style="color: #0000DD; font-weight: bold">2020</span>
+      OS<span style="color: #333333">/</span>Arch:          linux<span style="color: #333333">/</span>amd64
+      Experimental:     false
+     containerd:
+      Version:          <span style="color: #6600EE; font-weight: bold">1.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">7</span>
+      GitCommit:        <span style="color: #0000DD; font-weight: bold">8</span>fba4e9a7d01810a393d5d25a3621dc101981175
+     runc:
+      Version:          <span style="color: #6600EE; font-weight: bold">1.0</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">-</span>rc10
+      GitCommit:        dc9208a3303feef5b3839f4323d9beb36df0a9dd
+     docker<span style="color: #333333">-</span>init:
+      Version:          <span style="color: #6600EE; font-weight: bold">0.18</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>
+      GitCommit:        fec3683
+</pre>
+<p class="has-line-data" data-line-start="213" data-line-end="214">The Docker daemon binds to a Unix socket instead of a TCP port. By default that Unix socket is owned by the user <code>root</code> and other users can only access it using <code>sudo</code>. <strong>The Docker daemon always runs as the <code>root</code> user</strong>.</p>
+<h4 class="code-line" data-line-start=215 data-line-end=216 ><a id="Manage_Docker_as_nonroot_user_215"></a>Manage Docker as non-root user</h4>
+<p class="has-line-data" data-line-start="217" data-line-end="218">If you don’t want to preface the <code>docker</code> command with <code>sudo</code>, create a Unix group called <code>docker</code> and add users to it. When the Docker daemon starts, it creates a Unix socket accessible by members of the docker group.</p>
+<blockquote>
+<p class="has-line-data" data-line-start="219" data-line-end="220">The docker group grants privileges equivalent to the root user. For details on how this impacts security in your system, <a href="https://docs.docker.com/engine/security/#docker-daemon-attack-surface">read here</a>.</p>
+</blockquote>
+<blockquote>
+<p class="has-line-data" data-line-start="221" data-line-end="222">To run Docker without root privileges, see <a href="https://docs.docker.com/engine/security/rootless/">Run the Docker daemon as a non-root user (Rootless mode)</a>. Rootless mode is currently available as an experimental feature.</p>
+</blockquote>
+<p class="has-line-data" data-line-start="223" data-line-end="224">To create a docker group and add your user, we will do 4 things:</p>
+<ol>
+<li class="has-line-data" data-line-start="224" data-line-end="225">Create the docker group:</li>
+</ol>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo groupadd docker
+</pre>
+<ol start="2">
+<li class="has-line-data" data-line-start="228" data-line-end="229">Add your user to the docker group.</li>
+</ol>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo usermod <span style="color: #333333">-</span>aG docker <span style="color: #ff8080; ">$</span>USER
+</pre>
+<ol start="3">
+<li class="has-line-data" data-line-start="232" data-line-end="233">Log out and log back in so that your group membership is re-evaluated. Run the following command to activate the changes to groups:</li>
+</ol>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> newgrp docker 
+</pre>
+<ol start="4">
+<li class="has-line-data" data-line-start="236" data-line-end="237">Verify that you can run <code>docker</code> commands without <code>sudo</code>:</li>
+</ol>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> docker run hello<span style="color: #333333">-</span>world
+</pre>
+<p class="has-line-data" data-line-start="240" data-line-end="241">This command downloads a test image and runs it in a container. When the container runs, it prints an informational message and exits.</p>
+<p class="has-line-data" data-line-start="242" data-line-end="243">If you initially ran Docker CLI commands using <code>sudo</code> before adding your user to the docker group, you may see the following error, which indicates that your <code>~/.docker/</code> directory was created with incorrect permissions due to the sudo commands</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> docker run hello<span style="color: #333333">-</span>world
+</pre>
+<p class="has-line-data" data-line-start="248" data-line-end="249">To fix this problem, either remove the <code>~/.docker/</code> directory (it is recreated automatically, but any custom settings are lost), or change its ownership and permissions using the following commands:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo chown <span style="background-color: #fff0f0">&quot;$USER&quot;</span>:<span style="background-color: #fff0f0">&quot;$USER&quot;</span> <span style="color: #333333">/</span>home<span style="color: #333333">/</span><span style="background-color: #fff0f0">&quot;$USER&quot;</span><span style="color: #333333">/.</span>docker <span style="color: #333333">-</span>R
+<span style="color: #ff8080; ">$</span> sudo chmod g<span style="color: #333333">+</span>rwx <span style="background-color: #fff0f0">&quot;$HOME/.docker&quot;</span> <span style="color: #333333">-</span>R
+</pre>
+
+
+    </div>
+</div><hr>
+<!-- Comments Section -->
+<div class="row">            
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <h3 id="comments">Comments</h3>
+        <div class="translate-info">Feel free to post your comment in your language</div>
+
+        <!-- Display Flash Messages Here -->
+        {% include '_flash_message.html' %}
+
+        <!-- Comments Go Here -->
+        {% for post in posts %}
+            {% include '_comments.html' %}
+        {% endfor %}
+
+        <!-- Pagination Links -->
+        <nav aria-label="...">
+            <ul class="pager">
+                <li class="previous{% if not prev_url %} disabled{% endif %}">
+                    <a href="{{ prev_url or '#' }}">
+                        <span aria-hidden="true">&larr;</span> Newer Comments
+                    </a>
+                </li>
+                <li class="next{% if not next_url %} disabled{% endif %}">
+                    <a href="{{ next_url or '#' }}">
+                        Older Comments <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Comment Form Goes Here -->
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
