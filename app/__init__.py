@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app
 from config import Config
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -13,63 +13,83 @@ from flask_pagedown import PageDown
 
 app = Flask(__name__)
 app.config.from_object(Config)
-bootstrap = Bootstrap(app)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-moment = Moment(app)
-babel = Babel(app)
-pagedown = PageDown(app)
+bootstrap = Bootstrap()
+db = SQLAlchemy()
+migrate = Migrate(db)
+moment = Moment()
+babel = Babel()
+pagedown = PageDown()
 
 stripe_keys = {
-    "secret_key": app.config["STRIPE_SECRET_KEY"],
-    "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
-    "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
-}
-def start_ngrok():
-     from pyngrok import ngrok
+        "secret_key": app.config["STRIPE_SECRET_KEY"],
+        "publishable_key": app.config["STRIPE_PUBLISHABLE_KEY"],
+        "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
+    }
 
-     url = ngrok.connect(5000)
-     print(' * Tunnel URL: ', url)
-     
-if app.config['START_NGROK']:
-    start_ngrok()
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-if not app.debug:
-    if app.config['MAIL_SERVER']:
-        auth = None
-        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-        secure = None
-        if app.config['MAIL_USE_TLS']:
-            secure = ()
-        mail_handler = SMTPHandler(
-            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-            fromaddr='noreply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'],
-            subject='Gitau Harrison Blog Failure',
-            credentials=auth, secure=secure
+    db.init_app(app)
+    bootstrap.init_app(app)
+    moment.init_app(app)
+    migrate.init_app(app)
+    babel.init_app(app)
+    pagedown.init_app(app)
+
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
+        
+    def start_ngrok():
+        from pyngrok import ngrok
+
+        url = ngrok.connect(5000)
+        print(' * Tunnel URL: ', url)
+
+    if app.config['START_NGROK']:
+        start_ngrok()
+
+    if not app.debug:
+        if app.config['MAIL_SERVER']:
+            auth = None
+            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+            secure = None
+            if app.config['MAIL_USE_TLS']:
+                secure = ()
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr='noreply@' + app.config['MAIL_SERVER'],
+                toaddrs=app.config['ADMINS'],
+                subject='Gitau Harrison Blog Failure',
+                credentials=auth, secure=secure
+            )
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
+
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler(
+            'logs/personal_blog.log',
+            maxBytes=10240,
+            backupCount=10
         )
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Gitau Harrison Blog')
 
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
-    file_handler = RotatingFileHandler(
-        'logs/personal_blog.log',
-        maxBytes=10240,
-        backupCount=10
-    )
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-    ))
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('Gitau Harrison Blog')
+    return app
 
 @babel.localeselector
 def get_locale():
     # return request.accept_languages.best_match(app.config['LANGUAGES'])
     return 'en'
 
-from app import routes, models, errors
+from app import models

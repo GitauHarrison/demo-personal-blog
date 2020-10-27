@@ -1,52 +1,53 @@
-from app import app, db, stripe_keys
-from flask import render_template, url_for, flash, redirect, request, jsonify, g
-from app.forms import CommentForm
+from app import db, stripe_keys
+from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
 from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker
 import stripe
 from guess_language import guess_language
 from app.translate import translate
 from flask_babel import get_locale
+from app.main.forms import CommentForm
+from app.main import bp
 
-@app.route('/')
-@app.route('/home')
+@bp.route('/')
+@bp.route('/home')
 def home():
     return render_template('home.html', title = 'Home')
 
-@app.route('/about-me')
+@bp.route('/about-me')
 def about_me():
     return render_template('about_me.html', title = 'About Me')
 
-@app.route('/hire-me')
+@bp.route('/hire-me')
 def hire_me():
     return render_template('hire_me.html', title = 'Hire Me')
 
-@app.route('/my-interests')
+@bp.route('/my-interests')
 def my_interests():
     return render_template('my_interests.html', title = 'My Interests')
 
-@app.route('/web-development')
+@bp.route('/web-development')
 def web_development():
     return render_template('web_development.html', title = 'Web Development')
 
-@app.before_request
+@bp.before_request
 def before_request():
     g.locale = str(get_locale())
 
-@app.route('/portfolio')
+@bp.route('/portfolio')
 def portfolio():
     return render_template('portfolio.html', title = 'Portfolio')
 
-@app.route('/schedule')
+@bp.route('/schedule')
 def schedule():
     return render_template('schedule_call.html', title = 'Schedule Call')
 
 # START OF STRIPE PAYMENT INTEGRATION
-@app.route("/config")
+@bp.route("/config")
 def get_publishable_key():
     stripe_config = {"publicKey": stripe_keys["publishable_key"]}
     return jsonify(stripe_config)
 
-@app.route("/create-checkout-session")
+@bp.route("/create-checkout-session")
 def create_checkout_session():
     domain_url = "http://localhost:5000/"
     stripe.api_key = stripe_keys["secret_key"]
@@ -80,17 +81,17 @@ def create_checkout_session():
     except Exception as e:
         return jsonify(error=str(e)), 403
 
-@app.route('/success')
+@bp.route('/success')
 def success():
     flash('You have successfuly made your payment. Check out more course contents')
     return render_template('stripe_success.html', title = 'Payment Success')
 
-@app.route('/cancelled')
+@bp.route('/cancelled')
 def cancelled():
     flash('Sorry, your payment was not successful. Please try making another payment')
     return render_template('stripe_cancel.html', title = 'Payment Cancelled')
 
-@app.route("/webhook", methods=["POST"])
+@bp.route("/webhook", methods=["POST"])
 def stripe_webhook():
     payload = request.get_data(as_text=True)
     sig_header = request.headers.get("Stripe-Signature")
@@ -116,7 +117,7 @@ def stripe_webhook():
 # END OF STRIPE PAYMENT INTEGRATION
 
 # START OF LIVE TRANSLATION
-@app.route('/translate')
+@bp.route('/translate')
 def translate_text():
     return jsonify({
         'text': translate(
@@ -128,7 +129,7 @@ def translate_text():
 # END OF LIVE TRANSLATION
 
 # START OF TUTORIALS
-@app.route('/personal-blog', methods = ['GET', 'POST'])
+@bp.route('/personal-blog', methods = ['GET', 'POST'])
 def personal_blog():
     form = CommentForm()
     if form.validate_on_submit():
@@ -141,18 +142,18 @@ def personal_blog():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('personal_blog', _anchor='comments'))  
+        return redirect(url_for('main.personal_blog', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = PersonalBlogPost.query.order_by(PersonalBlogPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('personal_blog', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.personal_blog', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('personal_blog', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.personal_blog', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/virtualenvwrapper', methods = ['GET', 'POST'])
+@bp.route('/virtualenvwrapper', methods = ['GET', 'POST'])
 def virtualenvwrapper():
     form = CommentForm()
     if form.validate_on_submit():
@@ -165,18 +166,18 @@ def virtualenvwrapper():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('virtualenvwrapper', _anchor='comments'))  
+        return redirect(url_for('main.virtualenvwrapper', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = VirtualenvwrapperPost.query.order_by(VirtualenvwrapperPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('virtualenvwrapper', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/vagrant', methods = ['GET', 'POST'])
+@bp.route('/vagrant', methods = ['GET', 'POST'])
 def vagrant():
     form = CommentForm()
     if form.validate_on_submit():
@@ -189,18 +190,18 @@ def vagrant():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('vagrant', _anchor='comments'))  
+        return redirect(url_for('main.vagrant', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = VagrantPost.query.order_by(VagrantPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('vagrant', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.vagrant', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('vagrant', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.vagrant', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/reCaptcha', methods = ['GET', 'POST'])
+@bp.route('/reCaptcha', methods = ['GET', 'POST'])
 def reCaptcha():
     form = CommentForm()
     if form.validate_on_submit():
@@ -213,18 +214,18 @@ def reCaptcha():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('reCaptcha', _anchor='comments'))  
+        return redirect(url_for('main.reCaptcha', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('reCaptcha', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.reCaptcha', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('reCaptcha', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.reCaptcha', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/rich-text', methods = ['GET', 'POST'])
+@bp.route('/rich-text', methods = ['GET', 'POST'])
 def rich_text():
     form = CommentForm()
     if form.validate_on_submit():
@@ -237,18 +238,18 @@ def rich_text():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('rich_text', _anchor='comments'))  
+        return redirect(url_for('main.rich_text', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = richTextPost.query.order_by(richTextPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('rich_text', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.rich_text', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('rich_text', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.rich_text', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/ngrok', methods = ['GET', 'POST'])
+@bp.route('/ngrok', methods = ['GET', 'POST'])
 def ngrok():
     form = CommentForm()
     if form.validate_on_submit():
@@ -261,18 +262,18 @@ def ngrok():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('ngrok', _anchor='comments'))  
+        return redirect(url_for('main.ngrok', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = ngrokPost.query.order_by(ngrokPost.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('ngrok', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.ngrok', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('ngrok', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.ngrok', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@app.route('/install-docker', methods = ['GET', 'POST'])
+@bp.route('/install-docker', methods = ['GET', 'POST'])
 def install_docker():
     form = CommentForm()
     if form.validate_on_submit():
@@ -285,14 +286,14 @@ def install_docker():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')  
-        return redirect(url_for('install_docker', _anchor='comments'))  
+        return redirect(url_for('main.install_docker', _anchor='comments'))  
     page = request.args.get('page', type = int)
     posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False
+        page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('install_docker', _anchor='comments', page = posts.next_num) \
+    next_url = url_for('main.install_docker', _anchor='comments', page = posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('install_docker', _anchor='comments', page = posts.prev_num) \
+    prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
     return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
