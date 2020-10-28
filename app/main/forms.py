@@ -7,6 +7,6 @@ from flask_pagedown.fields import PageDownField
 class CommentForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    comment = PageDownField('Comment', validators=[DataRequired()])
+    comment = PageDownField('Comment', validators=[DataRequired()], render_kw={"placeholder": "Markdown Enabled"})
     recaptcha = RecaptchaField('Captcha')
     submit = SubmitField('Post')
