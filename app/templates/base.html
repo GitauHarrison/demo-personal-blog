@@ -94,6 +94,51 @@
                 $(destElem).text("Error: Could not contact server");
             });
         }
+
+        // HOVER EVENT
+        $(function() {
+            var timer = null;
+            var xhr = null;
+            $('.contributors-popup').hover(
+                function(event) {
+                    // mouse in event handler
+                    var elem = $(event.currentTarget);
+                    timer = setTimeout(function() {
+                        timer = null;
+                        xhr = $.ajax(
+                            '/portfolio/' + '/popup').done(
+                                function(data) {
+                                    xhr = null;
+                                    elem.popover({
+                                        trigger: 'manual',
+                                        html: true,
+                                        animation: false,
+                                        container: elem,
+                                        content: data
+                                    }).popover('show');
+                                    flask_moment_render_all();
+                                }
+                            );
+                    }, 500);
+                },
+                function(event) {
+                    // mouse out event handler
+                    var elem = $(event.currentTarget);
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    else if (xhr) {
+                        xhr.abort();
+                        xhr = null;
+                    }
+                    else {
+                        elem.popover('destroy');
+                    }
+                }
+            )
+        });
+        //END OF HOVER EVENT
     </script>
     <!-- reCaptcha Integration -->
     <script src='https://www.google.com/recaptcha/api.js' async defer></script>

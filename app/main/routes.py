@@ -37,6 +37,10 @@ def before_request():
 def portfolio():
     return render_template('portfolio.html', title = 'Portfolio')
 
+@bp.route('/portfolio/popup')
+def pop_up():
+    return render_template('popup.html', title = 'Pop Up')
+
 @bp.route('/schedule')
 def schedule():
     return render_template('schedule_call.html', title = 'Schedule Call')
