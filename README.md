@@ -6,33 +6,33 @@
 This is my blog, where I note all the projects I am involved in, my personal interests and other aspects of life I am engaged in.
 
 ### Design
-Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog-Portfolio?node-id=1%3A2&scaling=min-zoom) of the blog. I used Figma for prototyping and regualar reference during its development.
+Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog-Portfolio?node-id=1%3A2&scaling=min-zoom) of the blog. I used Figma for prototyping and regular reference during its development.
 
-# Features
-* User Authentication
-* Functional Password Reset Feature
+### Features
 * Ability to post comments
 * Realtime Date and Time
+* Payment
+* Live Language Translation
+* Consultation Scheduling
 * Database Management
-* Extra form protection
-* Autofocus of the Chat Input Box
-* Use of the Enter Key to Send Message
-* Descent Automatic Chat Page Scrolldown
-* Pre-created Rooms
-* Immediate Addition of User in Default Room
-* Chat Privacy in All Rooms
-* Tools Used
+* Markdown Form Editing
+* Link Popups
+
+### Tools Used
+
+* Calendly for Scheduling
+* Microsoft Language Translator
 * Flask Framework
-* Flask SocketIO
 * Twitter Bootstrap for Cross-browser Responsiveness
 * Python3 for Programming
-* Javascript for Extra Page Interactivity
 * SQLite for Local Development
-* Python Datetime Module for Localtime Management
-* Moment JS for Improved Time Formatting
+* Stripe For Payment
+* Moment JS for Realtime Date and Time
+* Gravatar for User Comments
 * Google reCaptcha for Extra Form Security
 * JQuery for Mobile Responsiveness
 * Ngrok for Localhost Testing
+* Flask PageDown for form editing
 
 ### Contributors:
 * [Gitau Harrison](https://github.com/GitauHarrison)
@@ -54,7 +54,7 @@ $ workon gitauharrison-portfolio # I am using a virtualenv wrapper
 
 Install all used dependancies:
 ```python
-$ pip3 install -r requirements.txt
+(gitauharrison-portfolio)$ pip3 install -r requirements.txt
 ```
 
 Run the application:
