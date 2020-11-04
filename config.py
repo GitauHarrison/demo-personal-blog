@@ -36,8 +36,8 @@ class Config(object):
     LANGUAGES=['en', 'sw']
 
     # reCAPTCHA configuration
-    RECAPTCHA_PUBLIC_KEY='6LfyL9oZAAAAAB3EFZQYBx3ivtgu00zQmOEqH4OQ'
-    RECAPTCHA_PRIVATE_KEY='6LfyL9oZAAAAAOfYBlOGCDt-MLYIvLBcFehW12d_'
+    RECAPTCHA_PUBLIC_KEY='6LfLJN8ZAAAAAJgBHQy76zPyHVR2O9jmaTThPTLP'
+    RECAPTCHA_PRIVATE_KEY='6LfLJN8ZAAAAACe28iK98cDOBl-1REobjjR-em1a'
 
     # Ngrok configuration
     START_NGROK=os.environ.get('START_NGROK') is not None and \
