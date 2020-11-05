@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="How_to_Deploy_Your_Flask_App_to_Heroku_0"></a>How to Deploy Your Flask App to Heroku</h1>
+<h6 class="code-line" data-line-start=2 data-line-end=3 ><a id="Things_to_know_beforehand_2"></a>Things to know beforehand</h6>
+<ul>
+<li class="has-line-data" data-line-start="3" data-line-end="4"><code>git</code>: Deploying to Heroku is done through <code>git</code> version control tool</li>
+<li class="has-line-data" data-line-start="4" data-line-end="5"><code>Procfile</code>: Heroku looks for a file called <code>Procfile</code> in the application’s root directory for instructions on how to start the application</li>
+<li class="has-line-data" data-line-start="5" data-line-end="6"><code>requirements.txt</code>: For python projects(initially, Heroku was built for Ruby related projects), you will need a <code>requirements.txt</code> which lists all the packages that are required to build and run your application.</li>
+</ul>
+<h6 class="code-line" data-line-start=8 data-line-end=9 ><a id="Procedure_8"></a>Procedure:</h6>
+<ol>
+<li class="has-line-data" data-line-start="10" data-line-end="11">Create an account at <a href="https://www.heroku.com/">Heroku</a>. It is free.</li>
+<li class="has-line-data" data-line-start="11" data-line-end="12">Install the <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku CLI</a></li>
+<li class="has-line-data" data-line-start="12" data-line-end="13">Set up <code>git</code></li>
+<li class="has-line-data" data-line-start="13" data-line-end="14">Create a Heroku Application</li>
+<li class="has-line-data" data-line-start="14" data-line-end="15">Deploy Your Application</li>
+<li class="has-line-data" data-line-start="15" data-line-end="16">Deploy Application Updates</li>
+</ol><br>
+<h4 class="code-line" data-line-start=18 data-line-end=19 ><a id="Create_Heroku_account_18"></a>Create Heroku account</h4>
+<p class="has-line-data" data-line-start="20" data-line-end="21">Before you can deploy your application to Heroku, you will need to have an account with them. Visit <a href="https://www.heroku.com/">heroku.com</a> and sign up for free. Your applications will be listed on your dashboard whenever you log in.</p>
+<br>
+<h4 class="code-line" data-line-start=22 data-line-end=23 ><a id="Install_Heroku_CLI_22"></a>Install Heroku CLI</h4>
+<p class="has-line-data" data-line-start="24" data-line-end="25">To interact with Heroku services, you will need to use their commandline tool called <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku CLI</a>. It is available for Linux, Mac OS X and Windows.</p>
+<p class="has-line-data" data-line-start="26" data-line-end="27">To install it, run the command below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo snap install <span style="color: #333333">--</span>classic heroku
+</pre>
+<p class="has-line-data" data-line-start="31" data-line-end="32">You can read the full <a href="https://devcenter.heroku.com/categories/command-line">Heroku CLI documention</a> for more information. Once installed, you need to log in to your account:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku login
+</pre>
+<p class="has-line-data" data-line-start="37" data-line-end="38">Heroku CLI will open in your default browser and ask you to enter your email address and your account password. Your authentication details will be remembered in subsequent commands.</p>
+<br>
+<h4 class="code-line" data-line-start=39 data-line-end=40 ><a id="Setting_Up_Git_39"></a>Setting Up Git</h4>
+<p class="has-line-data" data-line-start="41" data-line-end="42"><code>git</code> is core to the deployment of your applications to Heroku. You will need to install it on your system. Learn how to install it <a href="./install_git.md">here</a></p>
+<p class="has-line-data" data-line-start="43" data-line-end="44">The reason why you need <code>git</code> is because Heroku expects your project to be in a git repository. If you had your project on <a href="https://github.com/">GitHub</a>, clone it to your local machine:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git clone git<span style="color: #555555; font-weight: bold">@github</span><span style="color: #333333">.</span>com:GitauHarrison<span style="color: #333333">/</span>work_gossip_chat_app<span style="color: #333333">.</span>git
+</pre>
+<p class="has-line-data" data-line-start="48" data-line-end="49">OR</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git clone https:<span style="color: #333333">//</span>github<span style="color: #333333">.</span>com<span style="color: #333333">/</span>GitauHarrison<span style="color: #333333">/</span>work_gossip_chat_app<span style="color: #333333">.</span>git
+</pre>
+<p class="has-line-data" data-line-start="53" data-line-end="54">Whenever you use <code>https</code>, you will be required to always enter your <em>username</em> and <em>password</em> to access your resources. <code>ssh</code> on the other hand is <em>password-less</em>. Learn how to set up your <code>git</code> to use <code>ssh</code> <a href="/github_ssh.md">here</a>.</p>
+<blockquote>
+<p class="has-line-data" data-line-start="55" data-line-end="56">Everything should be done within  a virtual environment. In the case where you are cloning a project from GitHub, remember to install the project’s dependancies that are found in the <code>requirements.txt</code> file. To do so, run the command below:</p>
+</blockquote>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install <span style="color: #333333">-</span>r requirements<span style="color: #333333">.</span>txt
+</pre>
+<br>
+<h4 class="code-line" data-line-start=63 data-line-end=64 ><a id="Create_a_Heroku_Application_63"></a>Create a Heroku Application</h4>
+<p class="has-line-data" data-line-start="65" data-line-end="66">Heroku uses the command <code>apps:create</code> to register new applications. You will need to run the command below from the root directory of your application.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku apps:create work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app
+</pre>
+<p class="has-line-data" data-line-start="70" data-line-end="71"><code>work-gossip-chat-app</code> is a unique name. When you try to use the same name, it will be unavailable. You need to use another name which has not been used yet.</p>
+<p class="has-line-data" data-line-start="72" data-line-end="73">The output of this command will include the URL Heroku assigned to your application, together with a <code>git</code> repository. Your local <code>git</code> repository will be configured to now include a second from Heroku called <code>heroku</code>. To check all the available remotes, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git remote <span style="color: #333333">-</span>v
+</pre>
+<br>
+<h4 class="code-line" data-line-start=78 data-line-end=79 ><a id="Postgres_Database_for_Heroku_78"></a>Postgres Database for Heroku</h4>
+<p class="has-line-data" data-line-start="80" data-line-end="81">Heroku’s database offering is based on the Postgres database. You interact with it using its CLI tool.</p>
+<p class="has-line-data" data-line-start="82" data-line-end="83">First, we will begin by creating a database on the free version account:</p>
+<pre style="margin: 30; line-height: 125%">heroku addons:add heroku<span style="color: #333333">-</span>postgresql:hobby<span style="color: #333333">-</span>dev
+</pre>
+<p class="has-line-data" data-line-start="87" data-line-end="88">You will see this kind of result on your terminal:</p>
+<pre style="margin: 30; line-height: 125%">Creating heroku<span style="color: #333333">-</span>postgresql:hobby<span style="color: #333333">-</span>dev on <span style="color: #ff8080; ">⬢</span> work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app<span style="color: #333333">...</span> free
+Database has been created <span style="color: #000000; font-weight: bold">and</span> <span style="color: #000000; font-weight: bold">is</span> available
+ <span style="color: #ff8080; ">!</span> This database <span style="color: #000000; font-weight: bold">is</span> empty<span style="color: #333333">.</span> If upgrading, you can transfer
+ <span style="color: #ff8080; ">!</span> data <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">another</span> database <span style="color: #008800; font-weight: bold">with</span> pg:copy
+Created postgresql<span style="color: #333333">-</span>solid<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">77130</span> <span style="color: #008800; font-weight: bold">as</span> DATABASE_URL
+Use heroku addons:docs heroku<span style="color: #333333">-</span>postgresql to view documentation
+</pre>
+<p class="has-line-data" data-line-start="96" data-line-end="97"><code>DATABASE_URL</code> environment variable (as seen in the output above) stores the URL for the newly created database, which will be available when the application runs. The application will look for the database URL in that variable.</p>
+<p class="has-line-data" data-line-start="98" data-line-end="99">To find out the exact URL associated with your database, run this command:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:get DATABASE_URL
+</pre>
+<p class="has-line-data" data-line-start="103" data-line-end="104">To check the status of your database, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku pg:info DATABASE
+
+<span style="color: #333333">===</span> DATABASE_URL
+Plan:                  Hobby<span style="color: #333333">-</span>dev
+Status:                Available
+Connections:           <span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">20</span>
+PG Version:            <span style="color: #6600EE; font-weight: bold">12.4</span>
+Created:               <span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">10</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">05</span> <span style="color: #0000DD; font-weight: bold">01</span>:<span style="color: #0000DD; font-weight: bold">07</span> UTC
+Data Size:             <span style="color: #6600EE; font-weight: bold">7.9</span> MB
+Tables:                <span style="color: #0000DD; font-weight: bold">0</span>
+Rows:                  <span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">10000</span> (In compliance)
+Fork<span style="color: #333333">/</span>Follow:           Unsupported
+Rollback:              Unsupported
+Continuous Protection: Off
+Add<span style="color: #333333">-</span>on:                postgresql<span style="color: #333333">-</span>solid<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">77130</span>
+</pre>
+<br>
+<h4 class="code-line" data-line-start=122 data-line-end=123 ><a id="Logging_to_stdout_122"></a>Logging to <code>stdout</code></h4>
+<p class="has-line-data" data-line-start="124" data-line-end="125">Logging allows for the writing of status messages to a file or any other output streams. The log files contain all the information on which part the code is executed and what problems may have arisen. Learn more on Python logging <a href="https://realpython.com/python-logging/">here</a>.</p>
+<p class="has-line-data" data-line-start="126" data-line-end="127">Heroku expects applications to log directly to <code>stdout</code>. Every time you want to check your application logs, you can type the command below to see all the details:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku logs <span style="color: #333333">--</span>tail
+</pre>
+<p class="has-line-data" data-line-start="132" data-line-end="133">As always, we will create our application-wide variables in <code>config.py</code> and register it in the <code>application factory</code> as seen below:</p>
+<p class="code-title has-line-data" data-line-start="134" data-line-end="135">config.py: Log to stdout</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    <span style="color: #888888">#</span>
+    LOG_TO_STDOUT <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;LOG_TO_STDOUT&#39;</span>)
+</pre>
+<p class="code-title has-line-data" data-line-start="140" data-line-end="141">app/__init__.py: Add stream handler</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">create_app</span>(config_class<span style="color: #333333">=</span>Config):
+    <span style="color: #888888"># ...</span>
+    <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> app<span style="color: #333333">.</span>debug <span style="color: #000000; font-weight: bold">and</span> <span style="color: #000000; font-weight: bold">not</span> app<span style="color: #333333">.</span>testing:
+        <span style="color: #888888"># ...</span>
+
+        <span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;LOG_TO_STDOUT&#39;</span>]:
+            stream_handler <span style="color: #333333">=</span> logging<span style="color: #333333">.</span>StreamHandler()
+            stream_handler<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>INFO)
+            app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>addHandler(stream_handler)
+        <span style="color: #008800; font-weight: bold">else</span>:
+            <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>exists(<span style="background-color: #fff0f0">&#39;logs&#39;</span>):
+                os<span style="color: #333333">.</span>mkdir(<span style="background-color: #fff0f0">&#39;logs&#39;</span>)
+            file_handler <span style="color: #333333">=</span> RotatingFileHandler(<span style="background-color: #fff0f0">&#39;logs/tinker_app.log&#39;</span>, maxBytes<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">10240</span>, backupCount<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">10</span>)
+            file_handler<span style="color: #333333">.</span>setFormatter(logging<span style="color: #333333">.</span>Formatter(
+                <span style="background-color: #fff0f0">&#39;%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]&#39;</span>
+            ))
+            file_handler<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>INFO)
+            app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>addHandler(file_handler)
+
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>INFO)
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>info(<span style="background-color: #fff0f0">&#39;Microblog startup&#39;</span>)
+
+    <span style="color: #008800; font-weight: bold">return</span> app
+</pre>
+<p class="has-line-data" data-line-start="166" data-line-end="167">Now, set your <code>LOG_TO_STDOUT</code> environment variable in Heroku:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:<span style="color: #007020">set</span> LOG_TO_STDOUT<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
+</pre>
+<p class="has-line-data" data-line-start="170" data-line-end="171">This variable is set to <code>1</code> and it will be used at runtime.</p>
+<br>
+<h4 class="code-line" data-line-start=172 data-line-end=173 ><a id="Adding_Search_functionality_in_Heroku_172"></a>Adding Search functionality in Heroku</h4>
+<p class="has-line-data" data-line-start="174" data-line-end="175">Unlike Postgres which is provided by Heroku, a service such as Elasticsearch is provided by third parties that partner with Heroku to provide add-ons. There are a number of search addons you can choose from. Find more <a href="https://elements.heroku.com/addons">addons here</a>.</p>
+<p class="has-line-data" data-line-start="176" data-line-end="177"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/heroku_search_providers.png') }}" alt="Search Providers"></p>
+<p class="has-line-data" data-line-start="179" data-line-end="180">Let us try <a href="https://elements.heroku.com/addons/searchbox">SearchBox</a></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku addons:create searchbox:starter
+
+Creating searchbox:starter on <span style="color: #ff8080; ">⬢</span> work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app<span style="color: #333333">...</span> free
+Created searchbox<span style="color: #333333">-</span>adjacent<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">34792</span> <span style="color: #008800; font-weight: bold">as</span> SEARCHBOX_SSL_URL, SEARCHBOX_URL
+Use heroku addons:docs searchbox to view documentation
+</pre>
+<p class="has-line-data" data-line-start="189" data-line-end="190">A connection URL is created for the service in the <code>SEARCHBOX_SSL_URL</code> or <code>SEARCHBOX_URL</code> variables associated with your application.</p>
+<p class="has-line-data" data-line-start="191" data-line-end="192">To make use of these third-party addons and add their functionality to your application, you will need to provide your credit card info even though you are on the free tier. So, add this information to your billing. You will not be charged while you are on the free tier.</p>
+<p class="has-line-data" data-line-start="193" data-line-end="194">In your Heroku dashboard, among your installed addons, click on SearchBox Elasticsearch to find the URL associated with <code>SEARCHBOX_URL</code> variable.</p>
+<p class="has-line-data" data-line-start="195" data-line-end="196"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/addon_list.png') }}" alt="Addon List"></p>
+<p class="has-line-data" data-line-start="197" data-line-end="198">Similarly, you can run the command below to find the URL:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:get SEARCHBOX_URL
+</pre>
+<p class="has-line-data" data-line-start="202" data-line-end="203">The URL displayed in your terminal is your Elasticsearch connection URL. Configure it to your Heroku application’s <code>ELASTICSEARCH_URL</code> variable as shown below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:<span style="color: #007020">set</span> ELASTICSEARCH_URL<span style="color: #333333">=&lt;</span>displayed<span style="color: #333333">-</span>url<span style="color: #333333">-</span>from<span style="color: #333333">-</span>the<span style="color: #333333">-</span>command<span style="color: #333333">-</span>above<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="208" data-line-end="210">To make searching of keywords in your app, you will need to <strong>create</strong> an index within the <em>SearchBox Elasticseach</em> dashboard as seen in the image below. By extension, this will allow you to post comments in your home page.<br>
+<img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/post_index.png') }}" alt="Create Index For Search"></p>
+<p class="has-line-data" data-line-start="211" data-line-end="213"><strong>Note:</strong><br>
+If you are using <code>SEARCHBOX_SSL_URL</code>, then you should not have the trouble of indices not being created automatically by the server.</p>
+<br>
+<h4 class="code-line" data-line-start=216 data-line-end=217 ><a id="Updating_your_Dependancies_216"></a>Updating your Dependancies</h4>
+<p class="has-line-data" data-line-start="218" data-line-end="219">Heroku will use the listed dependancies to run your application. Additionally, it will need you to add 2 more dependancies to the <code>requirements.txt</code> file.</p>
+<h5 class="code-line" data-line-start=220 data-line-end=221 ><a id="gunicorn_220"></a><code>gunicorn</code></h5>
+<p class="has-line-data" data-line-start="222" data-line-end="223">Since Flask’s development server is not robust enough for use in production, you will need to add this server which is recommended by Heroku for Python applications:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install gunicorn
+</pre>
+<h6 class="code-line" data-line-start=227 data-line-end=228 ><a id="psycopg2_227"></a><code>psycopg2</code></h6>
+<p class="has-line-data" data-line-start="229" data-line-end="230">Our application will also be connecting to a Postgres database, and for that it requires this package to be installed.</p>
+<p class="has-line-data" data-line-start="231" data-line-end="232"><code>psycopg2</code> library is built as a wrapper around <code>libpq</code>. It requires some <code>PostgreSQL</code> binaries and headers requried for building 3rd-party applications for <code>PostgreSQL</code>.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install python3<span style="color: #333333">-</span>dev libpq<span style="color: #333333">-</span>dev
+</pre>
+<p class="has-line-data" data-line-start="236" data-line-end="237">The main goal of the command above is to provide all requirements for building <code>psycopg2</code>. To install the latest package in your system, use <code>pip</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install psycopg2
+</pre>
+<br>
+<h4 class="code-line" data-line-start=243 data-line-end=244 ><a id="The_Procfile_243"></a>The Procfile</h4>
+<p class="has-line-data" data-line-start="245" data-line-end="246">Heroku needs to know how to execute your application. For that, you need a <code>Procfile</code> which is created in the root directory. So, fo ahead and create an empty <code>Procfile</code> file:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch Procfile
+</pre>
+<p class="has-line-data" data-line-start="251" data-line-end="252">Then, update your <code>Procfile</code> with this info:</p>
+<p class="code-title has-line-data" data-line-start="253" data-line-end="254">Procfile: Application execution</p>
+<pre style="margin: 30; line-height: 125%">web: flask db upgrade; flask translate <span style="color: #007020">compile</span>; gunicorn tinker:app
+</pre>
+<p class="has-line-data" data-line-start="257" data-line-end="258">Parts of a <code>Procfile</code></p>
+<ul>
+<li class="has-line-data" data-line-start="259" data-line-end="260">Process name</li>
+<li class="has-line-data" data-line-start="260" data-line-end="261">Colon</li>
+<li class="has-line-data" data-line-start="261" data-line-end="263">Commands that start the process</li>
+</ul>
+<p class="has-line-data" data-line-start="263" data-line-end="264">The Procfile begins with a process name (in our case, since we are builing a web application, we will use <code>web</code>). After the colon, you will need to define the commands you need. Finally, you need to declare your server.</p>
+<p class="has-line-data" data-line-start="265" data-line-end="266">In our example, since we are using the <code>flask</code> command, we need to add the <code>FLASK_APP</code> environment variable:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:<span style="color: #007020">set</span> FLASK_APP<span style="color: #333333">=</span>tinker<span style="color: #333333">.</span>py
+</pre>
+<p class="has-line-data" data-line-start="271" data-line-end="272"><strong>Our application has other environment variables listed in our <code>config.py</code> file. Configure them with Heroku as shown above.</strong></p>
+<br>
+<h4 class="code-line" data-line-start=273 data-line-end=274 ><a id="How_to_generate_good_secret_keys_273"></a>How to generate good secret keys</h4>
+<p class="has-line-data" data-line-start="275" data-line-end="276">One of the variables you will need to add to heroku is <code>SECRET_KEY</code>. Our <code>SECRET_KEY</code> value is the message authentication code used to sign the cookies. If the value is known to the public, then someone can spoof a valid signature, which makes our app a lot less secure. The <code>SECRET_KEY</code> needs to be known only to the application even if the source code is published online. The solution to this is to generate a random <code>SECRET_KEY</code>.</p>
+<blockquote>
+<p class="has-line-data" data-line-start="277" data-line-end="278">A <em>secret key</em> should be as random as possible. Your operating system has ways to generate pretty random data based on a cryptographic random generator. Use the following command to quickly generate a value for <code>Flask.secret_key</code> (or <code>SECRET_KEY</code>):</p>
+</blockquote>
+<pre style="margin: 30; line-height: 125%">(virtual<span style="color: #333333">-</span>env)<span style="color: #ff8080; ">$</span> python <span style="color: #333333">-</span>c <span style="background-color: #fff0f0">&#39;import os; print(os.urandom(16))&#39;</span>
+
+<span style="color: #888888"># Output</span>
+b<span style="background-color: #fff0f0">&#39;_5#y2L&quot;F4Q8z</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\xec</span><span style="background-color: #fff0f0">]/&#39;</span>
+</pre>
+<br>
+<h4 class="code-line" data-line-start=286 data-line-end=287 ><a id="Deploying_Application_286"></a>Deploying Application</h4>
+<p class="has-line-data" data-line-start="288" data-line-end="289"><code>git push</code> is used to deploy the application to Heroku’s servers, similarly to how you would push changes from your local git repository to GitHub or any other remote server.</p>
+<p class="has-line-data" data-line-start="290" data-line-end="291">First, you need to save your changes and commit them:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git commit <span style="color: #333333">-</span>a <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;Make changes for heroku deployment&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="295" data-line-end="296">Then, start your deployment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Add remote repository</span>
+heroku git:remote <span style="color: #333333">-</span>a work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app
+    
+<span style="color: #888888"># Push to heroku master</span>
+git push heroku master
+    
+Enumerating objects: <span style="color: #0000DD; font-weight: bold">1170</span>, done<span style="color: #333333">.</span>
+Counting objects: <span style="color: #0000DD; font-weight: bold">100</span><span style="color: #333333">%</span> (<span style="color: #0000DD; font-weight: bold">1170</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">1170</span>), done<span style="color: #333333">.</span>
+Delta compression using up to <span style="color: #0000DD; font-weight: bold">4</span> threads
+Compressing objects: <span style="color: #0000DD; font-weight: bold">100</span><span style="color: #333333">%</span> (<span style="color: #0000DD; font-weight: bold">391</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">391</span>), done<span style="color: #333333">.</span>
+Writing objects: <span style="color: #0000DD; font-weight: bold">100</span><span style="color: #333333">%</span> (<span style="color: #0000DD; font-weight: bold">1170</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">1170</span>), <span style="color: #6600EE; font-weight: bold">691.88</span> KiB <span style="color: #333333">|</span> <span style="color: #6600EE; font-weight: bold">43.24</span> MiB<span style="color: #333333">/</span>s, done<span style="color: #333333">.</span>
+Total <span style="color: #0000DD; font-weight: bold">1170</span> (delta <span style="color: #0000DD; font-weight: bold">760</span>), reused <span style="color: #0000DD; font-weight: bold">1148</span> (delta <span style="color: #0000DD; font-weight: bold">750</span>)
+remote: Compressing source files<span style="color: #333333">...</span> done<span style="color: #333333">.</span>
+remote: Building source:
+remote: 
+remote: <span style="color: #333333">-----&gt;</span> Python app detected
+remote: <span style="color: #333333">-----&gt;</span> Installing python<span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">3.6</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">12</span>
+remote: <span style="color: #333333">-----&gt;</span> Installing pip <span style="color: #6600EE; font-weight: bold">20.1</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">1</span>, setuptools <span style="color: #6600EE; font-weight: bold">47.1</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #000000; font-weight: bold">and</span> wheel <span style="color: #6600EE; font-weight: bold">0.34</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">2</span>
+remote: <span style="color: #333333">-----&gt;</span> Installing SQLite3
+remote: <span style="color: #333333">-----&gt;</span> Installing requirements <span style="color: #008800; font-weight: bold">with</span> pip
+<span style="color: #888888"># ...</span>
+remote: <span style="color: #333333">-----&gt;</span> Discovering process types
+remote:        Procfile declares types <span style="color: #333333">-&gt;</span> web
+remote: 
+remote: <span style="color: #333333">-----&gt;</span> Compressing<span style="color: #333333">...</span>
+remote:        Done: <span style="color: #6600EE; font-weight: bold">59.3</span>M
+remote: <span style="color: #333333">-----&gt;</span> Launching<span style="color: #333333">...</span>
+remote:        Released v18
+remote:        https:<span style="color: #333333">//</span>work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app<span style="color: #333333">.</span>herokuapp<span style="color: #333333">.</span>com<span style="color: #333333">/</span> deployed to Heroku
+remote: 
+remote: Verifying deploy<span style="color: #333333">...</span> done<span style="color: #333333">.</span>
+To https:<span style="color: #333333">//</span>git<span style="color: #333333">.</span>heroku<span style="color: #333333">.</span>com<span style="color: #333333">/</span>work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app<span style="color: #333333">.</span>git
+    <span style="color: #333333">*</span> [new branch]      master <span style="color: #333333">-&gt;</span> master
+</pre>
+<p class="has-line-data" data-line-start="333" data-line-end="334">If you want to see the log entries for your application, run the command:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku logs <span style="color: #333333">--</span>tail
+</pre>
+<h6 class="code-line" data-line-start=339 data-line-end=340 ><a id="Database_Error_339"></a>Database Error</h6>
+<p class="has-line-data" data-line-start="341" data-line-end="342">Chances are that when you try to log into your app or even try to register a new user you will come across an error such as:</p>
+<pre style="margin: 30; line-height: 125%">sqlalchemy<span style="color: #333333">.</span>exc<span style="color: #333333">.</span>ProgrammingError: (psycopg2<span style="color: #333333">.</span>errors<span style="color: #333333">.</span>UndefinedTable) relation <span style="background-color: #fff0f0">&quot;user&quot;</span> does <span style="color: #000000; font-weight: bold">not</span> exist
+LINE <span style="color: #0000DD; font-weight: bold">2</span>: FROM <span style="background-color: #fff0f0">&quot;user&quot;</span>
+[SQL: SELECT <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>id AS user_id, <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>username AS user_username, <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>email AS user_email, <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>password_hash AS user_password_hash, <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>about_me AS user_about_me, <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>last_seen AS user_last_seen
+FROM <span style="background-color: #fff0f0">&quot;user&quot;</span>
+WHERE <span style="background-color: #fff0f0">&quot;user&quot;</span><span style="color: #333333">.</span>username <span style="color: #333333">=</span> <span style="color: #333333">%</span>(username_1)s
+LIMIT <span style="color: #333333">%</span>(param_1)s]
+[parameters: {<span style="background-color: #fff0f0">&#39;username_1&#39;</span>: <span style="background-color: #fff0f0">&#39;harry&#39;</span>, <span style="background-color: #fff0f0">&#39;param_1&#39;</span>: <span style="color: #0000DD; font-weight: bold">1</span>}]
+(Background on this error at: http:<span style="color: #333333">//</span>sqlalche<span style="color: #333333">.</span>me<span style="color: #333333">/</span>e<span style="color: #333333">/</span>f405)    
+</pre>
+<p class="has-line-data" data-line-start="354" data-line-end="355">This is a database error. Your application cannot read your database tables. Check that your Heroku database has tables in it by running the command <code>heroku pg:info DATABASE</code>. This will show you the status of your database, something similar to the output below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">===</span> DATABASE_URL
+Plan:                  Hobby<span style="color: #333333">-</span>dev
+Status:                Available
+Connections:           <span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">20</span>
+PG Version:            <span style="color: #6600EE; font-weight: bold">12.4</span>
+Created:               <span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">10</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">13</span> <span style="color: #0000DD; font-weight: bold">01</span>:<span style="color: #0000DD; font-weight: bold">23</span> UTC
+Data Size:             <span style="color: #6600EE; font-weight: bold">8.0</span> MB
+Tables:                <span style="color: #0000DD; font-weight: bold">0</span>        <span style="color: #888888"># &lt;--------------------------------  No tables</span>
+Rows:                  <span style="color: #0000DD; font-weight: bold">0</span><span style="color: #333333">/</span><span style="color: #0000DD; font-weight: bold">10000</span> (In compliance)
+Fork<span style="color: #333333">/</span>Follow:           Unsupported
+Rollback:              Unsupported
+Continuous Protection: Off
+Add<span style="color: #333333">-</span>on:                postgresql<span style="color: #333333">-</span>crystalline<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">47645</span>
+</pre>
+<p class="has-line-data" data-line-start="372" data-line-end="373">You can see that from the output, my databse has no tables, yet locally, I may have the database working well. To fix this, we need to update our database to include the tables created in your <code>models.py</code> file. In this case, as you can see from our <code>Procfile</code>, we will run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku run flask db upgrade <span style="color: #888888"># add heroku run</span>
+</pre>
+<br>
+<h4 class="code-line" data-line-start=380 data-line-end=381 ><a id="Application_Updates_380"></a>Application Updates</h4>
+<p class="has-line-data" data-line-start="382" data-line-end="383">Make changes to your applicatin and save it. You will need to <code>add</code> and <code>commit</code> them using <code>git</code>. Push the changes to Heroku:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git add <span style="color: #333333">.</span>
+<span style="color: #ff8080; ">$</span> git commit <span style="color: #333333">-</span>a <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;Message about your new changes&#39;</span>
+<span style="color: #ff8080; ">$</span> git push heroku master
+</pre><br>
+<h4 class="code-line" data-line-start=390 data-line-end=391 ><a id="Removing_addons_and_variables_in_Heroku_390"></a>Removing addons and variables in Heroku</h4>
+<p class="has-line-data" data-line-start="392" data-line-end="393">If at some point you would like to remove a config var, consider running:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:unset <span style="color: #333333">&lt;</span>VAR_NAME<span style="color: #333333">&gt;=&lt;</span>value<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="398" data-line-end="399">To remove an addon, do:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku addons:destroy <span style="color: #333333">&lt;</span>name<span style="color: #333333">-</span>of<span style="color: #333333">-</span>addon<span style="color: #333333">&gt;</span>
+</pre>
+
+
+
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">Comments</h3>
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
