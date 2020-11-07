@@ -25,7 +25,7 @@ def hire_me():
 def my_interests():
     return render_template('my_interests.html', title = 'My Interests')
 
-@bp.route('/web-development')
+@bp.route('/web-development', methods = ['GET', 'POST'])
 def web_development():
     form = CommentForm()
     if form.validate_on_submit():
