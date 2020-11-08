@@ -73,7 +73,7 @@ def get_publishable_key():
 
 @bp.route("/create-checkout-session")
 def create_checkout_session():
-    domain_url = "http://localhost:5000/"
+    domain_url = "https://gitauharrison-blog.herokuapp.com/"
     stripe.api_key = stripe_keys["secret_key"]
 
     try:
@@ -97,7 +97,7 @@ def create_checkout_session():
                     "name": "Consultation",
                     "quantity": 1,
                     "currency": "usd",
-                    "amount": "20000",
+                    "amount": "1500",
                 }
             ]
         )
