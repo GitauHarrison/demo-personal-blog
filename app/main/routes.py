@@ -73,7 +73,7 @@ def get_publishable_key():
 
 @bp.route("/create-checkout-session")
 def create_checkout_session():
-    domain_url = "https://gitauharrison-blog.herokuapp.com/"
+    domain_url = "http://localhost:5000/"
     stripe.api_key = stripe_keys["secret_key"]
 
     try:
