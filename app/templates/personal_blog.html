@@ -15,62 +15,24 @@
     </div>
     <div class="row">            
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <h3>Actual Course Content</h3>
+            <h3>Overview</h3>
             <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make 
-                a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, r
-                emaining essentially unchanged.
+                This blog contains 5 parts:
             </p>
-            <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make 
-                a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, r
-                emaining essentially unchanged:
-            </p>
-            <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-                standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make 
-                a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, r
-                emaining essentially unchanged:
-            </p>
-        </div>
-    </div><hr>
-    <!-- Comments Section -->
-    <div class="row">            
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-            <h3 id="comments">Comments</h3>
-            <div class="translate-info">Feel free to post your comment in your language</div>
-
-            <!-- Display Flash Messages Here -->
-            {% include '_flash_message.html' %}
-
-            <!-- Comments Go Here -->
-            {% for post in posts %}
-                {% include '_comments.html' %}
-            {% endfor %}
-
-            <!-- Pagination Links -->
-            <nav aria-label="...">
-                <ul class="pager">
-                    <li class="previous{% if not prev_url %} disabled{% endif %}">
-                        <a href="{{ prev_url or '#' }}">
-                            <span aria-hidden="true">&larr;</span> Newer Comments
-                        </a>
-                    </li>
-                    <li class="next{% if not next_url %} disabled{% endif %}">
-                        <a href="{{ next_url or '#' }}">
-                            Older Comments <span aria-hidden="true">&rarr;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <!-- Comment Form Goes Here -->
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
-                {{ wtf.quick_form(form) }}
+            <ol>
+                <li>A simple Home Page containing all the articles</li>
+                <li>An About Me page which shades light on who the author of the articles is</li>
+                <li>A Portfolio page that shows all the projects you have been involved in</li>
+                <li>A Hire Me Page which allows you to sell your services to interested persons</li>
+                <li>My Interests Page which goes into detail about some of the things you really enjoy doing</li>
+            </ol>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                <img src=" {{ url_for('static', filename = 'images/personal_blog.png') }} " class="img-fluid" style="max-width: 100%; height: auto;" alt="Chat App">
             </div>
+            <p>
+
+            </p>
         </div>
-    </div>
+    </div><br>
 </div>
 {% endblock %}
