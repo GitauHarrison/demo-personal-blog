@@ -175,7 +175,7 @@ def personal_blog():
         if posts.has_next else None
     prev_url = url_for('main.personal_blog', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @bp.route('/virtualenvwrapper', methods = ['GET', 'POST'])
 def virtualenvwrapper():
