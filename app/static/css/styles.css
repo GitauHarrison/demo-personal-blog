@@ -78,6 +78,11 @@ h4{
 /* ------------------------------------------ */
 /* Custom styles */
 /* ------------------------------------------ */
+.patron{
+    background-color: #cccccc;
+    padding: 20px;
+    border-radius: 3px;
+}
 .my-name{
     text-align: center;
 }
