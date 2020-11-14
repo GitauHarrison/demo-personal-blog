@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Flask Templates</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+<p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/b388b9099738c53b44650ef8e99a4364a923964a">here</a>.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">In the previous chapter, you learnt how to display a string on the web browser. During this chapter, I will show you how to work with HTML templates that help create a more elaborate and dynamic web application.</p>
+<h3 class="code-line" data-line-start=4 data-line-end=5 ><a id="Understanding_Templates_4"></a>Understanding Templates</h3>
+<p class="has-line-data" data-line-start="6" data-line-end="7">Our application structure from <a href="{{ url_for('main.hello_world') }}">chapter 1</a> was necessary to help us separate the application layout/presentation from the logic. Templates help us achieve this kind of separation. Flask templates are found in the <em>templates</em> subfolder within the application instance.</p>
+<h4 class="code-line" data-line-start=8 data-line-end=9 ><a id="Working_with_Templates_8"></a>Working with Templates</h4>
+<p class="has-line-data" data-line-start="10" data-line-end="11">Below, I am going to create a template for the home page of our blog.</p>
+<p class="code-title has-line-data" data-line-start="12" data-line-end="13">app/static/templates/home.html: Home Page</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+            Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\} <span style="color: #888888"># Remove the backslashes to get a pair \
+                of curly braces</span>
+        <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span>  
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>
+            Available Updates
+        <span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="29" data-line-end="30">This is a very standard HTML page. It basically contains <code>&lt;head&gt;</code> and <code>&lt;body&gt;</code> tags enclosed in <code>&lt;html&gt;</code>. The <code>&lt;head&gt;</code> has a dynamic content enclosed in <code>\{\{ ... \}\}</code>. The <code>title</code> is a placeholder variable which will be known at runtime.</p>
+<p class="has-line-data" data-line-start="31" data-line-end="32">With the simple presentation in place, we will now update our <code>home</code> view function.</p>
+<p class="code-title has-line-data" data-line-start="33" data-line-end="34">app/routes.py: Render the home template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> app
+    
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/home&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">home</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;home.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Home&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="44" data-line-end="45">Flask provides the <code>render_template</code> function which allows us to render (or to show) HTML templates. Above, we have returned the <code>home.html</code> template. Additionally, we have added a title to the function such that the placeholder value we saw previously will change to indicate ‘Home’. Jinja2 is responsible for substituting the placeholder value with the actual dynamic content.</p>
+<p class="has-line-data" data-line-start="46" data-line-end="47">We can make the title of our blog a bit more interesting. Jinja2 provides support for control statements to be used in templates. Let us update our home page to include a control statement.</p>
+<p class="code-title has-line-data" data-line-start="48" data-line-end="49">app/templates/home.html: Conditional statemenst in template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\} <span style="color: #888888"># Remove the backslashes to get \
+                    a pair of curly braces</span>
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Welcome to my Personal Blog
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}         
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>
+            Available Updates
+        <span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="69" data-line-end="70">The template is slightly  smarter now to know when a title has been provided or not. If there is a title in the view function, then it will use it within it’s head, otherwise, it will resort to displaying <em>Welcome to My Personal Blog</em>.</p>
+<h3 class="code-line" data-line-start=71 data-line-end=72 ><a id="Template_Inheritance_71"></a>Template Inheritance</h3>
+<p class="has-line-data" data-line-start="73" data-line-end="74">At this stage of the application, it is very easy to make edits in the templates. However, when the application becomes bigger and bigger, say, to have several templates, then making these edits on each template can become difficult and tiring. Thankfully, Flask allows for template inheritence where we can define a base layout for the entire blog. From this base layout, every other template that we will create will inherit the base styles and features. This makes is easy whenever we want to make changes to our growing application. The second reason to consider template inheritence is so that we can maintain a consistene theme or layout throughout our blog. We want that certain features be present in each template. For example, we would want to maintain our navigation bar and our footer everywhere.</p>
+<p class="has-line-data" data-line-start="75" data-line-end="76">For these reasons, we have our <code>base.html</code> file in the templates sub-folder. This file will contain our navigation bar and our footer. Notabely, we will move our <code>&lt;head&gt;</code> logic from the <code>home.html</code> template we implemented earlier to the <code>base.html</code> template.</p>
+<p class="code-title has-line-data" data-line-start="77" data-line-end="78">app/templates/base.html: Title, Navigation bar and Footer</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\} <span style="color: #888888"># Remove the backslashes to get a \
+                    pair of curly braces</span>
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Welcome to my Personal Blog
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}         
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            Gitau Harrison: <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;/home&quot;</span><span style="color: #333333">&gt;</span>Home<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+
+        {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="101" data-line-end="102">The <code>block</code> control statement is used to define where the derived templates can insert themselves. Blocks are to be given unique names which derived templates can reference to provide their own content.</p>
+<p class="code-title has-line-data" data-line-start="103" data-line-end="104">app/templates/home.html: Template inheritence</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Available Updates<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #888888"># Home Page Content Goes Here</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="115" data-line-end="116">The <code>extends</code> statement used above establishes the inheritence link between the two templates. When Jinja2 is asked to render the home page, it will know that it also needs to embed the <code>base.html</code> file.</p>
+<p class="has-line-data" data-line-start="117" data-line-end="118">Run your Flask application and you should be able to see your home page.</p>
+<p class="has-line-data" data-line-start="119" data-line-end="120"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = '/images/template_inheritence.png' ) }}" alt="Template Inheritence In Flask"></p>
+<p class="has-line-data" data-line-start="121" data-line-end="122">With that, you can go ahead and create the other templates needed to complete our personal blog. For your reference, you will need:</p>
+<ul>
+<li class="has-line-data" data-line-start="122" data-line-end="123">About Me template</li>
+<li class="has-line-data" data-line-start="123" data-line-end="124">Portfolio template</li>
+<li class="has-line-data" data-line-start="124" data-line-end="125">Hire Me template</li>
+<li class="has-line-data" data-line-start="125" data-line-end="127">My Interests template</li>
+</ul>
+<p class="has-line-data" data-line-start="127" data-line-end="128">If you would like to see the changes you make in the application without the need to exit and restart the flask server every other time, you will need to update your flask environment variables. Add FLASK_ENV and FLASK_DEBUG environment variables in your <code>.flaskenv</code> file.</p>
+<p class="code-title has-line-data" data-line-start="129" data-line-end="130">.flaskenv: More environment variables</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888">#...</span>
+FLASK_ENV<span style="color: #333333">=</span>development <span style="color: #888888"># you are working on a development server</span>
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span> <span style="color: #888888"># catching of live updates</span>
+</pre>
+
+
+            </div>
+        </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">Comments</h3>
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
