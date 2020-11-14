@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Flask Web Forms</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+<p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/12693f33c3fdfb35258ac9f3e76862fd558a25bc">here</a>.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">In the previous chapter, you learnt how to work with flask templates. In this chapter, I will show you how you can create flask web forms. Web forms are an integral part of a web application. We will use web forms to allow visitors of our blog to post comments on each article.</p>
+<h3 class="code-line" data-line-start=4 data-line-end=5 ><a id="Introduction_to_WTForms_4"></a>Introduction to WTForms</h3>
+<p class="has-line-data" data-line-start="6" data-line-end="7"><a href="https://wtforms.readthedocs.io/en/2.3.x/">WTForms</a> is a Python library that we will use to help render and validate forms. Flask has an extension called <a href="https://pythonhosted.org/Flask-WTF/">Flask-WTForms</a> which help integrate Flask and WTForms. This the the first flask extension that we will use, among many more. Let us go ahead and install it in our virtual environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>wtf
+</pre>
+<p class="has-line-data" data-line-start="11" data-line-end="12">Let us create a <code>config.py</code> file in the application’s root directory.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch config<span style="color: #333333">.</span>py
+</pre>
+<p class="has-line-data" data-line-start="17" data-line-end="18">This file will contain all the configurations we need for our applications. The very first configuration we will need is called the SECRET_KEY. This configuration variable will be used by Flask_WTform to help secure our forms against a nasty attack called <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF</a> (pronounced as ‘sea-surf’).</p>
+<p class="has-line-data" data-line-start="19" data-line-end="20">In our <code>config.py</code> file, let us update it to include this new security variable.</p>
+<p class="code-title has-line-data" data-line-start="21" data-line-end="22">config.py: Add configuration variable</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    SECRET_KEY<span style="color: #333333">=</span>os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;SECRET_KEY&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&#39;you-cannot-guess-this&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="29" data-line-end="30">As the name suggests, this should be secret, and should only be known to trusted maintainers of the application. The value of the SECRET_KEY is set to two, separated by the <code>or</code> operator. The first value is obtained from an envrionment variable called SECRET_KEY. If this value does not exist, then the application will use the value to the right of the <code>or</code> operator. This value can be anything. I have used <code>you-cannot-guess-this</code> for now.</p>
+<p class="has-line-data" data-line-start="31" data-line-end="32">At the moment, since we are developing the application, security concerns are low, hence the values used for the SECRET_KEY are sufficient. But upon deployment, I will set a hard-to-guess value for the SECRET_KEY to maximize on the application’s security.</p>
+<p class="has-line-data" data-line-start="33" data-line-end="34">With the config file in place, we need to register this configuration with the application. The application needs to read and apply it.</p>
+<p class="code-title has-line-data" data-line-start="35" data-line-end="36">app/__init__.py: Apply flask configuration</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+    <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p class="has-line-data" data-line-start="46" data-line-end="47">Notice that I am importing Flask (capital ‘F’) from flask (lower case ‘f’). flask (with a lower case is the package name from which we get Flask). Similarly, I am importing Config(with uppercase ‘C’) from config (lower case ‘c’). config (with a lower case) is the module name available in our root directory (the <code>config.py</code> file). Config (with uppercase ‘C’) is the class name used in our config module. This may seem a bit confusing at first, but over time it will start to make sense.</p>
+<h3 class="code-line" data-line-start=48 data-line-end=49 ><a id="Comments_Form_48"></a>Comments Form</h3>
+<p class="has-line-data" data-line-start="50" data-line-end="51">Flask_WTF uses classes to represent web forms. A form class basically defines the fields we will use in a form.</p>
+<p class="has-line-data" data-line-start="52" data-line-end="53">Let us create a <code>forms.py</code> file in our app subfolder that we will use to define our form.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>forms<span style="color: #333333">.</span>py
+</pre>
+<p class="code-title has-line-data" data-line-start="58" data-line-end="59">app/forms.py: Define the comments form</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_wtf</span> <span style="color: #008800; font-weight: bold">import</span> FlaskForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms</span> <span style="color: #008800; font-weight: bold">import</span> StringField, TextAreaField, SubmitField
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms.validators</span> <span style="color: #008800; font-weight: bold">import</span> DataRequired, Email
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">CommentForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators <span style="color: #333333">=</span> [DataRequired()])
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators <span style="color: #333333">=</span> [DataRequired(), Email()])
+    comment <span style="color: #333333">=</span> TextAreaField(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, validators <span style="color: #333333">=</span> [DataRequired()])
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Post&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="70" data-line-end="71">Flask extensions conventionally use the format <code>flask_&lt;extension-name&gt;</code> during imports. Flask_WTF uses <code>flask_wtf</code> from which we import <code>FlaskForm</code>. All the four fields in our form are imported directly from the Flask-WTF package.</p>
+<p class="has-line-data" data-line-start="72" data-line-end="73">The <code>validators</code> argument is optional. We have used <code>DataRequired</code> to ensure that whenever a user wishes to post a comment, then they have to fill in each field that contain that value.</p>
+<p class="has-line-data" data-line-start="74" data-line-end="75">One of the validators used is <code>Email</code>. What this does is it ensures that the data filled in the email field is a valid email address. Flask cannot validate this on its own. We need to install another extension to use this validation.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install email<span style="color: #333333">-</span>validator
+</pre>
+<h3 class="code-line" data-line-start=80 data-line-end=81 ><a id="Form_Template_80"></a>Form Template</h3>
+<p class="has-line-data" data-line-start="82" data-line-end="83">We have now defined how our form will be. The next step is to render this form in a comments template.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>comments<span style="color: #333333">.</span>html
+</pre>
+<p class="code-title has-line-data" data-line-start="87" data-line-end="88">app/templates/comments.html: Render Comments form</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>h3<span style="color: #333333">&gt;</span>Comments<span style="color: #333333">&lt;/</span>h3<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>form action<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;&quot;</span> method<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;POST&quot;</span> novalidate<span style="color: #333333">&gt;</span>
+    \{\{ form<span style="color: #333333">.</span>hidden_tag() \}\}
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>username(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">32</span>) \}\}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>email(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">32</span>) \}\}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>comment(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">64</span>) \}\}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>submit() \}\}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>form<span style="color: #333333">&gt;</span>
+<span style="color: #888888"># Remove the back slashes</span>
+</pre>
+<p class="has-line-data" data-line-start="110" data-line-end="111">I have intentionally not inherited the <code>base</code> template because I will include this <code>comments.html</code> file in other templates. To avoid double inheritence problems, it was necessary to not extend the base template. You will see how I will include this template in another template below.</p>
+<p class="has-line-data" data-line-start="112" data-line-end="113">The HTML <code>&lt;form&gt;</code> element is used to render web forms. I have used the <code>action</code> attribute to tell the browser which URL to submit the form when the submit button is clicked. When the value is set to empty, the URL to be used will be the one in the address bar, the one that rendered the form.</p>
+<p class="has-line-data" data-line-start="114" data-line-end="115">The HTTP method I want to use to submit the form data is <code>POST</code>. The default HTTP method to send the form is a <code>GET</code> request, but using the <code>POST</code> method provides for a better user experience such that the form data is submitted in the body of the form. When you use the <code>GET</code> method, the form fields are added to the URL, making it cluttered.</p>
+<p class="has-line-data" data-line-start="116" data-line-end="117">The <code>novalidate</code> tells the web browser not to apply any validation to the form fields.This now allows Flask to handle all form validation.</p>
+<p class="has-line-data" data-line-start="118" data-line-end="119"><code>form.hidden_tag()</code> is used to protect against CSRF attacks. It generates a hidden field that includes a token that enhance form protection. To protect a web form, all you have to do is to ensure you have the SECRET_KEY configured and the <code>form.hidden_tag()</code> used in the form. Flask_WTF does the rest for you.</p>
+<p class="has-line-data" data-line-start="120" data-line-end="121"><code>\{\{ form.&lt;field_name&gt;.label \}\}</code> is used to display the label of a field while <code>\{\{ form.&lt;field_name&gt;(size=32) \}\}</code> displays the actual field.</p>
+<h3 class="code-line" data-line-start=122 data-line-end=123 ><a id="View_Forms_122"></a>View Forms</h3>
+<p class="has-line-data" data-line-start="124" data-line-end="125">The last step to render our forms will be to create a view function that will be responsible for displaying the forms. We want our form to be included in each article. So, we will go ahead and create a dummy article and attach the form at the bottom of it. First, let us define our article view function.</p>
+<p class="has-line-data" data-line-start="126" data-line-end="127">app/routes.py: Article view function</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.forms</span> <span style="color: #008800; font-weight: bold">import</span> CommentForm
+    
+<span style="color: #888888">#...</span>
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/flask-webforms&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">flask_webforms</span>():
+    form <span style="color: #333333">=</span> CommentForm()
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;flask_webforms.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Flask Webforms&#39;</span>, form <span style="color: #333333">=</span> form)
+</pre>
+<p class="has-line-data" data-line-start="139" data-line-end="140">We do not have this dummy article template. We need to create it so that our view function can render it.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>flask_webforms<span style="color: #333333">.</span>html
+</pre>
+<p class="code-title has-line-data" data-line-start="145" data-line-end="146">app/templates/flask_webforms.html: First Article</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> simply dummy text of the printing <span style="color: #000000; font-weight: bold">and</span> typesetting industry<span style="color: #333333">.</span> 
+        Lorem Ipsum has been the industry<span style="background-color: #fff0f0">&#39;s standard dummy text ever since the 1500s,</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>h3<span style="color: #333333">&gt;</span>Working <span style="color: #008800; font-weight: bold">with</span> Flask Web Forms<span style="color: #333333">&lt;/</span>h3<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Contrary to popular belief, Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> simply random text<span style="color: #333333">.</span> 
+        It has roots <span style="color: #000000; font-weight: bold">in</span> a piece of classical Latin literature <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0000DD; font-weight: bold">45</span> BC, 
+        making it over <span style="color: #0000DD; font-weight: bold">2000</span> years old<span style="color: #333333">.</span> Richard McClintock, a Latin professor 
+        at Hampden<span style="color: #333333">-</span>Sydney College <span style="color: #000000; font-weight: bold">in</span> Virginia, looked up one of the more obscure 
+        Latin words, consectetur, <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">a</span> Lorem Ipsum passage, <span style="color: #000000; font-weight: bold">and</span> going through 
+        the cites of the word <span style="color: #000000; font-weight: bold">in</span> classical literature, discovered the undoubtable source<span style="color: #333333">.</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;&lt;</span>hr<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;comments.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="168" data-line-end="169">I have used the <code>{\% include '&lt;template.html&gt;' \%}</code> argument to incorporate the comments template in our article template.</p>
+<p class="has-line-data" data-line-start="170" data-line-end="171">With the article template in place, we can make it accessible to visitors of our blog by providing a link in the <code>base</code> template.</p>
+<p class="code-title has-line-data" data-line-start="172" data-line-end="173">app/templates/base.html: Link to Article</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\} <span style="color: #888888"># Remove the back slashes</span>
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Welcome to my Personal Blog
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}         
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            Gitau Harrison: <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;/home&quot;</span><span style="color: #333333">&gt;</span>Home<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>ul<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;/flask-webforms&quot;</span><span style="color: #333333">&gt;</span>Flask Webforms Link<span style="color: #333333">&lt;</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+
+        {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="202" data-line-end="203">At this point, you can run the application. You should be able to see the <em>Flask Webforms Link</em> on your <a href="http://localhost:5000/">localhost</a>. Click on the link to see your article with a comments form included at the bottom. Pretty cool, right?</p>
+<p class="has-line-data" data-line-start="204" data-line-end="205"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = '/images/article_form.png') }}" alt="Method Not Allowed"></p>
+<h3 class="code-line" data-line-start=206 data-line-end=207 ><a id="Receive_Form_Data_206"></a>Receive Form Data</h3>
+<p class="has-line-data" data-line-start="208" data-line-end="209">If you try to press the <em>Post</em> button, you will see:</p>
+<p class="has-line-data" data-line-start="210" data-line-end="211"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = '/images/method_not_allowed.png') }}" alt="Method Not Allowed"></p>
+<p class="has-line-data" data-line-start="212" data-line-end="213">This is because our previous view function does only half the job. We need to be able to process the data that has been submitted through our form.</p>
+<p class="code-title has-line-data" data-line-start="214" data-line-end="215">app/routes.py: Receive form data</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template, redirect, flash
+<span style="color: #888888">#...previous imports</span>
+    
+<span style="color: #888888">#...</span>
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/flask-webforms&#39;</span>, methods <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">flask_webforms</span>():
+    form <span style="color: #333333">=</span> CommentForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        flash(<span style="background-color: #fff0f0">&#39;{}</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\&#39;</span><span style="background-color: #fff0f0">s comment is now live!&#39;</span><span style="color: #333333">.</span>format(form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data))
+        <span style="color: #008800; font-weight: bold">return</span> redirect(<span style="background-color: #fff0f0">&#39;/flask_webforms&#39;</span>)
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;flask_webforms.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Flask Webforms&#39;</span>, form <span style="color: #333333">=</span> form)
+</pre>
+<p class="has-line-data" data-line-start="229" data-line-end="230">The first update is the <code>methods</code> argument in the decorator route. This tells Flask that the view function accepts both <code>GET</code> and <code>POST</code> requests, overiding the default, which is to accepts only <code>GET</code> requests. <code>POST</code> requests are primarily used to submit form data to the server, although <code>GET</code> requests can also do the same but it is not recommended.</p>
+<p class="has-line-data" data-line-start="231" data-line-end="232"><code>form.validate_on_submit()</code> method is used to handle form processing. When the browser sends a <code>GET</code> request, the method will return <code>False</code>, and therefore skip the form validation and render only the html page. If the browser returns a <code>POST</code> request due to a user clicking on the <em>Post</em> button, the method will gather the user’s username and run all validation. If everything is okay, then it will return <code>True</code>, flash a message on the screen and redirect the request to the <code>/flask_webforms</code> route.</p>
+<p class="has-line-data" data-line-start="233" data-line-end="234">Message flashing is quite popular. A lot of websites implement this. This feature provides the user with useful feedback about the status of their actions. Flashed messages, however, do not applear magically. The application’s templates need to render this messages.</p>
+<p class="has-line-data" data-line-start="235" data-line-end="236">We will add a flashed messages template and include it in our article page.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>flashed_messages<span style="color: #333333">.</span>html
+</pre>
+<p class="has-line-data" data-line-start="240" data-line-end="241">app/templates/flashed_messages.html: Flash messages</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">with</span> messages <span style="color: #333333">=</span> get_flashed_messages() <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> messages <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> message <span style="color: #000000; font-weight: bold">in</span> messages <span style="color: #333333">%</span>}
+            {{ message }}
+        {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endwith <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="250" data-line-end="251"><code>get_flashed_messages()</code> from flask is used to return all the registered flash messages. We assign all these messages to <code>messages</code> using the <code>with</code> construct. If messages exist, then we loop through all those registered messages and display each one of them that is available. These messages are requested once using <code>get_flashed_messages()</code>, then they are removed from the messages list. They will appear only once in the <code>flash</code> command.</p>
+<p class="has-line-data" data-line-start="252" data-line-end="253">We will add these flash messages to our article template right before the comments section, such that whenever a successful post is made, the flashed message will appear on top of the comments section only.</p>
+<p class="code-title has-line-data" data-line-start="254" data-line-end="255">app/templates/flask_webforms.html</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> simply dummy text of the printing <span style="color: #000000; font-weight: bold">and</span> typesetting industry<span style="color: #333333">.</span> 
+        Lorem Ipsum has been the industry<span style="background-color: #fff0f0">&#39;s standard dummy text ever since the 1500s,</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>h3<span style="color: #333333">&gt;</span>Working <span style="color: #008800; font-weight: bold">with</span> Flask Web Forms<span style="color: #333333">&lt;/</span>h3<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Contrary to popular belief, Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> simply random text<span style="color: #333333">.</span> 
+        It has roots <span style="color: #000000; font-weight: bold">in</span> a piece of classical Latin literature <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0000DD; font-weight: bold">45</span> BC, 
+        making it over <span style="color: #0000DD; font-weight: bold">2000</span> years old<span style="color: #333333">.</span> Richard McClintock, a Latin professor 
+        at Hampden<span style="color: #333333">-</span>Sydney College <span style="color: #000000; font-weight: bold">in</span> Virginia, looked up one of the more obscure 
+        Latin words, consectetur, <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">a</span> Lorem Ipsum passage, <span style="color: #000000; font-weight: bold">and</span> going through 
+        the cites of the word <span style="color: #000000; font-weight: bold">in</span> classical literature, discovered the undoubtable source<span style="color: #333333">.</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;&lt;</span>hr<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;flashed_messages.html&#39;</span> <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;comments.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="has-line-data" data-line-start="277" data-line-end="278">Test the application now, by submitting an empty form to see how <code>DataRequired</code> works.</p>
+<p class="has-line-data" data-line-start="279" data-line-end="280"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = '/images/flashed_message.png') }}" alt="Flashed Message"></p>
+<h3 class="code-line" data-line-start=281 data-line-end=282 ><a id="Improve_Field_Validation_281"></a>Improve Field Validation</h3>
+<p class="has-line-data" data-line-start="283" data-line-end="284">The way our form works to handle invalid user information submitted through our form is by rendering the form to the user again to put in better data. You will agree with me that there is no way a user of our current form will know whether the data they put in is valid or invalid. Our form has no way to show this. To improve the user experience at the form, we will add some field validation.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>h3<span style="color: #333333">&gt;</span>Comments<span style="color: #333333">&lt;/</span>h3<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>form action<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;&quot;</span> method<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;POST&quot;</span> novalidate<span style="color: #333333">&gt;</span>
+    \{\{ form<span style="color: #333333">.</span>hidden_tag() \}\}
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>username(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">32</span>) \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> error <span style="color: #000000; font-weight: bold">in</span> form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>errors <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>span style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;color: orangered;&quot;</span><span style="color: #333333">&gt;</span> {{ error }} <span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>email(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">32</span>) \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> error <span style="color: #000000; font-weight: bold">in</span> form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>errors <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>span style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;color: orangered;&quot;</span><span style="color: #333333">&gt;</span> {{ error }} <span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>label \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>comment(size<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">64</span>) \}\}<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> error <span style="color: #000000; font-weight: bold">in</span> form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>errors <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>span style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;color: orangered;&quot;</span><span style="color: #333333">&gt;</span> {{ error }} <span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        \{\{ form<span style="color: #333333">.</span>submit() \}\}
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>form<span style="color: #333333">&gt;</span>
+<span style="color: #888888"># Remove the back slashes</span>
+</pre>
+<p class="has-line-data" data-line-start="316" data-line-end="317">The only change I have made to the form is to include <code>{\% for error in form.&lt;fieldname&gt;.errors \%}&lt;span style=&quot;color: orangered;&quot;&gt; \{\{ error \}\} &lt;/span&gt;{\% endfor \%}</code>. This will render the error messages added by the validators  in orangered color. This time round, if you try to submit data with the field forms being empty, you will see an error message appear below each field in orangered color.</p>
+<p class="has-line-data" data-line-start="318" data-line-end="319"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = '/images/improved_form_validation.png') }}" alt="Improved Form Validation"></p>
+<h3 class="code-line" data-line-start=320 data-line-end=321 ><a id="Writing_Better_Links_320"></a>Writing Better Links</h3>
+<p class="has-line-data" data-line-start="322" data-line-end="323">One problem with writing actual links in our code is that if one day we decide to change a couple of things, chances are we will have to go and look for each link wherever it could be and change it. This is cumbersome and it becomes even more cumbersome and error-prone when the application becomes bigger.</p>
+<p class="has-line-data" data-line-start="324" data-line-end="325">To have better control over these links, we’d rather use their view function name instead of URLs. Flask provides a function called <code>url_for()</code> which maps URLs to view functions. For example, <code>url_for('about_me')</code> returns the <code>/about-me</code> URL. The argument in <code>url_for()</code> is the endpoint whose name is the view function name.</p>
+<p class="has-line-data" data-line-start="326" data-line-end="327">From now on, I will be using <code>url_for</code> every time I want to generate URLs. Meanwhile, we will change all URLs in our current application.</p>
+<p class="code-title has-line-data" data-line-start="328" data-line-end="329">app/templats/base.html: Use view function name when generating links</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\}
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+                Welcome to my Personal Blog
+            <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span> 
+        {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}         
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            Gitau Harrison: <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;home&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Home<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>ul<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;flask-webforms&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Flask Webforms Link<span style="color: #333333">&lt;</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+
+        {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+<span style="color: #888888"># Remove the back slash</span>
+</pre>
+<p class="code-title has-line-data" data-line-start="358" data-line-end="359">app/routes.py: Use view function names when generating links</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template, redirect, flash
+    <span style="color: #888888">#...previous imports</span>
+    
+<span style="color: #888888">#...</span>
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/flask-webforms&#39;</span>, methods <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">flask_webforms</span>():
+    form <span style="color: #333333">=</span> CommentForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        flash(<span style="background-color: #fff0f0">&#39;{}</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\&#39;</span><span style="background-color: #fff0f0">s comment is now live!&#39;</span><span style="color: #333333">.</span>format(form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data))
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;flask_webforms&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;flask_webforms.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Flask Webforms&#39;</span>, form <span style="color: #333333">=</span> form)
+</pre>
+
+
+
+
+            </div>
+        </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">Comments</h3>
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
