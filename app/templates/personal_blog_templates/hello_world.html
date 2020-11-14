@@ -5,7 +5,194 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                
+<p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/5b3f2b4c0348b933f4f07755457efc2fe3218c7a">here</a>.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">You will learn how to use Python and the Flask web Framework to build a personal blog. For this reason, you need to ensure you have Python installed.</p>
+<h3 class="code-line" data-line-start=4 data-line-end=5 ><a id="Install_Python_4"></a>Install Python</h3>
+<p class="has-line-data" data-line-start="6" data-line-end="7">How do you know whether you have Python installed in your computer? Open your terminal and type</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> which python3
+</pre>
+<p class="has-line-data" data-line-start="11" data-line-end="12">If you do not get any output displayed on your terminal, that means that you do not have Python installed in your system. You need to install it. Visit the <a href="https://www.python.org/downloads/">Python Official Site</a> and install the latest release according to your system. The three major systems include Windows, Linux and Mac OS X.</p>
+<p class="has-line-data" data-line-start="13" data-line-end="14">However, if you get something like:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> which python3
+
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">/</span>usr<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>python3
+</pre>     
+<p class="has-line-data" data-line-start="21" data-line-end="22">This means you have Python3 in your system. To make sure your Python installation is functional, run <code>python3</code> in your terminal as below:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> python3
+
+<span style="color: #888888"># Output</span>
+Python <span style="color: #6600EE; font-weight: bold">3.8</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">5</span> (default, Jul <span style="color: #0000DD; font-weight: bold">28</span> <span style="color: #0000DD; font-weight: bold">2020</span>, <span style="color: #0000DD; font-weight: bold">12</span>:<span style="color: #0000DD; font-weight: bold">59</span>:<span style="color: #0000DD; font-weight: bold">40</span>) 
+[GCC <span style="color: #6600EE; font-weight: bold">9.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>] on linux
+Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span style="background-color: #fff0f0">&quot;copyright&quot;</span>, <span style="background-color: #fff0f0">&quot;credits&quot;</span> <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&quot;license&quot;</span> <span style="color: #008800; font-weight: bold">for</span> more information<span style="color: #333333">.</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> 
+</pre>
+<p class="has-line-data" data-line-start="32" data-line-end="33">The Python interpreter is in an interactive prompt where you can type in Python statements. But for now, we won’t type in anything. We wanted to make sure that the interpreter is working well.</p>
+<p class="has-line-data" data-line-start="34" data-line-end="35">Type in <code>exit()</code> and press <code>Enter</code> to exit the interpreter. Alternatively, press <code>ctrl + Z</code>.</p>
+<p class="has-line-data" data-line-start="36" data-line-end="37">I recommend that you have Ubuntu as your main Operating System as you start this Web Development journey. Ubuntu, a distribution of Linux, is optimized for development and it takes a creator approach rather having you as a consumer of the Operating System. It comes preinstalled with Python. That means you do not need to install it again.</p>
+<blockquote>
+<p class="has-line-data" data-line-start="38" data-line-end="39">To install Ubuntu, you will need to create an Ubuntu Bootable USB stick. Learn how to create a bootable USB stick <a href="https://ubuntu.com/tutorials/create-a-usb-stick-on-windows#1-overview">on Windows</a> or <a href="https://ubuntu.com/tutorials/create-a-usb-stick-on-ubuntu#1-overview">on Ubuntu</a>. With this Bootable USB stick, you can:</p>
+<ul>
+<li class="has-line-data" data-line-start="39" data-line-end="40">Install or upgrade Ubuntu</li>
+<li class="has-line-data" data-line-start="40" data-line-end="41">Test out the Ubuntu desktop experience without touching your PC configuration</li>
+<li class="has-line-data" data-line-start="41" data-line-end="42">Boot into Ubuntu on a borrowed machine or from an internet cafe</li>
+<li class="has-line-data" data-line-start="42" data-line-end="43">Use tools installed by default on the USB stick to repair or fix a broken configuration</li>
+</ul>
+</blockquote>
+<h3 class="code-line" data-line-start=45 data-line-end=46 ><a id="Install_Flask_45"></a>Install Flask</h3>
+<p class="has-line-data" data-line-start="47" data-line-end="48">Python3 comes with a tool called <code>pip3</code> which does all the installation of Python packages. Python has an official and public Python Package repository called <a href="https://pypi.org/">PyPI</a>(Python Package Index) from where anybody can install Python packages.</p>
+<p class="has-line-data" data-line-start="49" data-line-end="50">To install a package on your machine, all you need to do is:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> pip3 install <span style="color: #333333">&lt;</span>package<span style="color: #333333">-</span>name<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="55" data-line-end="56">Note that if your Python interpreter is installed globally in your machine for all users, chances are your regular user account will not have the permission to make modifications to it. The only way to overcome this is to run the installation as an administrator using the <code>sudo</code> command. From there onwards, the installed packege will be available to everyone.</p>
+<p class="has-line-data" data-line-start="57" data-line-end="58">Whenever you are working on a project, chances are your project will have multiple versions. Think about this, you have just finished a project using <code>flask</code>'s version 0.1. By the time you want to start another project, another version of <code>flask</code>, say version 0.2 is released. Obviously, you will install version 0.2 of <code>flask</code> to keep your project current.</p>
+<p class="has-line-data" data-line-start="59" data-line-end="60">This may go on and on, not just with <code>flask</code> but maybe with another package. What you will end up with is your computer will have mutliple versions of packages. To keep your computer system clean, it is recommended that you create something called <em>virtual environments</em>. A virtual environment is a complete copy of the Python interpreter. The envrionments help isolate your development needs from that of your machine, and, therefore, helps to keep your system very clean and uncluttered.</p>
+<h3 class="code-line" data-line-start=61 data-line-end=62 ><a id="Getting_Started_61"></a>Getting Started</h3>
+<p class="has-line-data" data-line-start="63" data-line-end="64">Let us start by creating a directory that will host all our project files. I will call this directory <em>personal_blog</em>.</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> mkdir personal_blog <span style="color: #888888"># mkdir (short for make directory) command is used to create an empty directory</span>
+</pre>
+<p class="has-line-data" data-line-start="69" data-line-end="70">With an empty project directory created, we need to move into it:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> cd personal_blog <span style="color: #888888"># cd (change directory)command is used to change one directory from another</span>
+</pre>
+<h4 class="code-line" data-line-start=75 data-line-end=76 ><a id="Creating_a_Virtual_Environment_75"></a>Creating a Virtual Environment</h4>
+<p class="has-line-data" data-line-start="77" data-line-end="78">There are two ways you can use to create a virtual environment:</p>
+<ol>
+<li class="has-line-data" data-line-start="79" data-line-end="80">Manual way</li>
+<li class="has-line-data" data-line-start="80" data-line-end="82">Using virtualenv wrapper</li>
+</ol>
+<h5 class="code-line" data-line-start=82 data-line-end=83 ><a id="Manual_way_82"></a>Manual way</h5>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> python3 <span style="color: #333333">-</span>m venv venv
+</pre>
+<p class="has-line-data" data-line-start="88" data-line-end="89">Here, we are asking Python to run the <code>venv</code> package which creates virtual environment called <code>venv</code>.</p>
+<p class="has-line-data" data-line-start="90" data-line-end="91"><img src="/images/python_virtual_env.png" alt="Python Virtual Environment"></p>
+<p class="has-line-data" data-line-start="92" data-line-end="93">After the command completes, you are going to have a directory called <em>venv</em> where all your virtual environment will be saved.</p>
+<p class="has-line-data" data-line-start="94" data-line-end="95">With your virtual environment created, you have to tell your system that you want to use it. This is done by <em>activating</em> it. To activate your new virtual environment, run:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> source venv<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>activate
+
+<span style="color: #888888"># your terminal will change to something like:</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> <span style="color: #333333">...</span>
+</pre>
+<h5 class="code-line" data-line-start=103 data-line-end=104 ><a id="Using_Virtual_Environment_Wrappers_103"></a>Using Virtual Environment Wrappers</h5>
+<p class="has-line-data" data-line-start="105" data-line-end="106"><a href="https://virtualenvwrapper.readthedocs.io/en/latest/"><code>virtualenvwrapper</code></a> is a set of extensions to <code>virtualenv</code> tool. The extensions include wrappers for creating and deleting virtual environments and otherwise managing our development workflow, making it easier to work on more than one project at a time without introducing conflicts in their dependencies.</p>
+<p class="has-line-data" data-line-start="107" data-line-end="108">I personally prefer using <code>virtualenvwrapper</code> due to how easy it is to use. During creation of virtual environments, it not only creates it but it also activates it automatically.</p>
+<p class="has-line-data" data-line-start="109" data-line-end="110">For example, to create a virtual environment called <em>venv</em>, all I need to do is run the <code>mkvirtualenv</code> command to create and activate the new environment:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> mkvirtualenv venv
+
+<span style="color: #888888"># Seen on the terminal:</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> <span style="color: #333333">...</span>
+</pre>
+<p class="has-line-data" data-line-start="118" data-line-end="119">If you would like to use <code>virtualenvwrapper</code>, learn how to install and use it <a href="/virtualenvwrapper_setup.md">here</a>.</p>
+<h4 class="code-line" data-line-start=120 data-line-end=121 ><a id="Install_Flask_120"></a>Install Flask</h4>
+<p class="has-line-data" data-line-start="122" data-line-end="123">We will use <code>pip3</code> to install <code>flask</code>:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> pip3 install flask
+</pre>
+<p class="has-line-data" data-line-start="128" data-line-end="129">If you get a soft warning in your terminal informing you that there is an available update, do not panick. All you need to do is read the warning message carefully to understand what it is telling you. Typically, all warning and error messages provide suggestions on what you can do about them. In our case here, all we need to do is run:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> python <span style="color: #333333">-</span>m pip install <span style="color: #333333">--</span>upgrade pip
+</pre>
+<p class="has-line-data" data-line-start="133" data-line-end="134">This will make the update and get rid of the warning message. This warning message tends to only come when you install a new virtual environment.</p>
+<p class="has-line-data" data-line-start="135" data-line-end="136">Confirm that your virtual environment has <code>flask</code> installed by running your Python interpreter and importing it:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> python3 <span style="color: #888888"># run your Python interpreter</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">flask</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> 
+</pre>
+<p class="has-line-data" data-line-start="143" data-line-end="144">If you do not get any error, it means your flask extension was installed well. You can also check the version of <code>flask</code> installed. Run:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> flask <span style="color: #333333">--</span>version <span style="color: #888888"># ensure you exited the Python interpreter above by pressing ctrl + Z</span>
+</pre>
+<h4 class="code-line" data-line-start=149 data-line-end=150 ><a id="Hello_World_Application_149"></a>Hello World Application</h4>
+<p class="has-line-data" data-line-start="151" data-line-end="152">The <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask Documentation</a> is a great resource to help you get started with Python and Flask. Occassionally, you can refer to it to learn more.</p>
+<p class="has-line-data" data-line-start="153" data-line-end="154">Below, I am going to show you how you will create the structure of your project. Your application will exist as a package, with files and sub-folders in it.</p>
+<p class="has-line-data" data-line-start="155" data-line-end="156"><img src="/images/project_structure.png" alt="Project Structure"></p>
+<p class="has-line-data" data-line-start="157" data-line-end="158">Let us go ahead and create a sub directory called <em>app</em>:</p>
+<pre style="margin: 0; line-height: 125%">(venv) mkdir app <span style="color: #888888"># remember you are in the personal blog project folder already</span>
+</pre>
+<p class="has-line-data" data-line-start="162" data-line-end="163">This folder will contain:</p>
+<ul>
+<li class="has-line-data" data-line-start="163" data-line-end="164"><strong><em>init</em></strong>.py : it is used to define our app</li>
+<li class="has-line-data" data-line-start="164" data-line-end="165"><a href="http://routes.py">routes.py</a> : it will bear all the view functions and URLs that will help redirect us</li>
+<li class="has-line-data" data-line-start="165" data-line-end="166">templates sub-folder : all HTML files will be here</li>
+<li class="has-line-data" data-line-start="166" data-line-end="168">static subfolder : it will contain css and js subfolders that will host our styles files and our JS file</li>
+</ul>
+<p class="has-line-data" data-line-start="168" data-line-end="169">In Python, a sub-directory that includes a <strong><em>init</em></strong>.py file is considered a package, and can be imported. When you import a package, the <strong><em>init</em></strong>.py executes and defines what symbols the package exposes to the outside world.</p>
+<p class="has-line-data" data-line-start="170" data-line-end="171">Let us add all the other files and sub-folders:</p>
+<pre style="margin: 0; line-height: 125%">(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> cd app <span style="color: #888888"># move into the app folder</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> touch routes<span style="color: #333333">.</span>py <span style="color: #888888"># touch command creates an empty file</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> mkdir templates static <span style="color: #888888"># I have combined both templates in one command</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> touch templates<span style="color: #333333">/</span>base<span style="color: #333333">.</span>html templates<span style="color: #333333">/</span>index<span style="color: #333333">.</span>html <span style="color: #888888"># this creates two empty files in the templates sub-folder</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> mkdir static<span style="color: #333333">/</span>css static<span style="color: #333333">/</span>images static<span style="color: #333333">/</span>js <span style="color: #888888"># three sub-folders are created inside the static folder</span>
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> touch static<span style="color: #333333">/</span>css<span style="color: #333333">/</span>styles<span style="color: #333333">.</span>css
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> touch static<span style="color: #333333">/</span>js<span style="color: #333333">/</span>main<span style="color: #333333">.</span>js
+</pre>
+<p class="has-line-data" data-line-start="182" data-line-end="183">Everything is now created and well set up. Over the other articles, we will use the images, css and js sub-folders, but for now, we will not need them. So, we will disregard them for a while.</p>
+<p class="has-line-data" data-line-start="184" data-line-end="185">The <strong><em>init</em></strong>.py file is going to contain the following code:</p>
+<p class="has-line-data" data-line-start="186" data-line-end="187"><strong>init</strong>.py: Register your flask extension in the application</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+
+app <span style="color: #333333">=</span> Flask(__name__)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p class="has-line-data" data-line-start="196" data-line-end="197">Above, we have created the application object as an instance of the flask package. The <code>__name__</code> variable passed to the Flask class is a Python pre-defined variable, which is set to the name of the module in which it is used. Flask uses the location of this module as a starting point when it needs to load certain resources such as template files.</p>
+<p class="has-line-data" data-line-start="198" data-line-end="199">The application also imports the <code>routes</code> module from the application instance.</p>
+<p class="has-line-data" data-line-start="200" data-line-end="201">It might be confusing at first that there are two instance of <code>app</code>. The <code>app</code> variable in <code>app = Flask(__name__)</code>  is an instance of the class <code>Flask</code> which makes it a member of the <code>app</code> package. The second <code>app</code> is the <em>app</em> directory name, from which we are importing the <code>routes</code> module.</p>
+<p class="has-line-data" data-line-start="202" data-line-end="203">Another strange thing is that <code>routes</code> is imported at the bottom rather than at the top of the script. The bottom import is a walkaround to <em>circular imports</em>, a common problem with Flask applications.</p>
+<p class="has-line-data" data-line-start="204" data-line-end="205">As earlier mentioned, routes are the different URLs that the application implements. In Flask, Python functions are responsible for handling application routes, hence their name <em>view functions</em>. These view functions can be mapped to one or more URLS.</p>
+<p class="has-line-data" data-line-start="206" data-line-end="207">We will create our very first view function as seen below:</p>
+<p class="has-line-data" data-line-start="208" data-line-end="209"><a href="http://routes.py">routes.py</a>: Home page route</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/home&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">home</span>():
+    <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;Hello, world!&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="217" data-line-end="218">The name of our view function is called <code>home</code>. It handles two URLs which are associated with it, that is <code>/</code> and <code>/home</code>. To implement these two URLs, we have utilized the <code>@app.route</code> decorator. A decorator is primarily used to associate a URL with a given view function. What this means is that when a web browser requests for either of the two URLs, Flask is going to invoke the <code>home</code> function and pass the return value back to the browser as a response.</p>
+<p class="has-line-data" data-line-start="219" data-line-end="220">We then need to import the application instance in the top-level file <code>personal_blog.py</code> as seen below:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<p class="has-line-data" data-line-start="224" data-line-end="225">Again, we see that two <code>app</code>s have been used together. The statement above simply imports the <code>app</code> variable from the <code>app</code> package (this is the folder that contains <strong><em>init</em></strong>.py)</p>
+<p class="has-line-data" data-line-start="226" data-line-end="227">And that is pretty much it! You have just completed making your first Flask web application! To see it work, run these commands in your terminal:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #FF0000; background-color: #FFAAAA">$</span> export FLASK_APP<span style="color: #333333">=</span>personal_blog<span style="color: #333333">.</span>py <span style="color: #888888"># our application is registered here</span>
+<span style="color: #FF0000; background-color: #FFAAAA">$</span> flask run <span style="color: #888888"># this runs the flask server</span>
+</pre>
+<p class="has-line-data" data-line-start="232" data-line-end="233">You will see a URL generated in the terminal. The <code>flask run</code> command indicates that the server is running on IP address 127.0.0.1, which is always the address of your computer. A simpler name to this IP Address is <em>localhost</em>.</p>
+<p class="has-line-data" data-line-start="234" data-line-end="235">Applications deployed to production web servers typically listen on port 443, or sometimes port 80 if they do not implement encryption, whose access (to these ports) require administration rights. But in development, Flask uses the freely available port 5000.</p>
+<p class="has-line-data" data-line-start="236" data-line-end="237">Now, open your browser and enter the following URL in the address bar:</p>
+<pre style="margin: 0; line-height: 125%">http:<span style="color: #333333">//</span>localhost:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span>
+
+<span style="color: #888888"># Alternatively, you can use:</span>
+<span style="color: #888888"># http://localhost:5000/home</span>
+</pre>
+<p class="has-line-data" data-line-start="243" data-line-end="244"><img src="/images/hello_world.png" alt="Hello World"></p>
+<p class="has-line-data" data-line-start="245" data-line-end="246">You can see from above that the browser requesting for one of the two URLs which are mapped to the <code>home</code> view function, returning the string <code>Hello, world!</code>. If you try to enter any other URL, you will get an error since these are the only two URLs recognized by the application.</p>
+<p class="has-line-data" data-line-start="247" data-line-end="248">You have probably noted that the moment you ran <code>flask run</code> command, you saw:</p>
+<pre style="margin: 0; line-height: 125%">(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> flask run
+
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">*</span> Tip: There are <span style="color: #333333">.</span>env <span style="color: #000000; font-weight: bold">or</span> <span style="color: #333333">.</span>flaskenv files present<span style="color: #333333">.</span> Do <span style="background-color: #fff0f0">&quot;pip install python-dotenv&quot;</span> to use them<span style="color: #333333">.</span>
+<span style="color: #333333">*</span> Serving Flask app <span style="background-color: #fff0f0">&quot;personal_blog.py&quot;</span>
+<span style="color: #333333">*</span> Environment: production
+    WARNING: This <span style="color: #000000; font-weight: bold">is</span> a development server<span style="color: #333333">.</span> Do <span style="color: #000000; font-weight: bold">not</span> use it <span style="color: #000000; font-weight: bold">in</span> a production deployment<span style="color: #333333">.</span>
+    Use a production WSGI server instead<span style="color: #333333">.</span>
+<span style="color: #333333">*</span> Debug mode: off
+<span style="color: #333333">*</span> Running on http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span> (Press CTRL<span style="color: #333333">+</span>C to quit)
+</pre>
+<p class="has-line-data" data-line-start="262" data-line-end="263">Every time you need to see your application, you will need to run both of these commands:</p>
+<pre style="margin: 0; line-height: 125%">(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> export FLASK_APP<span style="color: #333333">=</span>personal_blog<span style="color: #333333">.</span>py
+(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> flask run
+</pre>
+<p class="has-line-data" data-line-start="268" data-line-end="269">FLASK_APP is an environment variable. If you close your terminal, and re-open it, your Flask application will not remember any environment variable. That means you will have to type in the above commands all over again. And this is not the only environment variable you will use. So, imagine how many you need to remember in order to run your application.</p>
+<p class="has-line-data" data-line-start="270" data-line-end="271">Thankfully, there is a way around it. Starting from Flask 1.0, we are able to register all our environment variables in a file and have it automatically imported when we run <code>flask run</code> command. To use this option, as you can see from the output above, we need to install the <code>python-dotenv</code> package:</p>
+<pre style="margin: 0; line-height: 125%">(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> pip3 install python<span style="color: #333333">-</span>dotenv
+</pre>
+<p class="has-line-data" data-line-start="276" data-line-end="277">Create a <code>.flaskenv</code> file in the application’s root directory (personal_blog folder) to hold all our environment variables:</p>
+<pre style="margin: 0; line-height: 125%">(venv) <span style="color: #FF0000; background-color: #FFAAAA">$</span> touch <span style="color: #333333">.</span>flaskenv
+</pre>
+<p class="has-line-data" data-line-start="282" data-line-end="283">.flaskenv: Add all environement variables</p>
+<pre style="margin: 0; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>practice_blog<span style="color: #333333">.</span>py
+</pre>
+<p class="has-line-data" data-line-start="286" data-line-end="287">Now, whenever you start your application, all you need to do is run <code>flask run</code> command. Doing this is optional. If you will prefer to set environment variables manually, it is perfectly okay. Just remember them.</p>
+
+
             </div>
         </div>
     </div><hr>
