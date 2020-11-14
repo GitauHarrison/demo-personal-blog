@@ -50,6 +50,9 @@ h3{
 h4{
     padding-top: 15px;
 }
+.chapters{
+    list-style-type: none;
+  }
 /* MEDIA QUIERIES */
 @media all and (max-width: 992px) {
     body::after {

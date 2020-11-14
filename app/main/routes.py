@@ -178,7 +178,7 @@ def personal_blog():
         if posts.has_prev else None
     return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/hello-world', methods = ['GET', 'POST'])
+@bp.route('/chapter-1/hello-world', methods = ['GET', 'POST'])
 def hello_world():
     form = CommentForm()
     if form.validate_on_submit():
