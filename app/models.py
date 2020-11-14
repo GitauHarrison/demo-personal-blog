@@ -17,7 +17,7 @@ class User(db.Model):
     docker_installation_posts = db.relationship('installDocker', backref='author', lazy='dynamic')
     heroku_deployment = db.relationship('HerokuDeployment', backref='author', lazy='dynamic')
     web_development = db.relationship('WebDevelopmentPost', backref='author', lazy='dynamic')
-    hello_world = db.relationship('HelloWorldPost', backref='author', lazy='dynamic')    
+  
     flask_templates = db.relationship('FlaskTemplatesPost', backref='author', lazy='dynamic')    
     flask_web_forms = db.relationship('FlaskWebFormsPost', backref='author', lazy='dynamic')
     
