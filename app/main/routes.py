@@ -1,8 +1,7 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
-from app.models import User
-#, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-#    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
+from app.models import User, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
+    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
 
 import stripe
 from guess_language import guess_language
