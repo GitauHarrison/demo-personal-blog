@@ -1,7 +1,8 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
-from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, \
-    HerokuDeployment, WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
+# from app.models import User
+# , PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, \
+#     HerokuDeployment, WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -26,29 +27,29 @@ def hire_me():
 def my_interests():
     return render_template('my_interests.html', title = 'My Interests')
 
-@bp.route('/web-development', methods = ['GET', 'POST'])
-def web_development():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = WebDevelopmentPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.web_development', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = WebDevelopmentPost.query.order_by(WebDevelopmentPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.web_development', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.web_development', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('web_development.html', title = 'Web Development', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/web-development', methods = ['GET', 'POST'])
+# def web_development():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = WebDevelopmentPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.web_development', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = WebDevelopmentPost.query.order_by(WebDevelopmentPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.web_development', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.web_development', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('web_development.html', title = 'Web Development', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @bp.before_request
 def before_request():
@@ -154,267 +155,267 @@ def translate_text():
 # END OF LIVE TRANSLATION
 
 # START OF TUTORIALS
-@bp.route('/personal-blog', methods = ['GET', 'POST'])
-def personal_blog():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = PersonalBlogPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.personal_blog', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = PersonalBlogPost.query.order_by(PersonalBlogPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.personal_blog', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.personal_blog', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/personal-blog', methods = ['GET', 'POST'])
+# def personal_blog():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = PersonalBlogPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.personal_blog', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = PersonalBlogPost.query.order_by(PersonalBlogPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.personal_blog', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.personal_blog', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/chapter-1/hello-world', methods = ['GET', 'POST'])
-def hello_world():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = HelloWorldPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.hello_world', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = HelloWorldPost.query.order_by(HelloWorldPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.hello_world', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.hello_world', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('personal_blog_templates/hello_world.html', title = 'Hello World', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/chapter-1/hello-world', methods = ['GET', 'POST'])
+# def hello_world():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = HelloWorldPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.hello_world', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = HelloWorldPost.query.order_by(HelloWorldPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.hello_world', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.hello_world', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('personal_blog_templates/hello_world.html', title = 'Hello World', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/chapter-2/flask-templates', methods = ['GET', 'POST'])
-def flask_templates():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = FlaskTemplatesPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.flask_templates', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = FlaskTemplatesPost.query.order_by(FlaskTemplatesPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.flask_templates', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.flask_templates', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/chapter-2/flask-templates', methods = ['GET', 'POST'])
+# def flask_templates():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = FlaskTemplatesPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.flask_templates', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = FlaskTemplatesPost.query.order_by(FlaskTemplatesPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.flask_templates', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.flask_templates', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/chapter-3/flask-web-forms', methods = ['GET', 'POST'])
-def flask_web_forms():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = FlaskWebFormsPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.flask_web_forms', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = FlaskWebFormsPost.query.order_by(FlaskWebFormsPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.flask_web_forms', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.flask_web_forms', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('personal_blog_templates/flask_web_forms.html', title = 'Flask Web Forms', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/chapter-3/flask-web-forms', methods = ['GET', 'POST'])
+# def flask_web_forms():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = FlaskWebFormsPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.flask_web_forms', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = FlaskWebFormsPost.query.order_by(FlaskWebFormsPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.flask_web_forms', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.flask_web_forms', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('personal_blog_templates/flask_web_forms.html', title = 'Flask Web Forms', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/virtualenvwrapper', methods = ['GET', 'POST'])
-def virtualenvwrapper():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = VirtualenvwrapperPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.virtualenvwrapper', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = VirtualenvwrapperPost.query.order_by(VirtualenvwrapperPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/virtualenvwrapper', methods = ['GET', 'POST'])
+# def virtualenvwrapper():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = VirtualenvwrapperPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.virtualenvwrapper', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = VirtualenvwrapperPost.query.order_by(VirtualenvwrapperPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/vagrant', methods = ['GET', 'POST'])
-def vagrant():
-    form = CommentForm()
-    if form.validate_on_submit():
-       language = guess_language(form.comment.data)
-       if language == 'UNKNOWN' or len(language) > 5:
-           language = ''
-       user = User(username = form.username.data, email = form.email.data)        
-       post = VagrantPost(body = form.comment.data, author = user, language = language)
-       db.session.add(user)
-       db.session.add(post)
-       db.session.commit()
-       flash('Your comment is now live!')  
-       return redirect(url_for('main.vagrant', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = VagrantPost.query.order_by(VagrantPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.vagrant', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.vagrant', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/vagrant', methods = ['GET', 'POST'])
+# def vagrant():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#        language = guess_language(form.comment.data)
+#        if language == 'UNKNOWN' or len(language) > 5:
+#            language = ''
+#        user = User(username = form.username.data, email = form.email.data)        
+#        post = VagrantPost(body = form.comment.data, author = user, language = language)
+#        db.session.add(user)
+#        db.session.add(post)
+#        db.session.commit()
+#        flash('Your comment is now live!')  
+#        return redirect(url_for('main.vagrant', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = VagrantPost.query.order_by(VagrantPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.vagrant', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.vagrant', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/reCaptcha', methods = ['GET', 'POST'])
-def reCaptcha():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = reCaptchaPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.reCaptcha', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.reCaptcha', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.reCaptcha', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/reCaptcha', methods = ['GET', 'POST'])
+# def reCaptcha():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = reCaptchaPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.reCaptcha', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = reCaptchaPost.query.order_by(reCaptchaPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.reCaptcha', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.reCaptcha', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/rich-text', methods = ['GET', 'POST'])
-def rich_text():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = richTextPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.rich_text', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = richTextPost.query.order_by(richTextPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.rich_text', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.rich_text', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/rich-text', methods = ['GET', 'POST'])
+# def rich_text():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = richTextPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.rich_text', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = richTextPost.query.order_by(richTextPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.rich_text', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.rich_text', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/ngrok', methods = ['GET', 'POST'])
-def ngrok():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = ngrokPost(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.ngrok', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = ngrokPost.query.order_by(ngrokPost.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.ngrok', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.ngrok', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/ngrok', methods = ['GET', 'POST'])
+# def ngrok():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = ngrokPost(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.ngrok', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = ngrokPost.query.order_by(ngrokPost.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.ngrok', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.ngrok', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/install-docker', methods = ['GET', 'POST'])
-def install_docker():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = installDocker(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.install_docker', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.install_docker', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/install-docker', methods = ['GET', 'POST'])
+# def install_docker():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = installDocker(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.install_docker', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.install_docker', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/heroku-deployment', methods = ['GET', 'POST'])
-def heroku_deployment():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username = form.username.data, email = form.email.data)        
-        post = HerokuDeployment(body = form.comment.data, author = user, language = language)
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your comment is now live!')  
-        return redirect(url_for('main.heroku_deployment', _anchor='comments'))  
-    page = request.args.get('page', type = int)
-    posts = HerokuDeployment.query.order_by(HerokuDeployment.timestamp.asc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
-    )
-    next_url = url_for('main.heroku_deployment', _anchor='comments', page = posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.heroku_deployment', _anchor='comments', page = posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('heroku_deployment.html', title = 'Heroku Deployment', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+# @bp.route('/heroku-deployment', methods = ['GET', 'POST'])
+# def heroku_deployment():
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         language = guess_language(form.comment.data)
+#         if language == 'UNKNOWN' or len(language) > 5:
+#             language = ''
+#         user = User(username = form.username.data, email = form.email.data)        
+#         post = HerokuDeployment(body = form.comment.data, author = user, language = language)
+#         db.session.add(user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your comment is now live!')  
+#         return redirect(url_for('main.heroku_deployment', _anchor='comments'))  
+#     page = request.args.get('page', type = int)
+#     posts = HerokuDeployment.query.order_by(HerokuDeployment.timestamp.asc()).paginate(
+#         page, current_app.config['POSTS_PER_PAGE'], False
+#     )
+#     next_url = url_for('main.heroku_deployment', _anchor='comments', page = posts.next_num) \
+#         if posts.has_next else None
+#     prev_url = url_for('main.heroku_deployment', _anchor='comments', page = posts.prev_num) \
+#         if posts.has_prev else None
+#     return render_template('heroku_deployment.html', title = 'Heroku Deployment', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 # END OF TUTORIALS

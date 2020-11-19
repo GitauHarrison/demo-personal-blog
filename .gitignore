@@ -105,16 +105,16 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
-.venv
-env/
+#.env
+#.venv
+#env/
 venv/
 ENV/
 env.bak/
 venv.bak/
 
 # Flask Environment Variables
-.flaskenv
+#.flaskenv
 
 # Spyder project settings
 .spyderproject
@@ -148,10 +148,10 @@ cython_debug/
 .project
 .pydevproject
 
-app.db
+#app.db
 
 # configuration
-config.py
+#config.py
 
 # Flask migrations
-migrations/
+#migrations/

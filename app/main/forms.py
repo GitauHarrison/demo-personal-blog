@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email, ValidationError
-from app.models import User
+# from app.models import User
 from flask_pagedown.fields import PageDownField
 
 class CommentForm(FlaskForm):
