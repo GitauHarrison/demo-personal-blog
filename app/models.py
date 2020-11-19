@@ -14,6 +14,7 @@ class User(db.Model):
     reCaptcha_posts = db.relationship('reCaptchaPost', backref='author', lazy='dynamic')
     rich_text_posts = db.relationship('richTextPost', backref='author', lazy='dynamic')
     ngrok_posts = db.relationship('ngrokPost', backref='author', lazy='dynamic')
+    docker_installation_posts = db.relationship('installDocker', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return 'User <>'.format(self.username)
@@ -153,3 +154,25 @@ class ngrokPost(db.Model):
         return 'Post <>'.format(self.body)
         
 db.event.listen(ngrokPost.body, 'set', ngrokPost.on_changed_body)
+
+class installDocker(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
+    def __repr__(self):
+        return 'Post <>'.format(self.body)
+        
+db.event.listen(installDocker.body, 'set', installDocker.on_changed_body)

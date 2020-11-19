@@ -1,7 +1,6 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
-from app.models import User, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost
-# installDocker, \
+from app.models import User, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker
 #     HerokuDeployment, WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
 import stripe
 from guess_language import guess_language
@@ -371,29 +370,29 @@ def ngrok():
         if posts.has_prev else None
     return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-# @bp.route('/install-docker', methods = ['GET', 'POST'])
-# def install_docker():
-#     form = CommentForm()
-#     if form.validate_on_submit():
-#         language = guess_language(form.comment.data)
-#         if language == 'UNKNOWN' or len(language) > 5:
-#             language = ''
-#         user = User(username = form.username.data, email = form.email.data)        
-#         post = installDocker(body = form.comment.data, author = user, language = language)
-#         db.session.add(user)
-#         db.session.add(post)
-#         db.session.commit()
-#         flash('Your comment is now live!')  
-#         return redirect(url_for('main.install_docker', _anchor='comments'))  
-#     page = request.args.get('page', type = int)
-#     posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
-#         page, current_app.config['POSTS_PER_PAGE'], False
-#     )
-#     next_url = url_for('main.install_docker', _anchor='comments', page = posts.next_num) \
-#         if posts.has_next else None
-#     prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
-#         if posts.has_prev else None
-#     return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+@bp.route('/install-docker', methods = ['GET', 'POST'])
+def install_docker():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username = form.username.data, email = form.email.data)        
+        post = installDocker(body = form.comment.data, author = user, language = language)
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')  
+        return redirect(url_for('main.install_docker', _anchor='comments'))  
+    page = request.args.get('page', type = int)
+    posts = installDocker.query.order_by(installDocker.timestamp.asc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.install_docker', _anchor='comments', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 # @bp.route('/heroku-deployment', methods = ['GET', 'POST'])
 # def heroku_deployment():
