@@ -1,8 +1,8 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
 from app.models import User, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-    WebDevelopmentPost, HelloWorldPost
-#     , HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost
+    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost
+# FlaskWebFormsPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -203,29 +203,29 @@ def hello_world():
         if posts.has_prev else None
     return render_template('personal_blog_templates/hello_world.html', title = 'Hello World', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-# @bp.route('/chapter-2/flask-templates', methods = ['GET', 'POST'])
-# def flask_templates():
-#     form = CommentForm()
-#     if form.validate_on_submit():
-#         language = guess_language(form.comment.data)
-#         if language == 'UNKNOWN' or len(language) > 5:
-#             language = ''
-#         user = User(username = form.username.data, email = form.email.data)        
-#         post = FlaskTemplatesPost(body = form.comment.data, author = user, language = language)
-#         db.session.add(user)
-#         db.session.add(post)
-#         db.session.commit()
-#         flash('Your comment is now live!')  
-#         return redirect(url_for('main.flask_templates', _anchor='comments'))  
-#     page = request.args.get('page', type = int)
-#     posts = FlaskTemplatesPost.query.order_by(FlaskTemplatesPost.timestamp.asc()).paginate(
-#         page, current_app.config['POSTS_PER_PAGE'], False
-#     )
-#     next_url = url_for('main.flask_templates', _anchor='comments', page = posts.next_num) \
-#         if posts.has_next else None
-#     prev_url = url_for('main.flask_templates', _anchor='comments', page = posts.prev_num) \
-#         if posts.has_prev else None
-#     return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+@bp.route('/chapter-2/flask-templates', methods = ['GET', 'POST'])
+def flask_templates():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username = form.username.data, email = form.email.data)        
+        post = FlaskTemplatesPost(body = form.comment.data, author = user, language = language)
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')  
+        return redirect(url_for('main.flask_templates', _anchor='comments'))  
+    page = request.args.get('page', type = int)
+    posts = FlaskTemplatesPost.query.order_by(FlaskTemplatesPost.timestamp.asc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.flask_templates', _anchor='comments', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.flask_templates', _anchor='comments', page = posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 # @bp.route('/chapter-3/flask-web-forms', methods = ['GET', 'POST'])
 # def flask_web_forms():
