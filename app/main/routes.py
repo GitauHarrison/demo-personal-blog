@@ -75,7 +75,7 @@ def get_publishable_key():
 
 @bp.route("/create-checkout-session")
 def create_checkout_session():
-    domain_url = "http://localhost:5000/"
+    domain_url = "https://gitauharrison-blog.herokuapp.com/"
     stripe.api_key = stripe_keys["secret_key"]
 
     try:
@@ -347,7 +347,7 @@ def rich_text():
         if posts.has_prev else None
     return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-# @bp.route('/ngrok', methods = ['GET', 'POST'])
+@bp.route('/ngrok', methods = ['GET', 'POST'])
 def ngrok():
     form = CommentForm()
     if form.validate_on_submit():
