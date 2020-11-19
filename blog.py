@@ -1,14 +1,14 @@
 from app import create_app, db
-from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost
+from app.models import User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost
 
 app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
      return {'db': db, 'User': User, 'PersonalBlogPost': PersonalBlogPost, 'VagrantPost': VagrantPost, 'VirtualenvwrapperPost': VirtualenvwrapperPost, \
-          'reCaptchaPost': reCaptchaPost, 'richTextPost': richTextPost
+          'reCaptchaPost': reCaptchaPost, 'richTextPost': richTextPost, 'ngrokPost': ngrokPost
     }
 
-#          , 'ngrokPost': ngrokPost, 'installDocker': installDocker, \
+#          , 'installDocker': installDocker, \
 #               'HerokuDeployment': HerokuDeployment, 'WebDevelopmentPost': WebDevelopmentPost, 'HelloWorldPost': HelloWorldPost, \
 #                    'FlaskTemplatesPost': FlaskTemplatesPost, 'FlaskWebFormsPost': FlaskWebFormsPost
