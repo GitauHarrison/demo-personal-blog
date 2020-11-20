@@ -16,9 +16,9 @@
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 <p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/12693f33c3fdfb35258ac9f3e76862fd558a25bc">here</a>.</p>
-<p class="has-line-data" data-line-start="2" data-line-end="3">In the previous chapter, you learnt how to work with flask templates. In this chapter, I will show you how you can create flask web forms. Web forms are an integral part of a web application. We will use web forms to allow visitors of our blog to post comments on each article.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">In <a href="{ url_for('flask_templates') }">chapter 2</a>, you learnt how to work with flask templates. In this chapter, I will show you how you can create flask web forms. Web forms are an integral part of a web application. We will use web forms to allow visitors of our blog to post comments on each article.</p>
 <h3 class="code-line" data-line-start=4 data-line-end=5 ><a id="Introduction_to_WTForms_4"></a>Introduction to WTForms</h3>
-<p class="has-line-data" data-line-start="6" data-line-end="7"><a href="https://wtforms.readthedocs.io/en/2.3.x/">WTForms</a> is a Python library that we will use to help render and validate forms. Flask has an extension called <a href="https://pythonhosted.org/Flask-WTF/">Flask-WTForms</a> which help integrate Flask and WTForms. This the the first flask extension that we will use, among many more. Let us go ahead and install it in our virtual environment:</p>
+<p class="has-line-data" data-line-start="6" data-line-end="7"><a href="https://wtforms.readthedocs.io/en/2.3.x/">WTForms</a> is a Python library that we will use to help render and validate forms. Flask has an extension called <a href="https://pythonhosted.org/Flask-WTF/">Flask-WTForms</a> which help integrate Flask and WTForms. This is the first flask extension that we will use, among many more. Let us go ahead and install it in our virtual environment:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>wtf
 </pre>
 <p class="has-line-data" data-line-start="11" data-line-end="12">Let us create a <code>config.py</code> file in the application’s root directory.</p>
@@ -37,14 +37,14 @@
 <p class="has-line-data" data-line-start="33" data-line-end="34">With the config file in place, we need to register this configuration with the application. The application needs to read and apply it.</p>
 <p class="code-title has-line-data" data-line-start="35" data-line-end="36">app/__init__.py: Apply flask configuration</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
-    <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
     
 app <span style="color: #333333">=</span> Flask(__name__)
 app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
     
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
 </pre>
-<p class="has-line-data" data-line-start="46" data-line-end="47">Notice that I am importing Flask (capital ‘F’) from flask (lower case ‘f’). flask (with a lower case is the package name from which we get Flask). Similarly, I am importing Config(with uppercase ‘C’) from config (lower case ‘c’). config (with a lower case) is the module name available in our root directory (the <code>config.py</code> file). Config (with uppercase ‘C’) is the class name used in our config module. This may seem a bit confusing at first, but over time it will start to make sense.</p>
+<p class="has-line-data" data-line-start="46" data-line-end="47">Notice that I am importing Flask (capital ‘F’) from flask (lower case ‘f’). flask (with a lower case) is the package name from which we get Flask. Similarly, I am importing Config(with uppercase ‘C’) from config (lower case ‘c’). config (with a lower case) is the module name available in our root directory (the <code>config.py</code> file). Config (with uppercase ‘C’) is the class name used in our config module. This may seem a bit confusing at first, but over time it will start to make sense.</p>
 <h3 class="code-line" data-line-start=48 data-line-end=49 ><a id="Comments_Form_48"></a>Comments Form</h3>
 <p class="has-line-data" data-line-start="50" data-line-end="51">Flask_WTF uses classes to represent web forms. A form class basically defines the fields we will use in a form.</p>
 <p class="has-line-data" data-line-start="52" data-line-end="53">Let us create a <code>forms.py</code> file in our app subfolder that we will use to define our form.</p>
