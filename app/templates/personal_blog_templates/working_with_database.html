@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Hello, World!</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+<p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/3cc77ab6b79c45ad0bb61b1e1abb20990e9aacbe">here</a>.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">In this chapter, I will introduce the important concept of databases. We will use a database to store all user information that we get through our forms. Data in a database is typically persistent and can be retrieved when needed. What I mean is when we close our application and reopen it, we do not have to worry that any user data will be lost. Our database safely stores these data.</p>
+<h3 class="code-line" data-line-start=4 data-line-end=5 ><a id="Flask_Databases_4"></a>Flask Databases</h3>
+<p class="has-line-data" data-line-start="6" data-line-end="7">Flask supports a number of databases with no particular preference. It is intentionally unopinionated, which provides us with the freedom to choose whichever database we want to use. Despite the support for databases, Flask does not support them natively.</p>
+<p class="has-line-data" data-line-start="8" data-line-end="9">Databases can be grouped into two broad categries: <em>relational databases</em> and those that are not relational. Those that do not follow any relational model are called <em>NoSQL</em>, meaning they do not implement the relational query language <a href="https://en.wikipedia.org/wiki/SQL">SQL</a>. For applications that have structured data such as a list of users, or blog comments, relational databases are much better and more recommended. NoSQL databases do much better with data that is less structured. For this reason, we will learn how to implement relational databases for our blog.</p>
+<p class="has-line-data" data-line-start="10" data-line-end="11">We will use <a href="https://www.sqlalchemy.org/">SQLAlchemy</a>. It is an <a href="https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping">Object Relational Mapper</a> where classes can be mapped to a database to develop a clean database schema. SQLAlchemy supports a number of popular database engines, including MySQL, PostrgeSQL and SLQLite. This is super convinient because as you develop your application, you can use a serverless database such as SQLite and upon production, you can easily switch to a more robust database engine such as Postgre without having to change your application.</p>
+<p class="has-line-data" data-line-start="12" data-line-end="13">Flask has a couple of extensions that will help us work with databases. In this chapter, I will introduce two to you:</p>
+<ul>
+<li class="has-line-data" data-line-start="14" data-line-end="15"><a href="https://flask-sqlalchemy.palletsprojects.com/en/2.x/">Flask-SQLAlchemy</a></li>
+<li class="has-line-data" data-line-start="15" data-line-end="17"><a href="https://flask-migrate.readthedocs.io/en/latest/">Flask-migrate</a></li>
+</ul>
+<p class="has-line-data" data-line-start="17" data-line-end="18">When a database is created, it will not stay empty. Data will fill it. This means that our database will need to be constantly updated with new changes. So, with a relational database, when this change takes place, we need to migrate our current schema to the new modified structure.</p>
+<p class="has-line-data" data-line-start="19" data-line-end="20">Let us go ahead and install both extensions in our virtual environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>sqlalchemy
+<span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>migrate
+</pre>
+<p class="has-line-data" data-line-start="26" data-line-end="27">SQLite does not need to run any server. Additionally, since our application is still very small, this database engine is most appropriate for our use. For these two reasons, we will use it in our application. Let us add some configurations to our <code>config</code> module:</p>
+<p class="code-title has-line-data" data-line-start="44" data-line-end="45">config.py: Add configurations</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+basedir <span style="color: #333333">=</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>abspath(os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>dirname(__file__))
+        
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    <span style="color: #888888">#...</span>
+    SQLALCHEMY_DATABASE_URI<span style="color: #333333">=</span>os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;DATABASE_URL&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> \
+        <span style="background-color: #fff0f0">&#39;sqlite:///&#39;</span> <span style="color: #333333">+</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>join(basedir, <span style="background-color: #fff0f0">&#39;app.db&#39;</span>)
+    SQLALCHEMY_TRACK_MODIFICATIONS<span style="color: #333333">=</span><span style="color: #007020">False</span>
+</pre>
+<p class="has-line-data" data-line-start="38" data-line-end="39">We are taking the location of the database from the environment variable DATABASE_URL. If this does not exist, we provide a safety net where we configure our database called <code>app.db</code> in the main directory of our application, which is stored in the variable <code>basedir</code>.</p>
+<p class="has-line-data" data-line-start="40" data-line-end="41">Every time a change is made to the database, we will get a signal to our application. We do not need this signals every time we make changes to our database for now. So, I have set <code>SQLALCHEMY_TRACK_MODIFICATIONS</code> to <code>False</code>.</p>
+<p class="has-line-data" data-line-start="42" data-line-end="43">As done in the previous chapter, we need to register our database in the application instance.</p>
+<p class="code-title has-line-data" data-line-start="44" data-line-end="45">app/__init__.py: Initialize database in application</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_sqlalchemy</span> <span style="color: #008800; font-weight: bold">import</span> SQLAlchemy
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_migrate</span> <span style="color: #008800; font-weight: bold">import</span> Migrate
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+db <span style="color: #333333">=</span> SQLAlchemy(app)
+migrate <span style="color: #333333">=</span> Migrate(app, db)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes, models
+</pre>
+<p class="has-line-data" data-line-start="59" data-line-end="60">We have imported our <code>models</code> into the application instance.</p>
+<h3 class="code-line" data-line-start=61 data-line-end=62 ><a id="Database_Models_61"></a>Database Models</h3>
+<p class="has-line-data" data-line-start="63" data-line-end="64">Our database models will be defined by classes. The ORM layer will do the translation of our classes into rows in the proper database tables. Let us think about the data we want to add to our database. Our form collects a visitor’s <em>username</em>, <em>email</em> and <em>comment</em>. These are the data we are interested in, and they are the ones that will go into our database. The table below will show how the <em>User</em> table in our database will look like.</p>
+<p class="has-line-data" data-line-start="65" data-line-end="66"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/db_schema.png') }}" alt="Database Schema"></p>
+<p class="has-line-data" data-line-start="67" data-line-end="68"><code>id</code> field is usually in all models. It is used as a primary key. This field is automatically assigned a unique <code>id</code> value.</p>
+<p class="has-line-data" data-line-start="69" data-line-end="70">The <code>Username</code> and <code>Email</code> fields are defined by us. The type of data they hold is <code>string</code> (or <code>VARCHAR</code> in database jargon). Each of this field has a maximum length defined to optimize on storage space.</p>
+<p class="has-line-data" data-line-start="71" data-line-end="72">Now that we know what we want for our user table, we can code it in our <code>models</code> module. Since we do not have it yet, let us go ahead and create an empty <code>models.py</code> file in our <em>app</em> directory:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>models<span style="color: #333333">.</span>py
+</pre>
+<p class="has-line-data" data-line-start="77" data-line-end="78">Add this code below to define our models structure/schema:</p>
+<p class="code-title has-line-data" data-line-start="79" data-line-end="80">app/models.py: User schema</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    username <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    email <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">120</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>)    
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;User &lt;&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username)
+</pre>
+<p class="has-line-data" data-line-start="93" data-line-end="94">Our <code>User</code> class inherites a base class called <code>db.Model</code> which is used for all models in Flask-SQLAlchemy. The class defines several fields as variables of the instance <code>db.Column</code>.</p>
+<p class="has-line-data" data-line-start="95" data-line-end="96">The <code>__repr__</code> method tells Python how to print the objects of the <code>User</code> class. This method is especially useful when we want to debug our code. I will show you  how to use the method in the Python interpreter.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User
+<span style="color: #333333">&gt;&gt;&gt;</span> u <span style="color: #333333">=</span> User (username <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Gitau&#39;</span>, email <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;harry@email.com&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>username
+    
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;Gitau&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="106" data-line-end="107">Our output is as a result of <code>__repr__</code> returning it as we had defied it above.</p>
+<h3 class="code-line" data-line-start=108 data-line-end=109 ><a id="Create_Migration_Repository_108"></a>Create Migration Repository</h3>
+<p class="has-line-data" data-line-start="110" data-line-end="111"><a href="https://alembic.sqlalchemy.org/en/latest/">Alembic</a>, a database migration framework for SQLAlchemy, maintains a <em>migrations repository</em> which stores all migrations scripts. Every time our database changes, a migration script needs to be generated to indicate the new schema/structure of the modified model. These new scripts are stored in the aforementioned <em>migrations repository</em>. Now that we have our database structure set up, we need to create a migrations script which defines our new User model. <code>Flask-migrate</code> helps us to manage all our migrations needs. Run the command below to generate a <em>migrations</em> repository:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db init
+
+<span style="color: #888888"># Output</span>
+Creating directory <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutori
+    al_project<span style="color: #333333">/</span>migrations <span style="color: #333333">...</span>  done
+    Creating directory <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutori
+    al_project<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>versions <span style="color: #333333">...</span>  done
+    Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_proje
+    ct<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>alembic<span style="color: #333333">.</span>ini <span style="color: #333333">...</span>  done
+    Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_proje
+    ct<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>script<span style="color: #333333">.</span>py<span style="color: #333333">.</span>mako <span style="color: #333333">...</span>  done
+    Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_proje
+    ct<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>env<span style="color: #333333">.</span>py <span style="color: #333333">...</span>  done
+    Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_proje
+    ct<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>README <span style="color: #333333">...</span>  done
+    Please edit configuration<span style="color: #333333">/</span>connection<span style="color: #333333">/</span>logging settings <span style="color: #000000; font-weight: bold">in</span> <span style="background-color: #fff0f0">&#39;/home/gitau/software_development/pyt</span>
+    hon<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_project<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>alembic<span style="color: #333333">.</span>ini<span style="background-color: #fff0f0">&#39; before proceeding.</span>
+</pre>
+<p class="has-line-data" data-line-start="132" data-line-end="133">Check your roote folder. The <em>migrations</em> subfolder that has been created should be part of your application from now henceforth, and you need to commit it to version control.</p>
+<h3 class="code-line" data-line-start=134 data-line-end=135 ><a id="First_Migration_134"></a>First Migration</h3>
+<p class="has-line-data" data-line-start="136" data-line-end="137">Let us now add a <code>User</code> table that maps the User model in our database. We will use <code>flask db migrate</code> command to automatically generate our table:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;user table&#39;</span>
+
+<span style="color: #888888"># Output</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Context impl SQLiteImpl<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Will assume non<span style="color: #333333">-</span>transactional DDL<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added table <span style="background-color: #fff0f0">&#39;user&#39;</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added index <span style="background-color: #fff0f0">&#39;ix_user_comment&#39;</span> on <span style="background-color: #fff0f0">&#39;[&#39;</span>comment<span style="background-color: #fff0f0">&#39;]&#39;</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added index <span style="background-color: #fff0f0">&#39;ix_user_email&#39;</span> on <span style="background-color: #fff0f0">&#39;[&#39;</span>email<span style="background-color: #fff0f0">&#39;]&#39;</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added index <span style="background-color: #fff0f0">&#39;ix_user_username&#39;</span> on <span style="background-color: #fff0f0">&#39;[&#39;</span>username<span style="background-color: #fff0f0">&#39;]&#39;</span>
+    Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_project<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>versions<span style="color: #333333">/</span>e3ed68135fa1_user_table<span style="color: #333333">.</span>py <span style="color: #333333">...</span>  done
+</pre>
+<p class="has-line-data" data-line-start="151" data-line-end="152">You will notice two things:</p>
+<ul>
+<li class="has-line-data" data-line-start="152" data-line-end="153"><code>app.db</code> has been created</li>
+<li class="has-line-data" data-line-start="153" data-line-end="155"><code>...user_table.py</code> file in <em>migrations/versions</em> has also been created</li>
+</ul>
+<p class="has-line-data" data-line-start="155" data-line-end="156">The migration script <code>...user_table.py</code> is also part of your project and will need to be added to version control. <code>flask db migrate</code> does not make any changes to our database, it only generates a migrations script. What we need to do to apply these changes to our database is to run the <code>flask db upgrade</code> command:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db upgrade
+
+<span style="color: #888888"># Output</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Context impl SQLiteImpl<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Will assume non<span style="color: #333333">-</span>transactional DDL<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Running upgrade  <span style="color: #333333">-&gt;</span> e3ed68135fa1, user table
+</pre>
+<p class="has-line-data" data-line-start="165" data-line-end="166">SQLite thankfully creates a database for us (the <code>app.db</code> file). However, when working with PostgreSQL or MySQL, you will need to create the database in the database server before running <code>upgrade</code>.</p>
+<p class="has-line-data" data-line-start="167" data-line-end="168">There is also the <code>flask db downgrade</code> command which returns the state of our database to a previous version. We won’t use it at this point because we have no need to downgrade anything.</p>
+<p class="has-line-data" data-line-start="169" data-line-end="170">In summary, to create and apply changes to your database, all you need to do is run these commands in order:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db init <span style="color: #888888"># Only run once</span>
+<span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;&lt;your new changes&gt;&#39;</span>
+<span style="color: #ff8080; ">$</span> flask db upgrade
+</pre>
+<h3 class="code-line" data-line-start=177 data-line-end=178 ><a id="Relationships_in_Database_177"></a>Relationships in Database</h3>
+<p class="has-line-data" data-line-start="179" data-line-end="180">Visitors to our blog will do one thing: post comments. The way we have set up our database allows for one visitor to post multiple comments using the same credentials. I mean, a user called ‘Harry’ can use the username ‘Harry’ and his email ‘harry@email.com’ to post several comments without running the risk of our application rejecting his subsequent comments.</p>
+<p class="has-line-data" data-line-start="181" data-line-end="182">Here is the thing: in our database scenario, each comment belongs to a specific user. In other words a visitor of our blog who decides to leave a comment owns his or her comment. The most efficient way we can record this scenario is by visualizing two records.</p>
+<p class="has-line-data" data-line-start="183" data-line-end="184"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/db_relationship.png') }}" alt="Database Relationship"></p>
+<p class="has-line-data" data-line-start="185" data-line-end="186">Our <em>Comment Table</em> has <code>id</code>, <code>comment</code>, <code>timestamp</code> and <code>user_id</code> fields. The <code>user_id</code> field links the <em>Comment Table</em> with the <em>User Table</em>. It is referred to as a <code>foreign key</code>. This key is of type <em>integer</em>.</p>
+<p class="has-line-data" data-line-start="187" data-line-end="188">The kind of relationship we are seeing here is a <em>one-to-many relationship</em>. One user can write many comments. We need to show this relationship in our <code>models.py</code> file:</p>
+<p class="code-title has-line-data" data-line-start="356" data-line-end="357">models.py: Models relationships</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> datetime
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    username <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    email <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">120</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>)    
+    comments <span style="color: #333333">=</span> db<span style="color: #333333">.</span>relationship(<span style="background-color: #fff0f0">&#39;Comment&#39;</span>, backref<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;author&#39;</span>, lazy<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;dynamic&#39;</span>)
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;User &lt;&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username)
+    
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Comment</span>(db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    body <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(), index<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    timestamp <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>DateTime, index<span style="color: #333333">=</span><span style="color: #007020">True</span>, default<span style="color: #333333">=</span>datetime<span style="color: #333333">.</span>utcnow)
+    user_id <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, db<span style="color: #333333">.</span>ForeignKey(<span style="background-color: #fff0f0">&#39;user.id&#39;</span>))
+    
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;Body &lt;&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>body)
+</pre>
+<p class="has-line-data" data-line-start="212" data-line-end="213">The <code>timestamp</code> field will be responsible for showing what time a user made a comment. It uses the standard <code>utcnow</code> time convention. It is recommended that <code>utc</code> be used rather than the local time zone. Imagine visitors of your blog reside in different timezones. To manage each visitor’s timezone in our application can be a hectic task. Instead, we resort to using the conventional <code>utc</code> which is a standard time conversion.</p>
+<p class="has-line-data" data-line-start="214" data-line-end="215">When you pass a function as a default, SQLAlchemy will set the field to the value of calling that function. Note that I am using <code>utcnow</code> and not the result of calling <code>utcnow()</code>. I have excluded the <code>()</code> because using it will give us the result of that function. We do not want to pass the result of the function to our field, rather we let SQLAlchemy do that using the argument <code>default</code>.</p>
+<p class="has-line-data" data-line-start="216" data-line-end="217">As earlier mentioned, <code>user_id</code> in <em>Comment Table</em> is a foreign key. To declare it in our <em>Comment</em> model, we use <code>db.ForeignKey()</code>, for which SQLAlchemy user lowercase letters. If the word is multi_worded, then the snake_case convention is applied.</p>
+<p class="has-line-data" data-line-start="218" data-line-end="219">We referrence the <em>Comment Table</em> in the <em>User Table</em> using <code>db.relationship</code>. The first argument in <code>db.relationship</code> is the name of the table we are referrencing, in this case it is the <em>Comment Table</em>. It is used conventionally on the ‘one’ side of the relationship to referrence the ‘many’ side of the same relationship.</p>
+<p class="has-line-data" data-line-start="220" data-line-end="221">The <code>backref</code> will return the user as the <code>author</code> of the comment while <code>lazy</code> defines how the database query for the relationship will be issued.</p>
+<p class="has-line-data" data-line-start="222" data-line-end="223">With these updates to our database, we need to apply them by running these commands:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;comment table&#39;</span>
+<span style="color: #ff8080; ">$</span> flask db upgrage
+</pre>
+<h3 class="code-line" data-line-start=228 data-line-end=229 ><a id="Testing_228"></a>Testing</h3>
+<p class="has-line-data" data-line-start="230" data-line-end="231">At this point, we have our database set up. But it is empty. To test it’s functionality, we need to input some data. In this section, you will learn how to work with the database itself and the data it contains. Make sure you are in the interactive shell.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3
+
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User, Comment
+</pre>
+<p class="has-line-data" data-line-start="239" data-line-end="240">Let us add a user:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> u <span style="color: #333333">=</span>  User(username <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;gitau&#39;</span>, email <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;gitau@email.com&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(u)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+</pre>
+<p class="has-line-data" data-line-start="247" data-line-end="248">Changes to a database are done is sessions. You can accululate multiple changes and then commit them to the database once. If at one point you get an error, you can do <code>db.session.rollback()</code> to abort the session and remove any changes from the  session.</p>
+<p class="has-line-data" data-line-start="249" data-line-end="250">Let us add another user:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> u <span style="color: #333333">=</span>  User(username <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;harry&#39;</span>, email <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;harry@email.com&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(u)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+</pre>
+<p class="has-line-data" data-line-start="257" data-line-end="258">We can query our database to return all users:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> users <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>all()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">for</span> u <span style="color: #000000; font-weight: bold">in</span> users:
+<span style="color: #333333">...</span>    <span style="color: #008800; font-weight: bold">print</span>(u<span style="color: #333333">.</span>id, u<span style="color: #333333">.</span>username)
+    
+<span style="color: #888888"># Output</span>
+<span style="color: #0000DD; font-weight: bold">1</span> gitau
+<span style="color: #0000DD; font-weight: bold">2</span> harry
+</pre>
+<p class="has-line-data" data-line-start="269" data-line-end="270">If you know the <code>id</code> of a user, you can retrieve that use as seen below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> u <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>get(<span style="color: #0000DD; font-weight: bold">1</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>username
+    
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;gitau&#39;</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>email
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;gitau@email.com&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="282" data-line-end="283">Adding a user comment is similar to adding the user:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> c <span style="color: #333333">=</span> Comment(body <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;this is a comment&#39;</span>, author <span style="color: #333333">=</span> u)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(c)
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+</pre>
+<p class="has-line-data" data-line-start="290" data-line-end="291">To retrieve all comments, all we need to do is to query the <em>Comment Table</em>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> comments <span style="color: #333333">=</span> Comment<span style="color: #333333">.</span>query<span style="color: #333333">.</span>all()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">for</span> c <span style="color: #000000; font-weight: bold">in</span> comments:
+<span style="color: #333333">...</span>     <span style="color: #008800; font-weight: bold">print</span>(c<span style="color: #333333">.</span>id, c<span style="color: #333333">.</span>author<span style="color: #333333">.</span>username, c<span style="color: #333333">.</span>body)
+<span style="color: #333333">...</span>
+<span style="color: #888888"># Output</span>
+<span style="color: #0000DD; font-weight: bold">1</span> gitau this <span style="color: #000000; font-weight: bold">is</span> a comment
+</pre>
+<p class="has-line-data" data-line-start="300" data-line-end="301">That was fun! Let us restore our database to a clean slate now:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> users <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>all()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">for</span> u <span style="color: #000000; font-weight: bold">in</span> users:
+<span style="color: #333333">...</span>     db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>delete(u)
+<span style="color: #333333">...</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> comments <span style="color: #333333">=</span> Comment<span style="color: #333333">.</span>query<span style="color: #333333">.</span>all()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">for</span> c <span style="color: #000000; font-weight: bold">in</span> comments:
+<span style="color: #333333">...</span>     db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>delete(c)
+<span style="color: #333333">...</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+</pre>
+<h3 class="code-line" data-line-start=314 data-line-end=315 ><a id="What_is_Shell_Context_314"></a>What is Shell Context</h3>
+<p class="has-line-data" data-line-start="316" data-line-end="317">Above, we have had to manually run our imports. Probably you have noticed that whenever you exit the Python interpreter, you had to start all over again. Your session is discarded and not remembered every time you restart your shell prompt. This is what we had to do all the time:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3
+
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User, Comment
+</pre>
+<p class="has-line-data" data-line-start="325" data-line-end="326">Thankfully, flask offers a solution to this rather tedious task. The <code>flask</code> command offers <code>flask shell</code> whose sole purpose is to start a Python interpreter in the context of our application. Check this out:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3
+
+<span style="color: #333333">&gt;&gt;&gt;</span> app
+    
+<span style="color: #888888"># Output</span>
+Traceback (most recent call last):
+    File <span style="background-color: #fff0f0">&quot;&lt;stdin&gt;&quot;</span>, line <span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #000000; font-weight: bold">in</span> <span style="color: #333333">&lt;</span>module<span style="color: #333333">&gt;</span>
+<span style="color: #ff8080; font-weight: bold">NameError</span>: name <span style="background-color: #fff0f0">&#39;app&#39;</span> <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> defined
+<span style="color: #333333">&gt;&gt;&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="338" data-line-end="339">This is when we start our Python interpreter the normal way. We get an error that app is not defined in our application. Is that true? Definitely no!</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask shell
+
+Python <span style="color: #6600EE; font-weight: bold">3.8</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">5</span> (default, Jul <span style="color: #0000DD; font-weight: bold">28</span> <span style="color: #0000DD; font-weight: bold">2020</span>, <span style="color: #0000DD; font-weight: bold">12</span>:<span style="color: #0000DD; font-weight: bold">59</span>:<span style="color: #0000DD; font-weight: bold">40</span>) 
+[GCC <span style="color: #6600EE; font-weight: bold">9.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>] on linux
+App: app [development]
+Instance: <span style="color: #333333">/</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_project<span style="color: #333333">/</span>instance
+<span style="color: #333333">&gt;&gt;&gt;</span>app
+    
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">&lt;</span>Flask <span style="background-color: #fff0f0">&#39;app&#39;</span><span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="352" data-line-end="353">This time round, the interpreter pre-imports <em>app</em> in the context of our application. We have no error. Very  convinient, right?</p>
+<p class="has-line-data" data-line-start="354" data-line-end="355">We can configure the shell context to preimport whatever else we want. This is done in the <code>personal_blog.py</code> file.</p>
+<p class="code-title has-line-data" data-line-start="356" data-line-end="357">personal_blog.py: Configure the shell context</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app, db
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User, Comment
+    
+<span style="color: #555555; font-weight: bold">@app.shell_context_processor</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">make_shell_context</span>():
+    <span style="color: #008800; font-weight: bold">return</span> { <span style="background-color: #fff0f0">&#39;db&#39;</span>: db, <span style="background-color: #fff0f0">&#39;User&#39;</span>: User, <span style="background-color: #fff0f0">&#39;Comment&#39;</span>: Comment }
+</pre>
+<p class="has-line-data" data-line-start="366" data-line-end="367">Now, when <code>flask shell</code> command runs, it will invoke the <code>make_shell_context()</code> function and register the items returned by it in the shell session. Let us test <code>flask shell</code> out:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask shell
+
+<span style="color: #333333">&gt;&gt;&gt;</span> db
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">&lt;</span>SQLAlchemy engine<span style="color: #333333">=</span>sqlite:<span style="color: #333333">////</span>home<span style="color: #333333">/</span>gitau<span style="color: #333333">/</span>software_development<span style="color: #333333">/</span>python<span style="color: #333333">/</span>flask_tutorial<span style="color: #333333">/</span>personal_blog_tutorial_project<span style="color: #333333">/</span>app<span style="color: #333333">.</span>db<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> Comment
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">&lt;</span><span style="color: #008800; font-weight: bold">class</span> <span style="color: #ff8080; ">&#39;</span><span style="color: #BB0066; font-weight: bold">app</span><span style="color: #333333">.</span>models<span style="color: #333333">.</span>Comment<span style="background-color: #fff0f0">&#39;&gt;</span>
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">Comments</h3>
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
