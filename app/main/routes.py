@@ -41,6 +41,16 @@ def posting_articles():
         if posts.has_prev else None      
     return render_template('posting_articles.html', title = 'Posting Articles', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
+@bp.route('/delete-articles')
+def delete_articles():
+    posts = ArticlesList.query.all()
+    for post in posts:
+        db.session.delete(post)
+        db.session.commit()
+        flash('Deletion successful: One home page post was successfully deleted')
+        return redirect(url_for('main.posting_articles'))             
+    return render_template('posting_articles.html', title = 'Posting Articles')
+
 @bp.route('/about-me')
 def about_me():
     return render_template('about_me.html', title = 'About Me')
