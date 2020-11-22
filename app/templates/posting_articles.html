@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <h1>Posting Articles</h1>
+
+        <!-- Flash Message -->
+        {% include '_flash_message.html' %}
+
+        <!-- Actual Article -->
+        {% for post in posts %}
+            {% include '_actual_articles.html' %}
+        {% endfor %}
+
+        <!-- Comment Form -->
+        <div class="row posting-articles">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}

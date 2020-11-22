@@ -4,6 +4,13 @@ from hashlib import md5
 from markdown import markdown
 import bleach
 
+class ArticlesList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(140), index=True)
+    date_posted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    content = db.Column(db.String(), index=True)
+    link = db.Column(db.String(140), index=True)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True)

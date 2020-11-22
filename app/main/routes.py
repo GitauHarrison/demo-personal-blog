@@ -1,18 +1,45 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
-from app.models import User, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
+from app.models import User, ArticlesList, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
     WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
 from flask_babel import get_locale
-from app.main.forms import CommentForm
+from app.main.forms import CommentForm, ArticlesForm
 from app.main import bp
 
 @bp.route('/')
 @bp.route('/home')
-def home():
-    return render_template('home.html', title = 'Home')
+def home():  
+    page = request.args.get('page', type = int)
+    posts = ArticlesList.query.order_by(ArticlesList.date_posted.desc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.home', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.home', page = posts.prev_num) \
+        if posts.has_prev else None  
+    return render_template('home.html', title = 'Home',posts = posts.items, next_url = next_url, prev_url = prev_url)
+
+@bp.route('/posting-articles', methods = ['GET', 'POST'])
+def posting_articles():
+    form = ArticlesForm()
+    if form.validate_on_submit():
+        post = ArticlesList(title = form.title.data, content = form.content.data, link = form.link.data)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')
+        return redirect(url_for('main.home'))    
+    page = request.args.get('page', type = int)
+    posts = ArticlesList.query.order_by(ArticlesList.date_posted.desc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.home', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.home', page = posts.prev_num) \
+        if posts.has_prev else None      
+    return render_template('posting_articles.html', title = 'Posting Articles', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @bp.route('/about-me')
 def about_me():

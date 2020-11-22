@@ -10,6 +10,7 @@ import os
 import stripe
 from flask_babel import Babel
 from flask_pagedown import PageDown
+from flask_ckeditor import CKEditor
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,6 +20,7 @@ migrate = Migrate()
 moment = Moment()
 babel = Babel()
 pagedown = PageDown()
+ckeditor = CKEditor()
 
 stripe_keys = {
         "secret_key": app.config["STRIPE_SECRET_KEY"],
@@ -36,6 +38,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     babel.init_app(app)
     pagedown.init_app(app)
+    ckeditor.init_app(app)
 
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)

@@ -5,6 +5,7 @@
     {{ super() }}
     <link rel="icon" type="image/png" href="{{ url_for('static', filename = 'images/hash-48.png') }}">
     {{ pagedown.html_head() }}
+    {{ ckeditor.load() }}
 {% endblock %}
 
 <!-- Title Section -->
@@ -42,6 +43,7 @@
                 <li><a href=" {{ url_for('main.portfolio') }} ">Portfolio</a></li>          
                 <li><a href=" {{ url_for('main.hire_me') }} ">Hire Me</a></li>            
                 <li><a href=" {{ url_for('main.my_interests') }} ">My Interests</a></li> 
+                <li><a href=" {{ url_for('main.posting_articles') }} ">Post Article</a></li> 
             </ul>                       
         </div>
     </div>
@@ -141,5 +143,5 @@
         //END OF HOVER EVENT
     </script>
     <!-- reCaptcha Integration -->
-    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+    <script src='https://www.google.com/recaptcha/api.js' async defer></script>   
 {% endblock %}
