@@ -27,7 +27,8 @@ class User(db.Model):
     hello_world = db.relationship('HelloWorldPost', backref='author', lazy='dynamic')
     flask_templates = db.relationship('FlaskTemplatesPost', backref='author', lazy='dynamic')  
     flask_web_forms = db.relationship('FlaskWebFormsPost', backref='author', lazy='dynamic')    
-    flask_databases = db.relationship('FlaskDatabasePost', backref='author', lazy='dynamic')
+    flask_databases = db.relationship('FlaskDatabasePost', backref='author', lazy='dynamic')    
+    user_comments = db.relationship('UserCommentsPost', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return 'User <>'.format(self.username)
@@ -321,3 +322,25 @@ class FlaskDatabasePost(db.Model):
         return 'Post <>'.format(self.body)
         
 db.event.listen(FlaskDatabasePost.body, 'set', FlaskDatabasePost.on_changed_body)
+
+class UserCommentsPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
+    def __repr__(self):
+        return 'Post <>'.format(self.body)
+        
+db.event.listen(UserCommentsPost.body, 'set', UserCommentsPost.on_changed_body)

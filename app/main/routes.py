@@ -1,7 +1,7 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
 from app.models import User, ArticlesList, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost
+    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -328,6 +328,32 @@ def flask_database():
     all_posts = FlaskDatabasePost.query.all()
     total = len(all_posts)
     return render_template('personal_blog_templates/working_with_database.html', title = 'Database', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
+
+@bp.route('/chapter-5/user-comments', methods = ['GET', 'POST'])
+def user_comments():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username = form.username.data, email = form.email.data)        
+        post = UserCommentsPost(body = form.comment.data, author = user, language = language)
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')  
+        return redirect(url_for('main.user_comments', _anchor='comments'))  
+    page = request.args.get('page', type = int)
+    posts = UserCommentsPost.query.order_by(UserCommentsPost.timestamp.asc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.user_comments', _anchor='comments', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.user_comments', _anchor='comments', page = posts.prev_num) \
+        if posts.has_prev else None
+    all_posts = UserCommentsPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/user_comments.html', title = 'User Comments', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 #---------------------------------------------------
 # End of Personal Blog Series

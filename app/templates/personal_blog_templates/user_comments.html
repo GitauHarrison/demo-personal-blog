@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Displaying User Comments</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+<p class="has-line-data" data-line-start="0" data-line-end="1">The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/0f32d10287e51e85ad519c1a4cff8b84dd0b6cda">here</a>.</p>
+<p class="has-line-data" data-line-start="2" data-line-end="3">This chapter will focus on how we will go about creating a simple profile for our blog users. You have probably noticed that whenever a user posts a comment, his or her comment has an avatar and the user’s username. These credentials are displayed alongside the actual user comment.</p>
+<p class="has-line-data" data-line-start="4" data-line-end="5"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/user_profile.png') }}" alt="User Profile"></p>
+<h3 class="code-line" data-line-start=6 data-line-end=7 ><a id="User_Avatar_6"></a>User Avatar</h3>
+<p class="has-line-data" data-line-start="8" data-line-end="9">We will use <a href="https://en.gravatar.com/">Gravatar</a> service to provide images for all our users. It is very simple to implement this service. To request an image for a given user, the URL format <em><a href="https://www.gravatar.com/avatar/">https://www.gravatar.com/avatar/</a>&lt;<em>hash</em>&gt;</em> is used, where <code>&lt;hash&gt;</code> is the md5 hash for a user’s email address.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">hashlib</span> <span style="color: #0e84b5; font-weight: bold">improt</span> <span style="color: #0e84b5; font-weight: bold">md5</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="background-color: #fff0f0">&#39;https://www.gravatar.com/avatar/&#39;</span> <span style="color: #333333">+</span> md5(b<span style="background-color: #fff0f0">&#39;harry@email.com&#39;</span>)<span style="color: #333333">.</span>hexdigest()
+    
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;https://www.gravatar.com/avatar/3f4360b2a748228ba4f745a3ebd428dc&#39;</span>
+</pre>
+<p class="has-line-data" data-line-start="17" data-line-end="19">The returned image has a default size of 80X80 pixels. This size can, however, be changed by adding an <code>s</code> argument to the URL’s query string. This is what I mean:<br>
+<em><a href="https://www.gravatar.com/avatar/3f4360b2a748228ba4f745a3ebd428dc?s=78">https://www.gravatar.com/avatar/3f4360b2a748228ba4f745a3ebd428dc?s=78</a></em>.</p>
+<p class="has-line-data" data-line-start="20" data-line-end="21">You can further customize the URL to include another type of image for your avatar. <a href="https://en.gravatar.com/site/implement/images/">Gravatar</a> has these images:</p>
+<ul>
+<li class="has-line-data" data-line-start="21" data-line-end="22">404: do not load any image if none is associated with the email hash, instead return an HTTP 404 (File Not Found) response</li>
+<li class="has-line-data" data-line-start="22" data-line-end="23">mp: (mystery-person) a simple, cartoon-style silhouetted outline of a person (does not vary by email hash)</li>
+<li class="has-line-data" data-line-start="23" data-line-end="24">identicon: a geometric pattern based on an email hash</li>
+<li class="has-line-data" data-line-start="24" data-line-end="25">monsterid: a generated ‘monster’ with different colors, faces, etc</li>
+<li class="has-line-data" data-line-start="25" data-line-end="26">wavatar: generated faces with differing features and backgrounds</li>
+<li class="has-line-data" data-line-start="26" data-line-end="27">retro: awesome generated, 8-bit arcade-style pixelated faces</li>
+<li class="has-line-data" data-line-start="27" data-line-end="28">robohash: a generated robot with different colors, faces, etc</li>
+<li class="has-line-data" data-line-start="28" data-line-end="30">blank: a transparent PNG image (border added to HTML below for demonstration purposes)</li>
+</ul>
+<p class="has-line-data" data-line-start="30" data-line-end="31">We can add an image of choice, say, the identicon, by passing the <code>d</code> argument to our query string. These options above are for users who do not have an avatar registered with the service.</p>
+<p class="has-line-data" data-line-start="32" data-line-end="33">Some sites can block the Gravatar service due to tracking concerns. So, if you do not see any image, maybe it is because of an extension that blocks the service.</p>
+<p class="has-line-data" data-line-start="34" data-line-end="35">Since avatars are associated with a user, we will add a logic to the <em>User</em> model.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">hashlib</span> <span style="color: #008800; font-weight: bold">import</span> md5
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(UserMixin, db<span style="color: #333333">.</span>Model):
+    <span style="color: #888888">#...</span>
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">avatar</span>(<span style="color: #007020">self</span>, size):
+        digest <span style="color: #333333">=</span> md5(<span style="color: #007020">self</span><span style="color: #333333">.</span>email<span style="color: #333333">.</span>lower()<span style="color: #333333">.</span>encode(<span style="background-color: #fff0f0">&#39;utf-8&#39;</span>))<span style="color: #333333">.</span>hexdigest()
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;https://www.gravatar.com/avatar/{}?d=identicon&amp;s={}&#39;</span><span style="color: #333333">.</span>format(digest, size)
+</pre>
+<p class="has-line-data" data-line-start="46" data-line-end="47">To generate an md5 hash, we convert a user’s email to lower case. md5 support in Python is in bytes and not strings, hence we encode the string as bytes before passing it on to the hash function. Learn more from their <a href="https://en.gravatar.com/site/implement/images">documentation</a>.</p>
+<h3 class="code-line" data-line-start=48 data-line-end=49 ><a id="Display_User_Avatar_48"></a>Display User Avatar</h3>
+<p class="has-line-data" data-line-start="50" data-line-end="51">As earlier mentioned, the user avatar will be displayed alongside a comment. We will create a sub-template that will be used to display this information.</p>
+<p class="code-title has-line-data" data-line-start="52" data-line-end="53">app/templates/_user_comments.html: Display User comments</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>table<span style="color: #333333">&gt;</span>
+    <span style="color: #888888"># Remove the back slashes</span>
+    <span style="color: #333333">&lt;</span>tr valign<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;top&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;&lt;</span>img src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ post.author.avatar(36) \}\}&quot;</span><span style="color: #333333">&gt;&lt;/</span>td<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;</span>\{\{ post<span style="color: #333333">.</span>author<span style="color: #333333">.</span>username \}\} says:<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>\{\{ post<span style="color: #333333">.</span>body \}\}<span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>tr<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>table<span style="color: #333333">&gt;</span>
+</pre>
+<p class="has-line-data" data-line-start="61" data-line-end="62">I have named this template using the <code>_</code> just to help us differentiate a “normal” template from a sub-template. A sub-template will be included in a “normal” template. In <a href="flask_web_forms.md">chapter 3</a>, we created a template called <code>flashed_messages.html</code>. Let us rename it to <code>_flashed_messages.html</code>. Make sure to also rename its inclusion in <code>flask_webforms.html</code>.</p>
+<p class="has-line-data" data-line-start="63" data-line-end="64">We will include these sub-templates in our articles. Our current article file is  <code>flask_webforms.html</code>. Let us add user comments in this template:</p>
+<p class="code-title has-line-data" data-line-start="65" data-line-end="66">app/templates/flask_webforms.html: Add user comments</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> simply dummy text of the printing <span style="color: #000000; font-weight: bold">and</span> typesetting industry<span style="color: #333333">.</span> 
+        Lorem Ipsum has been the industry<span style="background-color: #fff0f0">&#39;s standard dummy text ever since the 1500s,</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>h3<span style="color: #333333">&gt;</span>Working <span style="color: #008800; font-weight: bold">with</span> Flask Web Forms<span style="color: #333333">&lt;/</span>h3<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+        Contrary to popular belief, Lorem Ipsum <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> simply random text<span style="color: #333333">.</span> 
+        It has roots <span style="color: #000000; font-weight: bold">in</span> a piece of classical Latin literature <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0000DD; font-weight: bold">45</span> BC, 
+        making it over <span style="color: #0000DD; font-weight: bold">2000</span> years old<span style="color: #333333">.</span> Richard McClintock, a Latin professor 
+        at Hampden<span style="color: #333333">-</span>Sydney College <span style="color: #000000; font-weight: bold">in</span> Virginia, looked up one of the more obscure 
+        Latin words, consectetur, <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">a</span> <span style="color: #0e84b5; font-weight: bold">Lorem</span> <span style="color: #0e84b5; font-weight: bold">Ipsum</span> <span style="color: #0e84b5; font-weight: bold">passage</span>, <span style="color: #000000; font-weight: bold">and</span> going through 
+        the cites of the word <span style="color: #000000; font-weight: bold">in</span> classical literature, discovered the undoubtable source<span style="color: #333333">.</span>
+    <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;&lt;</span>hr<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;_flashed_messages.html&#39;</span> <span style="color: #333333">%</span>}
+    
+    <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> User Comments Come Before the Form <span style="color: #333333">--&gt;</span>
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> post <span style="color: #000000; font-weight: bold">in</span> posts <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;_comments.html&#39;</span> <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span><span style="color:  #ff8080; ">!</span><span style="color: #333333">--</span> End of User Comments <span style="color: #333333">--&gt;</span>
+    
+    {<span style="color: #333333">%</span> include <span style="background-color: #fff0f0">&#39;comments.html&#39;</span> <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>        
+<p class="has-line-data" data-line-start="97" data-line-end="98">We have used the <code>for</code> loop to get all the available comments from <code>posts</code> variable. I will discuss this variable in a minute below.</p>
+<h3 class="code-line" data-line-start=99 data-line-end=100 ><a id="Query_the_Database_for_Comments_99"></a>Query the Database for Comments</h3>
+<p class="has-line-data" data-line-start="101" data-line-end="102">We need to update our <code>flask_webforms</code> view function to allow for the display of user comments.</p>
+<p class="code-title has-line-data" data-line-start="103" data-line-end="104">app/routes.py: Update view function</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User, Comment
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db
+    
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">flask_webforms</span>():
+    form <span style="color: #333333">=</span> CommentForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User(username <span style="color: #333333">=</span> form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data, email <span style="color: #333333">=</span> form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>data)
+        post <span style="color: #333333">=</span> Comment(body <span style="color: #333333">=</span> form<span style="color: #333333">.</span>comment<span style="color: #333333">.</span>data, author <span style="color: #333333">=</span> user)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(user)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(post)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+        flash(<span style="background-color: #fff0f0">&#39;Your comment is now live!&#39;</span>)
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;flask_webforms&#39;</span>))
+    posts <span style="color: #333333">=</span> Comment<span style="color: #333333">.</span>query<span style="color: #333333">.</span>order_by(Comment<span style="color: #333333">.</span>timestamp<span style="color: #333333">.</span>desc())
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;flask_webforms.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Flask Webforms&#39;</span>, form <span style="color: #333333">=</span> form, posts <span style="color: #333333">=</span> posts)
+</pre>
+<p class="has-line-data" data-line-start="121" data-line-end="122">The function <code>validate_on_submit()</code> checks the validity of user data. If all is valid, our two models (User and Comment models) are updated with new user data. You can recall from <a href="working_with_database.md">chapter 4</a> that <code>db.session.add()</code> adds a user session to the database and the changes are applied by <code>db.session.commit()</code>. A message will be flashed to the user telling him or her that the process was successful and that their comment is now live.</p>
+<p class="has-line-data" data-line-start="123" data-line-end="124"><code>posts</code> variable is used to store the result of us querying the Comment Table. The results are to be returned in the order of the the time they were posted. SQLAlhchemy uses <code>order_by()</code> function to achieve this. For our case, we want the order to be descending.</p>
+<p class="has-line-data" data-line-start="125" data-line-end="126">Try posting several comments from your article form. You should be able to see the comments displayed.</p>
+<p class="has-line-data" data-line-start="127" data-line-end="128"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/user_comments.png') }}" alt="User Comments"></p>
+
+
+            </div>
+        </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
