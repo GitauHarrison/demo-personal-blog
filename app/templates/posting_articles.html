@@ -8,6 +8,18 @@
         <!-- Flash Message -->
         {% include '_flash_message.html' %}
 
+                <!-- Comment Form -->
+                <div class="row posting-articles">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                </div>
+        
+                <p>
+                    <a href=" {{ url_for('main.delete_articles') }} ">Delete article post in home page one by one</a>
+                </p>
+
+
         <!-- Actual Article -->
         {% for post in posts %}
             {% include '_actual_articles.html' %}
@@ -28,17 +40,6 @@
                 </li>
             </ul>
         </nav> 
-
-        <!-- Comment Form -->
-        <div class="row posting-articles">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                {{ wtf.quick_form(form) }}
-            </div>
-        </div>
-
-        <p>
-            <a href=" {{ url_for('main.delete_articles') }} ">Delete article post in home page one by one</a>
-        </p>
         
     </div>
 {% endblock %}
