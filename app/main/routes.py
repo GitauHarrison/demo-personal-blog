@@ -19,7 +19,7 @@ def home():
     next_url = url_for('main.home', page = posts.next_num) \
         if posts.has_next else None
     prev_url = url_for('main.home', page = posts.prev_num) \
-        if posts.has_prev else None  
+        if posts.has_prev else None      
     return render_template('home.html', title = 'Home',posts = posts.items, next_url = next_url, prev_url = prev_url)
 
 @bp.route('/posting-articles', methods = ['GET', 'POST'])
@@ -85,7 +85,9 @@ def web_development():
         if posts.has_next else None
     prev_url = url_for('main.web_development', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('web_development.html', title = 'Web Development', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = WebDevelopmentPost.query.all()
+    total = len(all_posts)
+    return render_template('web_development.html', title = 'Web Development', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.before_request
 def before_request():
@@ -219,7 +221,9 @@ def personal_blog():
         if posts.has_next else None
     prev_url = url_for('main.personal_blog', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = PersonalBlogPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/personal_blog.html', title = 'Personal Blog', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/chapter-1/hello-world', methods = ['GET', 'POST'])
 def hello_world():
@@ -243,7 +247,9 @@ def hello_world():
         if posts.has_next else None
     prev_url = url_for('main.hello_world', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog_templates/hello_world.html', title = 'Hello World', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = HelloWorldPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/hello_world.html', title = 'Hello World', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/chapter-2/flask-templates', methods = ['GET', 'POST'])
 def flask_templates():
@@ -267,7 +273,9 @@ def flask_templates():
         if posts.has_next else None
     prev_url = url_for('main.flask_templates', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = FlaskTemplatesPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/flask_templates.html', title = 'Flask Templates', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/chapter-3/flask-web-forms', methods = ['GET', 'POST'])
 def flask_web_forms():
@@ -291,7 +299,9 @@ def flask_web_forms():
         if posts.has_next else None
     prev_url = url_for('main.flask_web_forms', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog_templates/flask_web_forms.html', title = 'Flask Web Forms', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = FlaskWebFormsPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/flask_web_forms.html', title = 'Flask Web Forms', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/chapter-4/database', methods = ['GET', 'POST'])
 def flask_database():
@@ -315,7 +325,9 @@ def flask_database():
         if posts.has_next else None
     prev_url = url_for('main.flask_database', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('personal_blog_templates/working_with_database.html', title = 'Database', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = FlaskDatabasePost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/working_with_database.html', title = 'Database', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 #---------------------------------------------------
 # End of Personal Blog Series
@@ -343,7 +355,9 @@ def virtualenvwrapper():
         if posts.has_next else None
     prev_url = url_for('main.virtualenvwrapper', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = VirtualenvwrapperPost.query.all()
+    total = len(all_posts)
+    return render_template('virtualenvwrapper.html', title = 'Virtualenvwrapper Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/vagrant', methods = ['GET', 'POST'])
 def vagrant():
@@ -367,7 +381,9 @@ def vagrant():
         if posts.has_next else None
     prev_url = url_for('main.vagrant', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = VagrantPost.query.all()
+    total = len(all_posts)
+    return render_template('vagrant.html', title = 'Vagrant Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/reCaptcha', methods = ['GET', 'POST'])
 def reCaptcha():
@@ -391,7 +407,9 @@ def reCaptcha():
         if posts.has_next else None
     prev_url = url_for('main.reCaptcha', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = reCaptchaPost.query.all()
+    total = len(all_posts)
+    return render_template('reCaptcha.html', title = 'reCaptcha Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/rich-text', methods = ['GET', 'POST'])
 def rich_text():
@@ -415,7 +433,9 @@ def rich_text():
         if posts.has_next else None
     prev_url = url_for('main.rich_text', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = richTextPost.query.all()
+    total = len(all_posts)
+    return render_template('rich_text.html', title = 'Rich Text Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/ngrok', methods = ['GET', 'POST'])
 def ngrok():
@@ -439,7 +459,9 @@ def ngrok():
         if posts.has_next else None
     prev_url = url_for('main.ngrok', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = ngrokPost.query.all()
+    total = len(all_posts)
+    return render_template('ngrok_tutorial.html', title = 'Ngrok Tutorial', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/install-docker', methods = ['GET', 'POST'])
 def install_docker():
@@ -463,7 +485,9 @@ def install_docker():
         if posts.has_next else None
     prev_url = url_for('main.install_docker', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = installDocker.query.all()
+    total = len(all_posts)
+    return render_template('install_docker.html', title = 'Install Docker', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 @bp.route('/heroku-deployment', methods = ['GET', 'POST'])
 def heroku_deployment():
@@ -487,7 +511,9 @@ def heroku_deployment():
         if posts.has_next else None
     prev_url = url_for('main.heroku_deployment', _anchor='comments', page = posts.prev_num) \
         if posts.has_prev else None
-    return render_template('heroku_deployment.html', title = 'Heroku Deployment', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    all_posts = HerokuDeployment.query.all()
+    total = len(all_posts)
+    return render_template('heroku_deployment.html', title = 'Heroku Deployment', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url, total = total)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # END OF TUTORIALS

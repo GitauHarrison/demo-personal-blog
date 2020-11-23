@@ -54,7 +54,7 @@ class PersonalBlogPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
         
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Comment <>'.format(self.body)
         
 db.event.listen(PersonalBlogPost.body, 'set', PersonalBlogPost.on_changed_body)
 

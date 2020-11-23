@@ -149,6 +149,16 @@ blockquote{
     border-radius: 3px;
     padding: 0px;
 }
+/* .comments-num{
+    background-color: #482ff7;
+    color: white;
+} */
+.my-row{
+    background-color: orange;
+}
+.comment-title{
+    text-decoration: underline;
+}
 /* ------------------------------------------ */
 /* BUTTONS */
 /* ------------------------------------------ */
