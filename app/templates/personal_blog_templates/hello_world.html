@@ -54,7 +54,7 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 <p class="has-line-data" data-line-start="49" data-line-end="50">To install a package on your machine, all you need to do is:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install <span style="color: #333333">&lt;</span>package<span style="color: #333333">-</span>name<span style="color: #333333">&gt;</span>
 </pre>
-<p class="has-line-data" data-line-start="55" data-line-end="56">Note that if your Python interpreter is installed globally in your machine for all users, chances are your regular user account will not have the permission to make modifications to it. The only way to overcome this is to run the installation as an administrator using the <code>sudo</code> command. From there onwards, the installed packege will be available to everyone.</p>
+<p class="has-line-data" data-line-start="55" data-line-end="56">Note that if your Python interpreter is installed globally in your machine for all users, chances are your regular user account will not have the permission to make modifications to it. The only way to overcome this is to run the installation as an administrator using the <code>sudo</code> command. From there onwards, the installed package will be available to everyone.</p>
 <p class="has-line-data" data-line-start="57" data-line-end="58">Whenever you are working on a project, chances are your project will have multiple versions. Think about this, you have just finished a project using <code>flask</code>'s version 0.1. By the time you want to start another project, another version of <code>flask</code>, say version 0.2 is released. Obviously, you will install version 0.2 of <code>flask</code> to keep your project current.</p>
 <p class="has-line-data" data-line-start="59" data-line-end="60">This may go on and on, not just with <code>flask</code> but maybe with another package. What you will end up with is your computer will have mutliple versions of packages. To keep your computer system clean, it is recommended that you create something called <em>virtual environments</em>. A virtual environment is a complete copy of the Python interpreter. The envrionments help isolate your development needs from that of your machine, and, therefore, helps to keep your system very clean and uncluttered.</p>
 <h3 class="code-line" data-line-start=61 data-line-end=62 ><a id="Getting_Started_61"></a>Getting Started</h3>
@@ -84,19 +84,19 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 </pre>
 <h5 class="code-line" data-line-start=103 data-line-end=104 ><a id="Using_Virtual_Environment_Wrappers_103"></a>Using Virtual Environment Wrappers</h5>
 <p class="has-line-data" data-line-start="105" data-line-end="106"><a href="https://virtualenvwrapper.readthedocs.io/en/latest/"><code>virtualenvwrapper</code></a> is a set of extensions to <code>virtualenv</code> tool. The extensions include wrappers for creating and deleting virtual environments and otherwise managing our development workflow, making it easier to work on more than one project at a time without introducing conflicts in their dependencies.</p>
-<p class="has-line-data" data-line-start="107" data-line-end="108">I personally prefer using <code>virtualenvwrapper</code> due to how easy it is to use. During creation of virtual environments, it not only creates it but it also activates it automatically.</p>
+<p class="has-line-data" data-line-start="107" data-line-end="108">I personally prefer using <code>virtualenvwrapper</code> due to how easy it is to use. During creation of virtual environments, it not only creates but it also activates it automatically.</p>
 <p class="has-line-data" data-line-start="109" data-line-end="110">For example, to create a virtual environment called <em>venv</em>, all I need to do is run the <code>mkvirtualenv</code> command to create and activate the new environment:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv venv
 
 <span style="color: #888888"># Seen on the terminal:</span>
 (venv) <span style="color: #ff8080; ">$</span> <span style="color: #333333">...</span>
 </pre>
-<p class="has-line-data" data-line-start="118" data-line-end="119">If you would like to use <code>virtualenvwrapper</code>, learn how to install and use it <a href="/virtualenvwrapper_setup.md">here</a>.</p>
+<p class="has-line-data" data-line-start="118" data-line-end="119">If you would like to use <code>virtualenvwrapper</code>, learn how to install and use it <a href="{{ url_for('main.virtualenvwrapper') }}">here</a>.</p>
 <h4 class="code-line" data-line-start=120 data-line-end=121 ><a id="Install_Flask_120"></a>Install Flask</h4>
 <p class="has-line-data" data-line-start="122" data-line-end="123">We will use <code>pip3</code> to install <code>flask</code>:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask
 </pre>
-<p class="has-line-data" data-line-start="128" data-line-end="129">If you get a soft warning in your terminal informing you that there is an available update, do not panick. All you need to do is read the warning message carefully to understand what it is telling you. Typically, all warning and error messages provide suggestions on what you can do about them. In our case here, all we need to do is run:</p>
+<p class="has-line-data" data-line-start="128" data-line-end="129">If you get a soft warning in your terminal informing you that there is an available update, do not panic. All you need to do is read the warning message carefully to understand what it is telling you. Typically, all warning and error messages provide suggestions on what you can do about them. In our case here, all we need to do is run:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python <span style="color: #333333">-</span>m pip install <span style="color: #333333">--</span>upgrade pip
 </pre>
 <p class="has-line-data" data-line-start="133" data-line-end="134">This will make the update and get rid of the warning message. This warning message tends to only come when you install a new virtual environment.</p>
@@ -108,9 +108,8 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 <p class="has-line-data" data-line-start="143" data-line-end="144">If you do not get any error, it means your flask extension was installed well. You can also check the version of <code>flask</code> installed. Run:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> flask <span style="color: #333333">--</span>version <span style="color: #888888"># ensure you exited the Python interpreter above by pressing ctrl + Z</span>
 </pre>
-<h4 class="code-line" data-line-start=149 data-line-end=150 ><a id="Hello_World_Application_149"></a>Hello World Application</h4>
-<p class="has-line-data" data-line-start="151" data-line-end="152">The <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask Documentation</a> is a great resource to help you get started with Python and Flask. Occassionally, you can refer to it to learn more.</p>
-<p class="has-line-data" data-line-start="153" data-line-end="154">Below, I am going to show you how you will create the structure of your project. Your application will exist as a package, with files and sub-folders in it.</p>
+<h3 class="code-line" data-line-start=149 data-line-end=150 ><a id="Hello_World_Application_149"></a>Hello World Application</h3>
+<p class="has-line-data" data-line-start="151" data-line-end="152">The <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask Documentation</a> is a great resource to help you get started with Python and Flask. Occassionally, you can refer to it to learn more. Below, I am going to show you how you will create the structure of your project. Your application will exist as a package, with files and sub-folders in it.</p>
 <p class="has-line-data" data-line-start="155" data-line-end="156"><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename = '/images/project_structure.png') }}" alt="Project Structure"></p>
 <p class="has-line-data" data-line-start="157" data-line-end="158">Let us go ahead and create a sub directory called <em>app</em>:</p>
 <pre style="margin: 30; line-height: 125%">(venv) mkdir app <span style="color: #888888"># remember you are in the personal blog project folder already</span>
@@ -134,7 +133,7 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 </pre>
 <p class="has-line-data" data-line-start="182" data-line-end="183">Everything is now created and well set up. Over the other articles, we will use the images, css and js sub-folders, but for now, we will not need them. So, we will disregard them for a while.</p>
 <p class="has-line-data" data-line-start="184" data-line-end="185">The __init__.py file is going to contain the following code:</p>
-<p class="code-title has-line-data" data-line-start="186" data-line-end="187">__init__.py: Register your flask extension in the application</p>
+<p class="code-title has-line-data" data-line-start="186" data-line-end="187">app/__init__.py: Register your flask extension in the application</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
 
 app <span style="color: #333333">=</span> Flask(__name__)
@@ -147,7 +146,7 @@ app <span style="color: #333333">=</span> Flask(__name__)
 <p class="has-line-data" data-line-start="202" data-line-end="203">Another strange thing is that <code>routes</code> is imported at the bottom rather than at the top of the script. The bottom import is a walkaround to <em>circular imports</em>, a common problem with Flask applications.</p>
 <p class="has-line-data" data-line-start="204" data-line-end="205">As earlier mentioned, routes are the different URLs that the application implements. In Flask, Python functions are responsible for handling application routes, hence their name <em>view functions</em>. These view functions can be mapped to one or more URLS.</p>
 <p class="has-line-data" data-line-start="206" data-line-end="207">We will create our very first view function as seen below:</p>
-<p class="code-title has-line-data" data-line-start="208" data-line-end="209">routes.py: Home page route</p>
+<p class="code-title has-line-data" data-line-start="208" data-line-end="209">app/routes.py: Home page route</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
 
 <span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
