@@ -14,7 +14,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 
     # Pagination
-    POSTS_PER_PAGE=3
+    POSTS_PER_PAGE=20
 
     # Email configuration
     MAIL_SERVER='smtp.gmail.com'
