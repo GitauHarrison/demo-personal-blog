@@ -29,6 +29,7 @@ class User(db.Model):
     flask_web_forms = db.relationship('FlaskWebFormsPost', backref='author', lazy='dynamic')    
     flask_databases = db.relationship('FlaskDatabasePost', backref='author', lazy='dynamic')    
     user_comments = db.relationship('UserCommentsPost', backref='author', lazy='dynamic')
+    elasticsearch_comments = db.relationship('ElasticsearchPost', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return 'User <>'.format(self.username)
@@ -58,6 +59,28 @@ class PersonalBlogPost(db.Model):
         return 'Comment <>'.format(self.body)
         
 db.event.listen(PersonalBlogPost.body, 'set', PersonalBlogPost.on_changed_body)
+
+class ElasticsearchPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
+        
+    def __repr__(self):
+        return 'Post <>'.format(self.body)
+        
+db.event.listen(ElasticsearchPost.body, 'set', ElasticsearchPost.on_changed_body)
 
 class VagrantPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)

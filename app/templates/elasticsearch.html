@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="Install_Elasticsearch_in_Ubuntu_2004_0"></a>Install Elasticsearch in Ubuntu 20.04</h1>
+<p class="has-line-data" data-line-start="2" data-line-end="3">Since support for full-text search is not standardized like relational database are, there are several open-source full-text engines. Examples include <a href="http://sphinxsearch.com/">Sphinx</a>, <a href="https://lucene.apache.org/solr/">Apache Solr</a>, <a href="https://www.elastic.co/elasticsearch/">Elasticsearch</a> among others. Thankfully, all these engines can work within a Flask application due to the fact that Flask is not opinionated. Using search capabilities of one of the relational databases would be great but since SQLAlchemy does not support this functionality, we will have to content with learning how to handle the searching with raw SQL statement.</p>
+<p class="has-line-data" data-line-start="4" data-line-end="5">We can intentionally choose to use any of the full-text search engines to do the job for us. I will show you how you can install Elasticsearch and perform basic searches.</p>
+<p class="has-line-data" data-line-start="6" data-line-end="7">You probably are aware that <code>pip</code> allows us to install Python packages, and, therefore, it would make so much obvious sense to simply install <code>elasticsearch</code> by running:</p>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> pip3 install elasticsearch
+</pre>
+<p class="has-line-data" data-line-start="11" data-line-end="12">We can test out the service by performing basic operations in a Python interpreter:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3
+<span style="color: #888888"># ...</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">elasticsearch</span> <span style="color: #008800; font-weight: bold">import</span> Elasticsearch
+<span style="color: #333333">&gt;&gt;&gt;</span> es <span style="color: #333333">=</span> Elasticsearch(<span style="background-color: #fff0f0">&#39;http://localhost:9200&#39;</span>)
+</pre>
+<p class="has-line-data" data-line-start="19" data-line-end="20">We have created an instance of the class <code>Elasticsearch</code> and passed a connection URL to connect to the service. Since data in Elasticsearch is written in <em>indexes</em>, let us try to make one.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> es<span style="color: #333333">.</span>index(index<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;test_index&#39;</span>, <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>, body<span style="color: #333333">=</span>{<span style="background-color: #fff0f0">&#39;test&#39;</span>: <span style="background-color: #fff0f0">&#39;this is the first test&#39;</span>})
+</pre>
+<p class="has-line-data" data-line-start="24" data-line-end="25">Elasticsearch works with data in JSON format. We have written an object with the field <code>text</code> to an index called <code>test_index</code>. When you press <code>Enter</code> on your keyboard, you will get a <code>ConnectionError</code>. Your attempts to connect to the service fails.</p>
+<p class="has-line-data" data-line-start="26" data-line-end="27"><code>pip3 install elasticsearch</code> only installs a Python client which is used for communication between your Python script and the existing Elasticsearch cluster. The assumption is that the cluster is currently running on  <code>localhost</code> with the default elasticsearch port <code>9200</code>.</p>
+<p class="has-line-data" data-line-start="28" data-line-end="29">There are a couple of steps we need to follow to ensure that we have configured our machine to run <code>Elasticsearch</code>:</p>
+<ul>
+<li class="has-line-data" data-line-start="29" data-line-end="30">Install necessary packages needed to run <code>Elasticsearch</code></li>
+<li class="has-line-data" data-line-start="30" data-line-end="31">Download and install <code>Elasticsearch</code></li>
+<li class="has-line-data" data-line-start="31" data-line-end="33">Start the <code>Elasticsearch</code> service</li>
+</ul>
+<h3 class="code-line" data-line-start=33 data-line-end=34 ><a id="Install_Necessary_Packages_33"></a>Install Necessary Packages</h3>
+<p class="has-line-data" data-line-start="34" data-line-end="35">Since Elasticsearch runs on top of Java, you need to install the Java Development Kit (JDK). You can check if Java is installed by running this command in your terminal:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> java <span style="color: #333333">-</span>version
+</pre>
+<p class="has-line-data" data-line-start="39" data-line-end="40">If you do not have java, you can install the default JDK by:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install openjdk<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">8</span><span style="color: #333333">-</span>jre<span style="color: #333333">-</span>headless 
+</pre>
+<p class="has-line-data" data-line-start="44" data-line-end="45">Run <code>java --version</code> to check that <code>Java</code> is installed.</p>
+<p class="has-line-data" data-line-start="46" data-line-end="47">Then next step would be to allow access to our repositories via HTTPS. Therefore, let us install an APT transport package:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install apt<span style="color: #333333">-</span>transport<span style="color: #333333">-</span>https
+</pre>
+<h3 class="code-line" data-line-start=52 data-line-end=53 ><a id="Download_and_Install_Elasticsearch_52"></a>Download and Install <code>Elasticsearch</code></h3>
+<p class="has-line-data" data-line-start="54" data-line-end="55">First, update the GPG Key for the Elasticsearch repository using the wget command to pull the public key:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> wget <span style="color: #333333">-</span>qO <span style="color: #333333">-</span> https:<span style="color: #333333">//</span>artifacts<span style="color: #333333">.</span>elastic<span style="color: #333333">.</span>co<span style="color: #333333">/</span>GPG<span style="color: #333333">-</span>KEY<span style="color: #333333">-</span>elasticsearch <span style="color: #333333">|</span> sudo apt<span style="color: #333333">-</span>key add <span style="color: #333333">-</span>
+</pre>
+<p class="has-line-data" data-line-start="59" data-line-end="60">Add the repository to your system:</p>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> echo <span style="background-color: #fff0f0">&quot;deb https://artifacts.elastic.co/packages/7.x/apt stable main&quot;</span> <span style="color: #333333">|</span> sudo tee <span style="color: #333333">-</span>a <span style="color: #333333">/</span>etc<span style="color: #333333">/</span>apt<span style="color: #333333">/</span>sources<span style="color: #333333">.</span>list<span style="color: #333333">.</span>d<span style="color: #333333">/</span>elastic<span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">7.</span>x<span style="color: #333333">.</span>list
+</pre>
+<p class="has-line-data" data-line-start="65" data-line-end="66">Now, install <code>elasticsearch</code> by first updating the package index then run the installation:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt update
+<span style="color: #ff8080; ">$</span> sudo apt install elasticsearch
+</pre>
+<h3 class="code-line" data-line-start=71 data-line-end=72 ><a id="Start_Elasticsearch_71"></a>Start Elasticsearch</h3>
+<p class="has-line-data" data-line-start="72" data-line-end="73">Elasticsearch does not run until you start it. Also, when you reboot your machine, you need to rerun the elasticsearch service since it does not start automatically.</p>
+<p class="has-line-data" data-line-start="74" data-line-end="75">To reload the <code>systemd</code> configuration, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl daemon<span style="color: #333333">-</span><span style="color: #007020">reload</span>
+</pre>
+<p class="has-line-data" data-line-start="79" data-line-end="80">Enable the elasticsearch service:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl enable elasticsearch<span style="color: #333333">.</span>service
+</pre>
+<p class="has-line-data" data-line-start="85" data-line-end="86">Now, you can start elasticsearch:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo systemctl start elasticsearch<span style="color: #333333">.</span>service
+</pre>
+<p class="has-line-data" data-line-start="90" data-line-end="91">At this point, elasticsearch will start everytime you reboot your system. To test your set up and installation, run this command on your terminal:</p>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> curl localhost:<span style="color: #0000DD; font-weight: bold">9200</span>
+</pre>
+<p class="has-line-data" data-line-start="94" data-line-end="95">You should be able to see JSON formatted data displayed in your terminal. Alternatively, paste <a href="http://localhost:9200/">http://localhost:9200/</a> to your browser’s address bar. JSON data will be dumped on your screen.</p>
+<h3 class="code-line" data-line-start=96 data-line-end=97 ><a id="Testing_96"></a>Testing</h3>
+<p class="has-line-data" data-line-start="97" data-line-end="98">Create a virtual environment and install <code>elasticsearch</code> in this environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv test
+(test)<span style="color: #ff8080; ">$</span> pip3 install elasticsearch
+</pre>
+<p class="has-line-data" data-line-start="103" data-line-end="104">Start your interpreter:</p>
+<pre style="margin: 30; line-height: 125%">(test)<span style="color: #ff8080; ">$</span> python3
+<span style="color: #888888"># ...</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">elasticsearch</span> <span style="color: #008800; font-weight: bold">import</span> Elasticsearch
+<span style="color: #333333">&gt;&gt;&gt;</span> es <span style="color: #333333">=</span> Elasticsearch(<span style="background-color: #fff0f0">&#39;http://localhost:9200&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> es<span style="color: #333333">.</span>index(index<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;test_index&#39;</span>, <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>, body<span style="color: #333333">=</span>{<span style="background-color: #fff0f0">&#39;test&#39;</span>: <span style="background-color: #fff0f0">&#39;this is the first test&#39;</span>})
+    
+<span style="color: #888888"># Output</span>
+{<span style="background-color: #fff0f0">&#39;_index&#39;</span>: <span style="background-color: #fff0f0">&#39;my_index&#39;</span>, <span style="background-color: #fff0f0">&#39;_type&#39;</span>: <span style="background-color: #fff0f0">&#39;_doc&#39;</span>, <span style="background-color: #fff0f0">&#39;_id&#39;</span>: <span style="background-color: #fff0f0">&#39;1&#39;</span>, <span style="background-color: #fff0f0">&#39;_version&#39;</span>: <span style="color: #0000DD; font-weight: bold">2</span>, <span style="background-color: #fff0f0">&#39;result&#39;</span>: <span style="background-color: #fff0f0">&#39;updated&#39;</span>, <span style="background-color: #fff0f0">&#39;_shards&#39;</span>: {<span style="background-color: #fff0f0">&#39;total&#39;</span>: <span style="color: #0000DD; font-weight: bold">2</span>, <span style="background-color: #fff0f0">&#39;successful&#39;</span>: <span style="color: #0000DD; font-weight: bold">1</span>, <span style="background-color: #fff0f0">&#39;failed&#39;</span>: <span style="color: #0000DD; font-weight: bold">0</span>}, <span style="background-color: #fff0f0">&#39;_seq_no&#39;</span>: <span style="color: #0000DD; font-weight: bold">1</span>, <span style="background-color: #fff0f0">&#39;_primary_term&#39;</span>: <span style="color: #0000DD; font-weight: bold">1</span>}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from app import create_app, db
 from app.models import ArticlesList, User, PersonalBlogPost, VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-      WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost
+      WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost, ElasticsearchPost
 
 
 app = create_app()
@@ -10,5 +10,5 @@ def make_shell_context():
      return {'db': db, 'ArticlesList': ArticlesList, 'User': User, 'PersonalBlogPost': PersonalBlogPost, 'VagrantPost': VagrantPost, 'VirtualenvwrapperPost': VirtualenvwrapperPost, \
           'reCaptchaPost': reCaptchaPost, 'richTextPost': richTextPost, 'ngrokPost': ngrokPost, 'installDocker': installDocker, 'HerokuDeployment': HerokuDeployment,\
                'WebDevelopmentPost': WebDevelopmentPost, 'HelloWorldPost': HelloWorldPost, 'FlaskTemplatesPost': FlaskTemplatesPost, 'FlaskWebFormsPost': FlaskWebFormsPost,\
-                    'FlaskDatabasePost': FlaskDatabasePost, 'UserCommentsPost': UserCommentsPost
+                    'FlaskDatabasePost': FlaskDatabasePost, 'UserCommentsPost': UserCommentsPost, 'ElasticsearchPost': ElasticsearchPost
     }               
