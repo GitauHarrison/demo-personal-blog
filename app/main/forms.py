@@ -20,7 +20,7 @@ class ArticlesForm(FlaskForm):
 
 class PortfolioForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    overview = CKEditorField('Project Details', validators=[DataRequired()], render_kw={"placeholder": "Overview | Features | Tools Used"})    
+    overview = CKEditorField('Project Details', validators=[DataRequired()])    
     github_link = StringField('GitHub Project Link', validators=[DataRequired()], render_kw={"placeholder": "Use GitHub URL"})
     contributor_link = StringField('Contributor', validators=[DataRequired()], render_kw={"placeholder": "Use URL"})
     project_design_link = StringField('Project Design', validators=[DataRequired()], render_kw={"placeholder": "Use URL"})
