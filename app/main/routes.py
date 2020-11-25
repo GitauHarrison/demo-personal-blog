@@ -1,12 +1,12 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
 from app.models import User, ArticlesList, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost, ElasticsearchPost
+    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost, ElasticsearchPost, PortfolioList
 import stripe
 from guess_language import guess_language
 from app.translate import translate
 from flask_babel import get_locale
-from app.main.forms import CommentForm, ArticlesForm
+from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 
 @bp.route('/')
@@ -22,14 +22,52 @@ def home():
         if posts.has_prev else None      
     return render_template('home.html', title = 'Home',posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/posting-articles', methods = ['GET', 'POST'])
-def posting_articles():
+# ---------------------------------------------------------------
+# Updating Articles in Blog
+# ---------------------------------------------------------------
+@bp.route('/update-blog')
+def update_blog():
+    return render_template('update_blog.html', title = 'Updating Blog')
+
+@bp.route('/posting-portfolio-projects', methods = ['GET', 'POST'])
+def posting_portfolio_projects():
+    form = PortfolioForm()
+    if form.validate_on_submit():
+        post = PortfolioList(title = form.title.data, overview = form.overview.data, github_link = form.github_link.data, \
+            contributor_link = form.contributor_link.data, project_design_link = form.project_design_link.data,\
+                live_project_link = form.live_project_link.data)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('main.portfolio'))    
+    page = request.args.get('page', type = int)
+    posts = PortfolioList.query.order_by(PortfolioList.date_posted.desc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.portfolio', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.portfolio', page = posts.prev_num) \
+        if posts.has_prev else None      
+    return render_template('posting_portfolio_projects.html', title = 'Posting Portfolio Projects', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+
+@bp.route('/delete-portfolio-page-projects')
+def delete_portfolio_page_projects():
+    posts = PortfolioList.query.all()
+    for post in posts:
+        db.session.delete(post)
+        db.session.commit()
+        flash('Deletion successful: One portfolio project was successfully deleted')
+        return redirect(url_for('main.posting_portfolio_projects', _anchor='delete'))             
+    return render_template('posting_portfolio_projects.html', title = 'Deleting Portfolio Page Projects')
+
+@bp.route('/posting-home-page-articles', methods = ['GET', 'POST'])
+def posting_home_page_articles():
     form = ArticlesForm()
     if form.validate_on_submit():
         post = ArticlesList(title = form.title.data, content = form.content.data, link = form.link.data)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('Your post is now live!')
         return redirect(url_for('main.home'))    
     page = request.args.get('page', type = int)
     posts = ArticlesList.query.order_by(ArticlesList.date_posted.desc()).paginate(
@@ -39,17 +77,22 @@ def posting_articles():
         if posts.has_next else None
     prev_url = url_for('main.home', page = posts.prev_num) \
         if posts.has_prev else None      
-    return render_template('posting_articles.html', title = 'Posting Articles', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    return render_template('posting_home_page_articles.html', title = 'Posting Home Page Articles', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/delete-articles')
-def delete_articles():
+@bp.route('/delete-home-page-articles')
+def delete_home_page_articles():
     posts = ArticlesList.query.all()
     for post in posts:
         db.session.delete(post)
         db.session.commit()
         flash('Deletion successful: One home page post was successfully deleted')
-        return redirect(url_for('main.posting_articles'))             
-    return render_template('posting_articles.html', title = 'Posting Articles')
+        return redirect(url_for('main.posting_home_page_articles', _anchor='delete'))             
+    return render_template('posting_home_page_articles.html', title = 'Delete Home Page Articles')
+
+
+# ---------------------------------------------------------------
+# Updating Articles in Blog
+# ---------------------------------------------------------------
 
 @bp.route('/about-me')
 def about_me():
@@ -95,7 +138,15 @@ def before_request():
 
 @bp.route('/portfolio')
 def portfolio():
-    return render_template('portfolio.html', title = 'Portfolio')
+    page = request.args.get('page', type = int)
+    posts = PortfolioList.query.order_by(PortfolioList.date_posted.desc()).paginate(
+        page, current_app.config['POSTS_PER_PAGE'], False
+    )
+    next_url = url_for('main.portfolio', page = posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.portfolio', page = posts.prev_num) \
+        if posts.has_prev else None      
+    return render_template('portfolio.html', title = 'Portfolio', posts = posts.items, next_url = next_url, prev_url = prev_url)    
 
 @bp.route('/portfolio/popup')
 def pop_up():

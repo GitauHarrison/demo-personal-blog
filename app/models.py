@@ -11,6 +11,16 @@ class ArticlesList(db.Model):
     content = db.Column(db.String(), index=True)
     link = db.Column(db.String(140), index=True)
 
+class PortfolioList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(140), index=True)
+    date_posted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    overview = db.Column(db.String(), index=True)
+    github_link = db.Column(db.String(140), index=True)
+    contributor_link = db.Column(db.String(140), index=True)
+    project_design_link = db.Column(db.String(300), index=True)
+    live_project_link = db.Column(db.String(140), index=True)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True)

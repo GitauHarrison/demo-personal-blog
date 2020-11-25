@@ -3,7 +3,7 @@
 
 {% block app_content %}
     <div class="container">
-        <h1>Posting Articles</h1>
+        <h1>Update Portfolio Page</h1>
 
         <!-- Flash Message -->
         {% include '_flash_message.html' %}
@@ -15,14 +15,14 @@
                     </div>
                 </div>
         
-                <p>
-                    <a href=" {{ url_for('main.delete_articles') }} ">Delete article post in home page one by one</a>
+                <p class="delete">
+                    <a href=" {{ url_for('main.delete_portfolio_page_projects') }} ">Delete projects in portfolio page one by one</a>
                 </p>
 
 
         <!-- Actual Article -->
         {% for post in posts %}
-            {% include '_actual_articles.html' %}
+            {% include '_portfolio_updates.html' %}
         {% endfor %}
 
         <!-- Pagination Links -->
