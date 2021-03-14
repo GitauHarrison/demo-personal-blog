@@ -113,9 +113,6 @@ ENV/
 env.bak/
 venv.bak/
 
-# Flask Environment Variables
-#.flaskenv
-
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -148,10 +145,4 @@ cython_debug/
 .project
 .pydevproject
 
-#app.db
 
-# configuration
-config.py
-
-# Flask migrations
-#migrations/
