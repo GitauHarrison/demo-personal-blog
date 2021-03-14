@@ -30,7 +30,7 @@ psycopg2==2.8.6
 pyngrok==4.2.2
 pyparsing==2.4.7
 python-dateutil==2.8.1
-python-dotenv==0.14.0
+python-dotenv==0.15.0
 python-editor==1.0.4
 pytz==2020.1
 PyYAML==5.3.1
