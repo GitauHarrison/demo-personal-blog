@@ -1,7 +1,11 @@
 from app import db, stripe_keys
-from flask import render_template, url_for, flash, redirect, request, jsonify, g, current_app
-from app.models import User, ArticlesList, PersonalBlogPost,VagrantPost, VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, installDocker, HerokuDeployment,\
-    WebDevelopmentPost, HelloWorldPost, FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, UserCommentsPost, ElasticsearchPost, PortfolioList
+from flask import render_template, url_for, flash, redirect, request, \
+    jsonify, g, current_app
+from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
+    VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, \
+    installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
+    FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
+    UserCommentsPost, ElasticsearchPost, PortfolioList
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -9,46 +13,63 @@ from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 
+
 @bp.route('/')
 @bp.route('/home')
-def home():  
-    page = request.args.get('page', type = int)
+def home():
+    page = request.args.get('page', type=int)
     posts = ArticlesList.query.order_by(ArticlesList.date_posted.desc()).paginate(
         page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('main.home', page = posts.next_num) \
+    next_url = url_for('main.home', page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('main.home', page = posts.prev_num) \
-        if posts.has_prev else None      
-    return render_template('home.html', title = 'Home',posts = posts.items, next_url = next_url, prev_url = prev_url)
+    prev_url = url_for('main.home', page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('home.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 # ---------------------------------------------------------------
 # Updating Articles in Blog
 # ---------------------------------------------------------------
+
+
 @bp.route('/update-blog')
 def update_blog():
-    return render_template('update_blog.html', title = 'Updating Blog')
+    return render_template('update_blog.html', title='Updating Blog')
 
-@bp.route('/posting-portfolio-projects', methods = ['GET', 'POST'])
+
+@bp.route('/posting-portfolio-projects', methods=['GET', 'POST'])
 def posting_portfolio_projects():
     form = PortfolioForm()
     if form.validate_on_submit():
-        post = PortfolioList(title = form.title.data, overview = form.overview.data, github_link = form.github_link.data, \
-            contributor_link = form.contributor_link.data, project_design_link = form.project_design_link.data,\
-                live_project_link = form.live_project_link.data)
+        post = PortfolioList(title=form.title.data,
+                             overview=form.overview.data,
+                             github_link=form.github_link.data,
+                             contributor_link=form.contributor_link.data,
+                             project_design_link=form.project_design_link.data,
+                             live_project_link=form.live_project_link.data)
         db.session.add(post)
         db.session.commit()
         flash('Your post is now live!')
-        return redirect(url_for('main.portfolio'))    
-    page = request.args.get('page', type = int)
-    posts = PortfolioList.query.order_by(PortfolioList.date_posted.desc()).paginate(
+        return redirect(url_for('main.portfolio'))
+    page = request.args.get('page', type=int)
+    posts = PortfolioList.query.order_by(
+        PortfolioList.date_posted.desc()).paginate(
         page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('main.portfolio', page = posts.next_num) \
+    next_url = url_for('main.portfolio',
+                       page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('main.portfolio', page = posts.prev_num) \
-        if posts.has_prev else None      
-    return render_template('posting_portfolio_projects.html', title = 'Posting Portfolio Projects', form = form, posts = posts.items, next_url = next_url, prev_url = prev_url)
+    prev_url = url_for('main.portfolio',
+                       page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('posting_portfolio_projects.html',
+                           title='Posting Portfolio Projects',
+                           form=form,
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           )
+
 
 @bp.route('/delete-portfolio-page-projects')
 def delete_portfolio_page_projects():
