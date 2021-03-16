@@ -11,7 +11,8 @@ app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'ArticlesList': ArticlesList,
+    return {'db': db,
+            'ArticlesList': ArticlesList,
             'User': User, 'PersonalBlogPost': PersonalBlogPost,
             'VagrantPost': VagrantPost,
             'VirtualenvwrapperPost': VirtualenvwrapperPost,

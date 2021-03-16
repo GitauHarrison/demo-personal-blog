@@ -5,7 +5,7 @@ from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
     VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, \
     installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
     FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
-    UserCommentsPost, ElasticsearchPost, PortfolioList
+    UserCommentsPost, ElasticsearchPost, PortfolioList, FlaskBootstrapPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -576,6 +576,47 @@ def user_comments():
     total = len(all_posts)
     return render_template('personal_blog_templates/user_comments.html',
                            title='User Comments',
+                           form=form,
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total=total
+                           )
+
+
+@bp.route('/chapter-6/flask-bootstrap', methods=['GET', 'POST'])
+def flask_bootstrap():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username=form.username.data, email=form.email.data)
+        post = FlaskBootstrapPost(body=form.comment.data,
+                                  author=user,
+                                  language=language
+                                  )
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')
+        return redirect(url_for('main.flask_bootstrap', _anchor='comments'))
+    page = request.args.get('page', type=int)
+    posts = FlaskBootstrapPost.query.order_by(
+        FlaskBootstrapPost.timestamp.asc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.flask_bootstrap',
+                       _anchor='comments',
+                       page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.flask_bootstrap',
+                       _anchor='comments', page=posts.prev_num) \
+        if posts.has_prev else None
+    all_posts = UserCommentsPost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/flask_bootstrap.html',
+                           title='Flask Bootstrap',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,

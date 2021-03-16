@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Displaying User Comments</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+
+<p>The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/77f4b13fb60784ed05fa86324e8c7018a66d4834">here</a>.</p>
+<p>In this chapter, I will show you how you can replace the basic HTML templates we have been using and implement new ones based on the <a href="https://getbootstrap.com/">Bootstrap framework</a>. Until this point, you  can agree with me that we have focused so much on functionality and done little to none to improve the design of our blog. This was purposeful, and by design, because I did not want to get distracted by design before I got the application&#39;s logic right.</p>
+<h3 id="build-fast-and-responsive-designs-with-bootstrap">Build fast and responsive designs with Bootstrap</h3>
+<p>Bootstrap is a front-end framework that uses high-level CSS classes with pre-made styles for common types of user interfaces. Without a framework, we will be hard-tasked to design our own templates with custom styles. For example:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>        
+        <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>Personal Blog<span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>link <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheets&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;styles.css&quot;</span> <span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Welcome to My Blog<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>            
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p>Our styles:</p>
+<pre style="margin: 30; line-height: 125%">h1{
+    text<span style="color: #333333">-</span>align: center;
+    color: red;
+}
+</pre>
+<p>Above, we have had to identify what element we want to style, then added whatever styles we desire. As simple as this is, when you build larger applications, this can get a lot more complicated.</p>
+<p>Like I said earlier, Boostrap provides pre-made CSS classes with custom styles. See its implementation below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span>html<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>head<span style="color: #333333">&gt;</span>        
+        <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>Personal Blog<span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>link <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheets&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;styles.css&quot;</span> <span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>head<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>body<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; col-md-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Welcome to My Blog<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>            
+    <span style="color: #333333">&lt;/</span>body<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>html<span style="color: #333333">&gt;</span>
+</pre>
+<p>The text <code>Welcome to My Blog</code> will be centered without the need of us writing our own styles for it. Bootstrap, like most other frameworks, also provide JavaScript add-ons for things that cannot be done strictly with HTML and CSS.</p>
+<p>Using Bootstrap has several advantages:</p>
+<ul>
+<li>Cross-browser similarities</li>
+<li>Handling of multiple device sizes</li>
+<li>Layouts that can be customized</li>
+<li>Beautifully completed forms, alerts, toasts etc</li>
+</ul>
+<p>A direct way to work with Bootstrap is to include the file <em>bootstrap.min.css</em> in your base template. You can import it directly from a <a href="https://en.wikipedia.org/wiki/Content_delivery_network">CDN</a> or you can download it and add it to your project. See the <a href="https://getbootstrap.com/docs/4.5/getting-started/introduction/">documentation</a> to learn more.</p>
+<p>The <a href="https://pythonhosted.org/Flask-Bootstrap/"><code>flask-bootstrap</code></a> makes it a lot easier for us to work with Bootstrap by providing a base template. Let us install this extension:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>bootstrap
+</pre>
+<p>Register this extension in the application:</p>
+<p class="code-title" >app/__init__.py: Boostrap instance</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># ...</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_bootstrap</span> <span style="color: #008800; font-weight: bold">import</span> Bootstrap
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+    
+<span style="color: #888888"># ...</span>
+boostrap <span style="color: #333333">=</span> Bootstrap(app)
+</pre>
+<p>The <code>boostrap</code> instance makes the <em>boostrap/base.html</em> available to us, and can be referrenced in our application templates using <code>extends</code>. You have seen me use <code>extends</code> when I wanted to import the base template into other templates. So, if I say we need to import <em>bootstrap/base.html</em> into our base file, is that even possible?</p>
+<p>Yes! We will sort of have a three-level hierachy. This importation comes bundled with a few blocks such as <code>title</code>, <code>navbar</code> and <code>content</code>. I will greatly modify my base template to use this derived blocks.</p>
+<p class="code-title" >app/templates/base.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;bootstrap/base.html&#39;</span> <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+            Gitau Harrison <span style="color: #333333">|</span> \{\{ title \}\}
+        <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span>title<span style="color: #333333">&gt;</span>
+            Welcome to My Personal Blog
+        <span style="color: #333333">&lt;/</span>title<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block navbar <span style="color: #333333">%</span>}
+<span style="color: #333333">&lt;</span>nav class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar navbar-default&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-header&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>button <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;button&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-toggle collapsed&quot;</span> data<span style="color: #333333">-</span>toggle<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse&quot;</span> data<span style="color: #333333">-</span>target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#bs-example-navbar-collapse-1&quot;</span> aria<span style="color: #333333">-</span>expanded<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;false&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;sr-only&quot;</span><span style="color: #333333">&gt;</span>Toggle navigation<span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>a class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-brand&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;main.home&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Gitau Harrison<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse navbar-collapse&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;bs-example-navbar-collapse-1&quot;</span><span style="color: #333333">&gt;</span>            
+            <span style="color: #333333">&lt;</span>ul class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;nav navbar-nav navbar-right&quot;</span><span style="color: #333333">&gt;</span>                                 
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;about_me&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>About Me<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>            
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;portfolio&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Portfolio<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>          
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;hire_me&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Hire Me<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>            
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;my_interests&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>My Interests<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span> 
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;flask_webforms&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span> 
+            <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>                         
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>nav<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}    
+    {<span style="color: #333333">%</span> block app_content<span style="color: #333333">%</span>}        
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Our content will go here <span style="color: #333333">--&gt;</span>
+    
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+        
+    {<span style="color: #333333">%</span> block footer <span style="color: #333333">%</span>}    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Footer Goes Here <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;</span>nav class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;my-footer navbar navbar-default&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>   
+                <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12&quot;</span><span style="color: #333333">&gt;</span>                         
+                    <span style="color: #333333">&lt;</span>ul class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;nav navbar-nav&quot;</span><span style="color: #333333">&gt;</span>                
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#&quot;</span> target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;_blank&quot;</span><span style="color: #333333">&gt;</span>Become A Patreon<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>                 
+                    <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;</span>ul class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;nav navbar-nav navbar-right&quot;</span><span style="color: #333333">&gt;</span>                                 
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#&quot;</span> target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;_blank&quot;</span><span style="color: #333333">&gt;</span>YouTube<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>            
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#&quot;</span> target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;_blank&quot;</span><span style="color: #333333">&gt;</span>GitHub<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>                      
+                    <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span> 
+                <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>                                  
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>nav<span style="color: #333333">&gt;</span>
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Our Scripts Go Here <span style="color: #333333">--&gt;</span>
+    {<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+    
+    {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/flask_boostrap_template.png') }}" alt="Flask-Bootstrap Used"></p>
+<p>I literally used one of Boostrap&#39;s <a href="https://getbootstrap.com/docs/4.5/components/navs/">nav bars</a> as my own.  Everything should be self-explanatory. However, one thing I want to point out are these two blocks: <code>content</code> and <code>app_content</code>. The <code>content</code> block is a top-level Flask-Bootstrap container. It hosts the <code>app_content</code> block and the <code>footer</code> block. The <code>app_content</code> block is my own custom-made block where other templates will define their own content. </p>
+<p>With these definitions, I have to rename all my other templates to use <code>app_content</code>.</p>
+<p class="code-title" >app/templates/flask_webforms.html: Add <code>app_content</code> block</p>
+<pre style="margin: 30; line-height: 125%">{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Previous code <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>You need to do the same for all the other templates.</p>
+<h3 id="rendering-bootstrap-forms">Rendering Bootstrap Forms</h3>
+<p>Flask excells at rendering forms. If you recall, we had to create each field one by one and even added our own validation styles. Flask-Bootstrap comes with a macro that accepts Flask-WTF form object as an argument and renders it using Boostrap styles.</p>
+<p>app/templates/flask_webforms.html: Render Booststrap forms</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Flask Webforms<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Previous code <span style="color: #333333">--&gt;</span>
+    
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-md-4&quot;</span><span style="color: #333333">&gt;</span>
+            \{\{ wtf<span style="color: #333333">.</span>quick_form(form) \}\}
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/flask_boostrap_form.png') }}" alt="Flask-Bootstrap Used"></p>
+<h3 id="rendering-blog-comment">Rendering Blog Comment</h3>
+<p>Our comments do not look very descent. I will prefer if they had a bit more space among them and also among each table data.</p>
+<p class="code-title" >app/templates/_user_comments.html: Improved User Comments</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+<span style="color: #333333">&lt;</span>table class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;table table-hover&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>tr valign<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;top&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td width<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;70px&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>img src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ post.author.avatar(36) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;</span>\{\{ post<span style="color: #333333">.</span>author<span style="color: #333333">.</span>username \}\} says:<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>\{\{ post<span style="color: #333333">.</span>body \}\}<span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>tr<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>table<span style="color: #333333">&gt;</span>
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="/images/improved_user_comments.png" alt="Improved User Comments"></p>
+<h3 id="rendering-flash-messages">Rendering Flash Messages</h3>
+<p>We can also improve the way our flash messages look like. From <a href="https://getbootstrap.com/docs/4.0/components/alerts/">bootstrap alerts</a>, we can update our <code>_user_comments.html</code> sub-template to include one of the alert styles:</p>
+<p class="code-title" >app/templates/_user_comments.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">with</span> messages <span style="color: #333333">=</span> get_flashed_messages() <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> messages <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> message <span style="color: #000000; font-weight: bold">in</span> messages <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert alert-info&quot;</span> role<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert&quot;</span><span style="color: #333333">&gt;</span>
+            \{\{ message \}\}
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>            
+        {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endwith <span style="color: #333333">%</span>}
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/improved_flash_message.png') }}" alt="Improved Flash Message"></p>
+<h3 id="rendering-proper-flask-footer">Rendering Proper Flask Footer</h3>
+<p>The facelift is quite impressive now. There is one more thing that we need to improve. That footer! I want the footer to be at the very bottom of our page. Currently, the footer comes right where our page content ends. What I want is when the page content does not fill the entire viewport (this is the screen size), then it should go to the very bottom of the view port. If the content is far taller than the viewport, then, the footer should be seen at the end of the taller content.</p>
+<p>Footer beneath the content, even when the content is taller than the viewport.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/taller_content.png') }}" alt="Taller Content with Footer"></p>
+<p>Footer at the bottom of the page, leaving space between it and short content.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename='images/short_content.png') }}" alt="Short Content with Footer"></p>
+<p>To achieve this, I will create my own styles in a <code>styles.css</code> file. Let us create this file inside the css folder:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>static<span style="color: #333333">/</span>css<span style="color: #333333">/</span>styles<span style="color: #333333">.</span>css
+</pre>
+<p>To ensure that the styles are applied, we need to link this file with our base template. I will use the <code>styles</code> block.</p>
+<p class="code-title code-title" >app/templates/base.html: Link styles file</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Previous code <span style="color: #333333">--&gt;</span>
+    
+{<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> <span style="color: #333333">...</span> <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block styles <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+        <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename = &#39;css/styles.css&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Previous code <span style="color: #333333">--&gt;</span>
+</pre>
+<p>We can now go ahead and create our own custom styles in <code>styles.css</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">/*</span> <span style="color: #333333">-------------------------------------------------</span> <span style="color: #333333">*/</span>
+<span style="color: #333333">/*</span> BASE STYLES <span style="color: #333333">*/</span>
+<span style="color: #333333">/*</span> <span style="color: #333333">-------------------------------------------------</span> <span style="color: #333333">*/</span>
+html, body{
+    <span style="color: #007020">min</span><span style="color: #333333">-</span>height: <span style="color: #0000DD; font-weight: bold">100</span>vh; <span style="color: #333333">/*</span>Fills the viewport<span style="color: #333333">*/</span>
+    width: <span style="color: #0000DD; font-weight: bold">100</span><span style="color: #333333">%</span>;
+    margin: <span style="color: #0000DD; font-weight: bold">0</span>px;
+    position: relative; <span style="color: #333333">/*</span>You have to include this <span style="color: #000000; font-weight: bold">in</span> order to position other child items<span style="color: #333333">*/</span>
+    color: black;
+}
+body::after {
+    content: <span style="background-color: #fff0f0">&#39;&#39;</span>;
+    display: block;
+}
+<span style="color: #333333">/*</span> MEDIA QUIERIES <span style="color: #333333">*/</span>
+<span style="color: #555555; font-weight: bold">@media</span> <span style="color: #007020">all</span> <span style="color: #000000; font-weight: bold">and</span> (<span style="color: #007020">max</span><span style="color: #333333">-</span>width: <span style="color: #0000DD; font-weight: bold">992</span>px) {
+    body::after {
+        height: <span style="color: #0000DD; font-weight: bold">150</span>px; <span style="color: #333333">/*</span> Set same <span style="color: #008800; font-weight: bold">as</span> footer<span style="background-color: #fff0f0">&#39;s height when not using media queries*/</span>
+    }
+    <span style="color: #333333">.</span>my<span style="color: #333333">-</span>footer{
+        height: <span style="color: #0000DD; font-weight: bold">50</span>px;
+    }
+}
+<span style="color: #555555; font-weight: bold">@media</span> <span style="color: #007020">all</span> <span style="color: #000000; font-weight: bold">and</span> (<span style="color: #007020">min</span><span style="color: #333333">-</span>width: <span style="color: #0000DD; font-weight: bold">992</span>px) {
+    body::after {
+        height: <span style="color: #0000DD; font-weight: bold">50</span>px; <span style="color: #333333">/*</span> Set same <span style="color: #008800; font-weight: bold">as</span> footer<span style="background-color: #fff0f0">&#39;s height when not using media queries*/</span>
+    }
+    <span style="color: #333333">.</span>my<span style="color: #333333">-</span>footer{
+        height: <span style="color: #0000DD; font-weight: bold">50</span>px;
+    }
+}
+<span style="color: #333333">.</span>row{
+    padding<span style="color: #333333">-</span>bottom: <span style="color: #0000DD; font-weight: bold">10</span>px;
+}
+<span style="color: #333333">/*</span> <span style="color: #333333">-------------------------------------------------</span> <span style="color: #333333">*/</span>
+<span style="color: #333333">/*</span> FOOTER <span style="color: #333333">*/</span>
+<span style="color: #333333">/*</span> <span style="color: #333333">-------------------------------------------------</span> <span style="color: #333333">*/</span>
+<span style="color: #333333">.</span>my<span style="color: #333333">-</span>footer{
+    margin<span style="color: #333333">-</span>bottom: <span style="color: #0000DD; font-weight: bold">0</span>px;
+    position: absolute; <span style="color: #333333">/*</span>With the parent<span style="background-color: #fff0f0">&#39;s position relative, we can set our footer to absolute*/</span>
+    bottom: <span style="color: #0000DD; font-weight: bold">0</span>; <span style="color: #333333">/*</span>This takes it to the bottom<span style="color: #333333">*/</span>
+    width: <span style="color: #0000DD; font-weight: bold">100</span><span style="color: #333333">%</span>;
+    <span style="color: #333333">/*</span> height: <span style="color: #0000DD; font-weight: bold">150</span>px; <span style="color: #333333">*/</span>
+}
+</pre>
+<p>The most important thing to note here is the <code>position</code> of the parent element and the footer. The parent element (in our case they are <code>html</code> and <code>body</code>) should be set to fill the entire viewport by specifying the minimum height as <code>100vh</code> and their position to <code>relative</code>. The footer, on the otherhand, should be set to an <code>absolute</code> position. Ensure that you add <code>margin: 30;</code> to the footer to take it to the bottom.</p>
+<p>To ensure that these styles are applied in all viewport sizes, I use media queries. For now, I am only interested in the footer and body styles. You can add more if you want.</p>
+<p>Before I end this chapter, I will modify the structure of our application a bit. I will add a link in <em>My Interests</em> page which will redirect us to the  URL associated with the <code>flask_webforms</code> view function. I will then remove this link in our base template. If I want to access <em>Flask Web Forms</em> page, I will do so through the <em>My Interests Page</em>.</p>
+
+
+
+            </div>
+        </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
