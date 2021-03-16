@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Displaying User Comments</h1>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                {% include '_personal_blog_table_of_contents.html' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+<p>The completed project used in this article can be referenced <a href="https://github.com/GitauHarrison/personal-blog-tutorial-project/commit/6e45f97e64050331d70c1fe1b489981497e1297b">here</a>.</p>
+<p>Our <em>Comment</em> model has a <code>timestamp</code> field. In <a href="{{ url_for('main.user_comments') }}">chapter 5</a>, we saw how we can display a user&#39;s <code>username</code> and comment <code>body</code>. What we need to do now is display the time a comment was made in a user post. </p>
+<h3 id="understanding-dates-and-time-in-python">Understanding Dates and Time in Python</h3>
+<p>Python has a <a href="https://docs.python.org/3/library/datetime.html#module-datetime">datetime</a> module which supplies classes for manipulating dates and times. We will work with a few examples to understand how <code>datetime</code> works. To get started, activate your interpreter by typing <code>python3</code> in your terminal.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">datetime</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> datetime_object <span style="color: #333333">=</span> datetime<span style="color: #333333">.</span>datetime<span style="color: #333333">.</span>now()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(datetime_object)
+<span style="color: #888888">#Output</span>
+<span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">11</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">22</span> <span style="color: #4400EE; font-weight: bold">05</span>:<span style="color: #0000DD; font-weight: bold">45</span>:<span style="color: #6600EE; font-weight: bold">58.883645</span>
+</pre>
+<p>We have imported the datetime module. We then use one of the classes in <code>datetime</code> module called <code>datetime</code> and add <code>now()</code> method to create a datetime object containing the current local date and time.</p>
+<p>If we want to get only the date, then we will do:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Do not close the interpreter, if you do, you will need to import datetime again</span>
+<span style="color: #888888"># Below, I am not importing datetime because my interpreter session is still active</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> datetime_object <span style="color: #333333">=</span> datetime<span style="color: #333333">.</span>date<span style="color: #333333">.</span>today()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(datetime_object)
+<span style="color: #888888">#Output</span>
+<span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">11</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">22</span>
+</pre>
+<p>We have used <code>today()</code> method defined in the <code>date</code> class to get a <code>date</code> object containing the current local date.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> d <span style="color: #333333">=</span> datetime<span style="color: #333333">.</span>date(<span style="color: #0000DD; font-weight: bold">2020</span>, <span style="color: #0000DD; font-weight: bold">11</span>, <span style="color: #0000DD; font-weight: bold">22</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span> (d)
+<span style="color: #888888"># Output</span>
+<span style="color: #0000DD; font-weight: bold">2020</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">11</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">22</span>
+</pre>
+<p><code>date()</code> is a constructor of the <code>date</code> class. The constructor takes three arguments: year, month, day. Use this if you want to create a specific date.</p>
+<p>To be more specific in retrieving either the year, the month or the day, we will do:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> date
+
+<span style="color: #333333">&gt;&gt;&gt;</span> today <span style="color: #333333">=</span> date<span style="color: #333333">.</span>today()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;Current year: &#39;</span>, today<span style="color: #333333">.</span>year)
+<span style="color: #888888"># Output</span>
+Current year:  <span style="color: #0000DD; font-weight: bold">2020</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;Current month: &#39;</span>, today<span style="color: #333333">.</span>month)
+<span style="color: #888888"># Output</span>
+Current month:  <span style="color: #0000DD; font-weight: bold">11</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;Current day: &#39;</span>, today<span style="color: #333333">.</span>day)
+<span style="color: #888888"># Output</span>
+Current day:  <span style="color: #0000DD; font-weight: bold">22</span>
+</pre>
+<p>Let us now see how we can get the time object.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> time
+
+<span style="color: #333333">&gt;&gt;&gt;</span> t <span style="color: #333333">=</span> time()
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;t = &#39;</span>, t)
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> t <span style="color: #333333">=</span>  <span style="color: #4400EE; font-weight: bold">00</span>:<span style="color: #4400EE; font-weight: bold">00</span>:<span style="color: #4400EE; font-weight: bold">00</span>
+    
+<span style="color: #333333">&gt;&gt;&gt;</span> q <span style="color: #333333">=</span> time(<span style="color: #0000DD; font-weight: bold">6</span>, <span style="color: #0000DD; font-weight: bold">7</span>, <span style="color: #0000DD; font-weight: bold">30</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;q = &#39;</span>, q)
+<span style="color: #888888"># Output</span>
+q <span style="color: #333333">=</span>  <span style="color: #4400EE; font-weight: bold">06</span>:<span style="color: #4400EE; font-weight: bold">07</span>:<span style="color: #0000DD; font-weight: bold">30</span>
+</pre>
+<p>You get the idea. Using the <code>time</code> class, you can create a time object.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> datetime,date
+<span style="color: #333333">&gt;&gt;&gt;</span> t1 <span style="color: #333333">=</span> date(year <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">2020</span>, month <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">11</span>, day <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">22</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> t2 <span style="color: #333333">=</span> date(year <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">2019</span>, month <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">10</span>, day <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">13</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> t3 <span style="color: #333333">=</span> t1 <span style="color: #333333">-</span> t2
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;t3 = &#39;</span>, t3)
+<span style="color: #888888"># Output</span>
+t3 <span style="color: #333333">=</span>  <span style="color: #0000DD; font-weight: bold">406</span> days, <span style="color: #0000DD; font-weight: bold">0</span>:<span style="color: #4400EE; font-weight: bold">00</span>:<span style="color: #4400EE; font-weight: bold">00</span>
+</pre>
+<p>It is also possible to get the difference between two dates and times as seen below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> timedelta
+<span style="color: #333333">&gt;&gt;&gt;</span> t1 <span style="color: #333333">=</span> timedelta(weeks <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">4</span>, days <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">5</span>, hours <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">10</span>, seconds <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">10</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> t2 <span style="color: #333333">=</span> timedelta(days <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">7</span>, hours <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">2</span>, minutes <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">21</span>, seconds <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">34</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> t3 <span style="color: #333333">=</span> t1 <span style="color: #333333">-</span> t2
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;t3 = &#39;</span>, t3)
+<span style="color: #888888"># Output</span>
+t3 <span style="color: #333333">=</span>  <span style="color: #0000DD; font-weight: bold">26</span> days, <span style="color: #0000DD; font-weight: bold">7</span>:<span style="color: #0000DD; font-weight: bold">38</span>:<span style="color: #0000DD; font-weight: bold">36</span>
+</pre>
+<p>We have created two <code>timedelta</code> objects and printed their difference. For more authoritative information on the Python <code>datetime</code> module, check the <a href="https://docs.python.org/3/library/datetime.html">python documentation</a>.</p>
+<p>At this point, you are fairly familiar with how to use time and date in Python. But there is one more thing I would like to discuss: time zones. We know that their is an obvious possibility that the visitors of our blog may be living in different time zones. We want our blog to be able to generate consistent timestamps regardless of the fact that users of our blog may be living in different time zones. </p>
+<p>To understand the effect of timezone, I will show you how we are affected by it below:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> datetime
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #007020">str</span>(datetime<span style="color: #333333">.</span>now())
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;2020-11-22 06:25:15.366203&#39;</span>
+</pre>
+<p>If another user who is an a different time zone from mine runs the codes above, the output will be different. This is due to the concept to time zones. So how do we ensure consistency in our time?</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #007020">str</span>(datetime<span style="color: #333333">.</span>utcnow())
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&#39;2020-11-22 03:27:03.055821&#39;</span>
+</pre>
+<p>Regardless of timezones, any user who runs the code above will get the same output. <code>datetime.utcnow()</code> will always return the same time, regardless of location. UTC is the most used uniform timezone and is supported in the <code>datetime</code> class. You saw me implement this in <a href="4_working_with_database.md">chapter 4</a> while creating the <code>timestamp</code> field in the <em>Comment</em> model. This was to ensure consistency in the time implemented by our blog. </p>
+<p>While standardizing timestamps to UTC makes a lot of sense from the server&#39;s point of view, this creates a usability problem for users. I am in Nairobi and the current time here is <code>06:25:15</code>. However, UTC returns <code>03:27:03</code>. This means that I have to do the calculation of my actual time. Every visitor of our blog will have to do the same. Below, I will address this challenge while still maintaining a standardized time in our server.</p>
+<h3 id="moment-js">Moment.js</h3>
+<p><a href="https://momentjs.com/">Moment.js</a> is an open source Javascript library that helps in formating time and date. I am going to use this to help solve the issue with user time. To use it in our flask application, we will need to install the Flask extension associated with it:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remember to activate your virtual environment when installing packages</span>
+<span style="color: #ff8080; ">$</span> pip3 install flask<span style="color: #333333">-</span>moment
+</pre>
+<p>We need to register this extension in our application</p>
+<p class="code-title">app/__init__.py: Register flask-moment instance</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># ...</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_moment</span> <span style="color: #008800; font-weight: bold">import</span> Moment
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+<span style="color: #888888"># ...</span>
+moment <span style="color: #333333">=</span> Moment(app)
+</pre>
+<p>Moment.js is a Javascript library, and to use it, we need to add this script to our template so as to make it available. Thankfully, Flask-Moment makes it easier to do this, by exposing <code>moment.include_moment()</code> function that generates the <code>&lt;script&gt;</code> tag.</p>
+<p class="code-title">app/templates/base.html: Add moment.js in base template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+{<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span> \}\}
+    \{\{ moment<span style="color: #333333">.</span>include_moment() \}\}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>Flask-Bootstrap expects us to use the <code>scripts</code> block since it is the place where all JavaScript imports are to be included. The special thing with this block unlike the rest is we need to use <code>super()</code>. <code>super()</code> helps to preserve the content in the base template, without which all your base content definitions will be lost.</p>
+<h5 id="using-moment-js">Using Moment.js</h5>
+<p>Moment.js uses the ISO 8601 format to render timestamps, The format is as follows:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+\{\{ year \}\}<span style="color: #333333">-</span>\{\{ month \}\}<span style="color: #333333">-</span>\{\{ day \}\}T\{\{ hour \}\}:\{\{ minute \}\}:\{\{ second \}\}\{\{ timezone \}\}
+</pre>
+<p>The last part will always be a  <code>Z</code> which represents the UTC timezone that I want to work with in ISO 8601 format.</p>
+<p>Moment.js has multiple methods for different rendering options:</p>
+<pre style="margin: 30; line-height: 125%">moment(<span style="background-color: #fff0f0">&#39;2020-11-22T10:10:10Z&#39;</span>)<span style="color: #333333">.</span>format(<span style="background-color: #fff0f0">&#39;L&#39;</span>)
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&quot;11/22/2020&quot;</span>
+    
+moment(<span style="background-color: #fff0f0">&#39;2020-11-22T10:10:10Z&#39;</span>)<span style="color: #333333">.</span>format(<span style="background-color: #fff0f0">&#39;LL&#39;</span>)
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&quot;November 22, 2020&quot;</span>
+    
+moment(<span style="background-color: #fff0f0">&#39;2020-11-22T10:10:10Z&#39;</span>)<span style="color: #333333">.</span>format(<span style="background-color: #fff0f0">&#39;dddd&#39;</span>)
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&quot;Sunday&quot;</span>
+    
+moment(<span style="background-color: #fff0f0">&#39;2020-11-22T10:10:10Z&#39;</span>)<span style="color: #333333">.</span>calendar(<span style="background-color: #fff0f0">&#39;dddd&#39;</span>)
+<span style="color: #888888"># Output</span>
+<span style="background-color: #fff0f0">&quot;Today at 10:10 AM&quot;</span>
+</pre>
+<p>Learn more about the different rendering options of Moment.js <a href="https://momentjs.com/">here</a>.</p>
+<p>We will include a properly formated timestamp next to a user&#39;s name when posting a comment.</p>
+<p class="code-title">app/templates/_user_comments.html: Render timestamp</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+<span style="color: #333333">&lt;</span>table<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>tr valign<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;top&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;&lt;</span>img src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ post.author.avatar(36) \}\}&quot;</span><span style="color: #333333">&gt;&lt;/</span>td<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;</span>\{\{ post<span style="color: #333333">.</span>author<span style="color: #333333">.</span>username \}\} said \{\{ moment(post<span style="color: #333333">.</span>timestamp)<span style="color: #333333">.</span>fromNow() \}\}:<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+        \{\{ post<span style="color: #333333">.</span>body \}\}<span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>tr<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>table<span style="color: #333333">&gt;</span>
+</pre>
+<p>Below, you can see how the comments timestamp looks like when rendered with Flask-Moment and moment.js</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/comments_timestamp.png') }}" alt="Comment Timestamp"></p>
+<p>Impresssive, right! To make it stand out a bit, I can style both the username and the timestamp as seen below:</p>
+<p>app/templates/_user_comments.html: Improved Comment Styles</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove back slashes</span>
+
+<span style="color: #333333">&lt;</span>table class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;table table-hover&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>tr valign<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;top&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td width<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;70px&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>img src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ post.author.avatar(36) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>td<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>span style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;color: #482ff7&quot;</span><span style="color: #333333">&gt;</span>
+                \{\{ post<span style="color: #333333">.</span>author<span style="color: #333333">.</span>username \}\} 
+            <span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+                said 
+                <span style="color: #333333">&lt;</span>span style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; font-size: 10px;&quot;</span><span style="color: #333333">&gt;</span>
+                    \{\{ moment(post<span style="color: #333333">.</span>timestamp)<span style="color: #333333">.</span>fromNow() \}\}
+                <span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>:<span style="color: #333333">&lt;</span>br<span style="color: #333333">&gt;</span>
+            \{\{ post<span style="color: #333333">.</span>body \}\}<span style="color: #333333">&lt;/</span>td<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>tr<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>table<span style="color: #333333">&gt;</span>
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/styled_comments.png') }}" alt="Styled Comments"></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    <hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                        </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

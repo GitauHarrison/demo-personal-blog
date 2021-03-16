@@ -3,7 +3,8 @@ from app.models import ArticlesList, User, PersonalBlogPost, VagrantPost, \
      VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, \
      installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
      FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
-     UserCommentsPost, ElasticsearchPost, PortfolioList
+     UserCommentsPost, ElasticsearchPost, PortfolioList, DatesAndTimePost, \
+     FlaskBootstrapPost
 
 
 app = create_app()
@@ -26,5 +27,7 @@ def make_shell_context():
             'FlaskDatabasePost': FlaskDatabasePost,
             'UserCommentsPost': UserCommentsPost,
             'ElasticsearchPost': ElasticsearchPost,
-            'PortfolioList': PortfolioList
+            'PortfolioList': PortfolioList,
+            'DatesAndTimePost': DatesAndTimePost,
+            'FlaskBootstrapPost': FlaskBootstrapPost
             }

@@ -5,7 +5,8 @@ from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
     VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, \
     installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
     FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
-    UserCommentsPost, ElasticsearchPost, PortfolioList, FlaskBootstrapPost
+    UserCommentsPost, ElasticsearchPost, PortfolioList, FlaskBootstrapPost, \
+    DatesAndTimePost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -617,6 +618,47 @@ def flask_bootstrap():
     total = len(all_posts)
     return render_template('personal_blog_templates/flask_bootstrap.html',
                            title='Flask Bootstrap',
+                           form=form,
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total=total
+                           )
+
+
+@bp.route('/chapter-7/dates-and-time', methods=['GET', 'POST'])
+def dates_and_time():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username=form.username.data, email=form.email.data)
+        post = DatesAndTimePost(body=form.comment.data,
+                                author=user,
+                                language=language
+                                )
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')
+        return redirect(url_for('main.dates_and_time', _anchor='comments'))
+    page = request.args.get('page', type=int)
+    posts = DatesAndTimePost.query.order_by(
+            DatesAndTimePost.timestamp.asc()).paginate(
+                page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.dates_and_time',
+                       _anchor='comments',
+                       page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.dates_and_time',
+                       _anchor='comments', page=posts.prev_num) \
+        if posts.has_prev else None
+    all_posts = DatesAndTimePost.query.all()
+    total = len(all_posts)
+    return render_template('personal_blog_templates/dates_and_time.html',
+                           title='Date And Time',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
