@@ -202,7 +202,7 @@ boostrap <span style="color: #333333">=</span> Bootstrap(app)
     <span style="color: #333333">&lt;/</span>tr<span style="color: #333333">&gt;</span>
 <span style="color: #333333">&lt;/</span>table<span style="color: #333333">&gt;</span>
 </pre>
-<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="/images/improved_user_comments.png" alt="Improved User Comments"></p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src=" {{ url_for('static', filename='images/improved_user_comments.png') }}" alt="Improved User Comments"></p>
 <h3 id="rendering-flash-messages">Rendering Flash Messages</h3>
 <p>We can also improve the way our flash messages look like. From <a href="https://getbootstrap.com/docs/4.0/components/alerts/">bootstrap alerts</a>, we can update our <code>_user_comments.html</code> sub-template to include one of the alert styles:</p>
 <p class="code-title" >app/templates/_user_comments.html</p>
