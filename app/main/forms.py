@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Email
-from flask_wtf.file import FileField, FileRequired
 
 # from app.models import User
 from flask_pagedown.fields import PageDownField
@@ -38,7 +37,7 @@ class PortfolioForm(FlaskForm):
     project_design_link = StringField('Project Design',
                                       validators=[DataRequired()],
                                       render_kw={"placeholder": "Use URL"})
-    live_project_link = StringField('Live Project', 
+    live_project_link = StringField('Live Project',
                                     validators=[DataRequired()],
                                     render_kw={"placeholder": "Use URL"})
     submit = SubmitField('Post')

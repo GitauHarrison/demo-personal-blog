@@ -2,8 +2,10 @@ import json
 import requests
 from app import app
 
+
 def translate(text, source_language, dest_language):
-    if 'MS_TRANSLATOR_KEY' not in app.config or not app.config['MS_TRANSLATOR_KEY']:
+    if 'MS_TRANSLATOR_KEY' not in app.config or not \
+            app.config['MS_TRANSLATOR_KEY']:
         return ('Error: hte translation service is not configured')
     auth = {'Ocp-Apim-Subscription-Key': app.config['MS_TRANSLATOR_KEY']}
     r = requests.get('https://api.microsofttranslator.com/v2/Ajax.svc'

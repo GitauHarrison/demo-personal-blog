@@ -28,6 +28,7 @@ stripe_keys = {
         "endpoint_secret": app.config["STRIPE_ENDPOINT_SECRET"]
     }
 
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -45,7 +46,7 @@ def create_app(config_class=Config):
 
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
-        
+
     def start_ngrok():
         from pyngrok import ngrok
 
@@ -59,7 +60,9 @@ def create_app(config_class=Config):
         if app.config['MAIL_SERVER']:
             auth = None
             if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-                auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+                auth = (app.config['MAIL_USERNAME'],
+                        app.config['MAIL_PASSWORD']
+                        )
             secure = None
             if app.config['MAIL_USE_TLS']:
                 secure = ()
@@ -93,6 +96,7 @@ def create_app(config_class=Config):
             app.logger.info('Gitau Harrison Blog')
 
     return app
+
 
 @babel.localeselector
 def get_locale():
