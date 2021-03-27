@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+<h1 id="how-to-install-and-configure-git-in-ubuntu">How to Install and Configure Git in Ubuntu</h1>
+<p>It is best to install <code>git</code> from the Ubuntu Software repository. This tutorial is based on Ubuntu 20.04. Run the following commands in your terminal following the order below:
+<br></p>
+<h4 id="installation">Installation</h4>
+<h5 id="procedure-1-">Procedure 1:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt update
+<span style="color: #ff8080; ">$</span> sudo apt upgrade
+</pre>
+<p>It is important to always update and upgrage your <a href="https://guide.ubuntu-fr.org/server/apt.html#:~:text=The%20apt%20command%20is%20a,upgrading%20the%20entire%20Ubuntu%20system.">APT</a>. Since your are running as root, you will be asked to enter your password. Do so and the installation will continue.</p>
+<h5 id="procedure-2-">Procedure 2:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install git
+</pre>
+<p>This downloads and installs <code>git</code> on your system.</p>
+<h5 id="procedure-3-">Procedure 3:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git <span style="color: #333333">--</span>version
+</pre>
+<p>Check what version of git has been installed in your system.
+<br></p>
+<h4 id="configuration">Configuration</h4>
+<p>We will use the terminal to configure <code>git</code>. You will need to provide your <em>username</em> and <em>email address</em>.</p>
+<h5 id="procedure-1-">Procedure 1:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #008800; font-weight: bold">global</span> user<span style="color: #333333">.</span>username <span style="background-color: #fff0f0">&quot;&lt;put here your username&gt;&quot;</span>
+</pre>
+<p>This will set your global username</p>
+<h5 id="procedure-2-">Procedure 2:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #008800; font-weight: bold">global</span> user<span style="color: #333333">.</span>email <span style="background-color: #fff0f0">&quot;&lt;put here your email@example.com&gt;&quot;</span>
+</pre>
+<h5 id="procedure-3-">Procedure 3:</h5>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #007020">list</span>
+</pre>
+<p>This step confirms all the changes you just made in the <code>git</code> configuration file. If at any point you want to edit your changes, run <code>$ git config</code></p>
+<p><strong>Read more on <code>git</code> in their <a href="https://git-scm.com/">documentation</a></strong>.</p>
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
