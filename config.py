@@ -15,29 +15,35 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    SECRET_KEY=b'N\xabM\xc1\xcd\x0b\xf2\xc8-E\x82/\x07\xb6\x89\x11'
+    # Pagination
+    POSTS_PER_PAGE = os.environ.get('POSTS_PER_PAGE')
 
-    POSTS_PER_PAGE=10
+    # Email configuration
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = os.environ.get('MAIL_PORT ')
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    ADMINS = os.environ.get('ADMINS')
 
-    MAIL_SERVER='smtp.gmail.com'
-    MAIL_PORT='587'
-    MAIL_USE_TLS='True'
-    MAIL_USERNAME='tastebolder@gmail.com'
-    MAIL_PASSWORD=b"\x7f'.\x17\xf0\x85\xde\x9f:-|p(k\xbf\xd3"
-    ADMINS=['norulesanymore@gmail.com']
+    # Stripe
+    STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+    STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+    STRIPE_ENDPOINT_SECRET = os.environ.get('STRIPE_ENDPOINT_SECRET')
 
-    STRIPE_PUBLISHABLE_KEY='pk_test_51HedKjKExJxw7LdpAQR3oWJ1AWW94e8leKDmjbPkLbjvW81NzX2jXntzt774lnSxiuubyBItFVPUmeVUsxBWaoNH00eLRpQz3v'
-    STRIPE_SECRET_KEY='sk_test_51HedKjKExJxw7LdpBoS4e5v2Bekry7MvxSCXjKKBjchSe59n9KADKBJzwiFqLxIFEstnY8V1Mn6BYm00hQET99Wl00lEhu0Lj5'
-    STRIPE_ENDPOINT_SECRET='whsec_wnJMeZIAWSHZm5sONh5eBP8pSmiWpcDp'
+    # MS Live Translation
+    MS_TRANSLATOR_KEY = os.environ.get('MS_TRANSLATOR_KEY')
 
-    MS_TRANSLATOR_KEY='344435f010f8410caaa6c1f972507a3e'
+    # Manual Translation Language Options
+    LANGUAGES = os.environ.get('LANGUAGES')
 
-    LANGUAGES=['en', 'sw']
+    # reCAPTCHA configuration
+    RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+    RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
-    RECAPTCHA_PUBLIC_KEY='6LfLJN8ZAAAAAJgBHQy76zPyHVR2O9jmaTThPTLP'
-    RECAPTCHA_PRIVATE_KEY='6LfLJN8ZAAAAACe28iK98cDOBl-1REobjjR-em1a'
+    # Ngrok configuration
+    START_NGROK = os.environ.get('START_NGROK') is not None and \
+        os.environ.get('WERKZEUG_RUN_MAIN') is not 'true'
 
-    LOG_TO_STDOUT=1
-
-    START_NGROK=1 
-
+    # Heroku logs requirement
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
