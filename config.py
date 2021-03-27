@@ -39,3 +39,5 @@ class Config(object):
 
     LOG_TO_STDOUT=1
 
+    START_NGROK=1 
+
