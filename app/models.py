@@ -64,6 +64,11 @@ class User(db.Model):
                                       backref='author',
                                       lazy='dynamic'
                                       )
+    github_ssh = db.relationship('GithubSSHPost',
+                                 backref='author',
+                                 lazy='dynamic'
+                                 )
+    # Start of Personal Blog Tutorial
     hello_world = db.relationship('HelloWorldPost',
                                   backref='author',
                                   lazy='dynamic'
@@ -95,9 +100,10 @@ class User(db.Model):
                                      backref='author',
                                      lazy='dynamic'
                                      )
+    # End of Personal Blog Tutorial
 
     def __repr__(self):
-        return 'User <>'.format(self.username)
+        return 'User: {}'.format(self.username)
 
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
@@ -122,7 +128,7 @@ class PersonalBlogPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Comment <>'.format(self.body)
+        return 'Comment: {}'.format(self.body)
 
 
 db.event.listen(PersonalBlogPost.body,
@@ -149,7 +155,7 @@ class ElasticsearchPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post {}'.format(self.body)
 
 
 db.event.listen(ElasticsearchPost.body,
@@ -176,7 +182,7 @@ class VagrantPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(VagrantPost.body,
@@ -203,7 +209,7 @@ class VirtualenvwrapperPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(VirtualenvwrapperPost.body,
@@ -230,7 +236,7 @@ class reCaptchaPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(reCaptchaPost.body,
@@ -257,7 +263,7 @@ class richTextPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(richTextPost.body,
@@ -284,7 +290,7 @@ class ngrokPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(ngrokPost.body,
@@ -311,7 +317,7 @@ class installDocker(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(installDocker.body,
@@ -338,7 +344,7 @@ class HerokuDeployment(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format = 'html'), tags = allowed_tags, strip = True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(HerokuDeployment.body,
@@ -365,13 +371,44 @@ class WebDevelopmentPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(WebDevelopmentPost.body,
                 'set',
                 WebDevelopmentPost.on_changed_body
                 )
+
+
+class GithubSSHPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    def __repr__(self):
+        return 'Post: {}'.format(self.body)
+
+
+db.event.listen(GithubSSHPost.body,
+                'set',
+                GithubSSHPost.on_changed_body
+                )
+
+# -----------------------
+# Personal Blog
+# -----------------------
 
 
 class HelloWorldPost(db.Model):
@@ -392,7 +429,7 @@ class HelloWorldPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(HelloWorldPost.body,
@@ -419,7 +456,7 @@ class FlaskTemplatesPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(FlaskTemplatesPost.body,
@@ -446,7 +483,7 @@ class FlaskWebFormsPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(FlaskWebFormsPost.body,
@@ -473,7 +510,7 @@ class FlaskDatabasePost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(FlaskDatabasePost.body,
@@ -500,7 +537,7 @@ class UserCommentsPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(UserCommentsPost.body,
@@ -527,7 +564,7 @@ class FlaskBootstrapPost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(FlaskBootstrapPost.body,
@@ -554,10 +591,14 @@ class DatesAndTimePost(db.Model):
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
 
     def __repr__(self):
-        return 'Post <>'.format(self.body)
+        return 'Post: {}'.format(self.body)
 
 
 db.event.listen(DatesAndTimePost.body,
                 'set',
                 DatesAndTimePost.on_changed_body
                 )
+
+# -----------------------
+# End of Personal Blog
+# -----------------------
