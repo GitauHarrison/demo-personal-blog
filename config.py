@@ -17,7 +17,7 @@ class Config(object):
 
     SECRET_KEY=b'N\xabM\xc1\xcd\x0b\xf2\xc8-E\x82/\x07\xb6\x89\x11'
 
-    POSTS_PER_PAGE=3
+    POSTS_PER_PAGE=10
 
     MAIL_SERVER='smtp.gmail.com'
     MAIL_PORT='587'
