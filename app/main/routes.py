@@ -585,7 +585,7 @@ def user_comments():
                            )
 
 
-@bp.route('/chapter-6/flask-bootstrap', methods=['GET', 'POST'])
+@bp.route('/chapter-6/styled-applicatioin', methods=['GET', 'POST'])
 def flask_bootstrap():
     form = CommentForm()
     if form.validate_on_submit():
@@ -617,7 +617,7 @@ def flask_bootstrap():
     all_posts = UserCommentsPost.query.all()
     total = len(all_posts)
     return render_template('personal_blog_templates/flask_bootstrap.html',
-                           title='Flask Bootstrap',
+                           title='Styled Application',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
