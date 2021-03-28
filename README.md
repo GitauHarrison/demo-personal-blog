@@ -1,6 +1,6 @@
 # I Am Found Here 100% of The Time
 
-![Personal Blog](app/static/images/personal_blog.png)
+![Personal Blog](app/static/images/personal_blog.gif)
 
 ### Overview
 This is my blog, where I note all the projects I am involved in, my personal interests and other aspects of life I am engaged in.
