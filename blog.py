@@ -4,7 +4,7 @@ from app.models import ArticlesList, User, PersonalBlogPost, VagrantPost, \
      installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
      FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
      UserCommentsPost, ElasticsearchPost, PortfolioList, DatesAndTimePost, \
-     FlaskBootstrapPost, GithubSSHPost , InstallGitPost
+     FlaskBootstrapPost, GithubSSHPost, InstallGitPost, FileUploadsPost
 
 
 app = create_app()
@@ -34,5 +34,6 @@ def make_shell_context():
             'DatesAndTimePost': DatesAndTimePost,
             'FlaskBootstrapPost': FlaskBootstrapPost,
             'GithubSSHPost': GithubSSHPost,
-            'InstallGitPost': InstallGitPost
+            'InstallGitPost': InstallGitPost,
+            'FileUploadsPost': FileUploadsPost
             }
