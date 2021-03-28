@@ -20,7 +20,7 @@ class ArticlesForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = CKEditorField('Article Content', validators=[DataRequired()])
     link = StringField('Link', validators=[DataRequired()],
-                       render_kw={"placeholder": "Use URL not view function eg `/test` "})
+                       render_kw={"placeholder": "Use URL without the slash"})
     submit = SubmitField('Post')
 
 
