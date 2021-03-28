@@ -1,0 +1,520 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+<h1 id="stripe-for-payment-using-python-and-flask">Stripe For Payment using Python and Flask</h1>
+<p>Stripe currently has 3 payment strategies for accepting one-time payments:</p>
+<ol>
+<li><a href="https://stripe.com/docs/payments/charges-api">Charges API</a> (legacy)</li>
+<li><a href="https://stripe.com/payments/checkout">Stripe Checkout</a> (We will focus on this)</li>
+<li><a href="https://stripe.com/docs/payments/payment-intents">Payments Intents API</a> </li>
+</ol>
+<h5 id="which-strategy-should-you-use-">Which strategy should you use?</h5>
+<ul>
+<li>Use <em>Stripe Checkout</em> if you want to get up and running fast. It provides a number of powerful features out-of-the-box, supports multiple languages, and can even be used for <a href="https://stripe.com/docs/billing/subscriptions/fixed-price">recurring payments</a>. Most importantly, Checkout manages the entire payment process for you, so you can begin accepting payments without even having to add a single form!</li>
+<li>Use the Payment Intents API (along with Elements) if you want to customize the payment experience for your end users.</li>
+</ul>
+<h5 id="workflow">Workflow</h5>
+<ol>
+<li>Create a project structure to hold all your project resources</li>
+<li>Create a virtual environment and install <code>flask</code></li>
+<li>Initialize your app to make sure it is working well (you will display the classic &#39;Hello, world&#39; message)</li>
+<li>Add Stripe and its keys</li>
+<li>Create a product in Stripe</li>
+<li>Get your Publishable Key</li>
+<li>Create a <a href="https://stripe.com/payments/checkout">Checkout Session</a></li>
+<li>Redirect the user appropriately when they have checked out</li>
+<li>Confirm payment with Stripe Webhooks</li>
+</ol>
+<img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_flask_demo.gif') }}" alt="Stripe Flask Demo">
+<h4 id="initial-setup">Initial SetUp</h4>
+<p>You need to create your project directory and move into it. It is important that you activate your <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a> before installing <code>Flask</code>. </p>
+<p>Create your project folder and move into it:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkdir flask<span style="color: #333333">-</span>stripe<span style="color: #333333">-</span>checkout <span style="color: #333333">&amp;&amp;</span> cd flask<span style="color: #333333">-</span>stripe<span style="color: #333333">-</span>checkout
+</pre>
+<p>Create your virtual environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3 <span style="color: #333333">-</span>m venv tutorial<span style="color: #333333">-</span>env
+</pre>
+<p>If you wish to use a virtualenvironment wrapper to create your virtual environment, learn how to <a href="/virtualenvwrapper_setup.md">configure Python Environment with Virtualenvwrapper here</a>.</p>
+<p>Install <code>flask</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install flask
+</pre>
+<p>Save your app requirements in a <code>requirements.txt</code> file as shown below</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+<h5 id="simple-flask-app-structure">Simple Flask App Structure</h5>
+<p>So far, we already have our project folder created and it holds the <code>requirements.txt</code> file. We will add the following empty files to complete the structure for our simple app.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_project_structure.svg') }}" alt="Python Project Structure"></p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> mkdir app
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>__init__<span style="color: #333333">.</span>py <span style="color: #888888"># This is where the application is initialized</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>routes<span style="color: #333333">.</span>py <span style="color: #888888"># All our views will be here</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">.</span>py <span style="color: #888888"># this allows for our app to run</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch config <span style="color: #888888"># all our configuration variables will be stored here</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch <span style="color: #333333">.</span>flaskenv <span style="color: #888888"># stores all your environment variables </span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> mkdir app<span style="color: #333333">/</span>templates <span style="color: #888888"># create a templates subfolder to hold all our template files</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>base<span style="color: #333333">.</span>html <span style="color: #888888"># base structure of the app will be here</span>
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>templates<span style="color: #333333">/</span>index<span style="color: #333333">.</span>html <span style="color: #888888"># this is the primary template</span>
+</pre>
+<p>Add the following contents to the appropriate files:</p>
+<p class="code-title">app/__init__.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+
+app <span style="color: #333333">=</span> Flask(__name__)
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/index&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">index</span>():
+    <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&quot;Hello, world!&quot;</span>
+</pre>
+<p class="code-title">app.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<h5 id="fire-up-your-server">Fire Up Your Server</h5>
+<p>There are two ways you can start your Flask server:</p>
+<p><strong>Method #1:</strong></p>
+<p>Our app is set up and we need to fire our server to display <em>Hello, world!</em>. Let us set up <code>FLASK_APP</code> environment variable to import our flask app:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> export FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> flask run
+    
+<span style="color: #888888"># This is what you will see:</span>
+<span style="color: #333333">*</span> Serving Flask app <span style="background-color: #fff0f0">&quot;app&quot;</span>
+<span style="color: #333333">*</span> Running on http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span> (Press CTRL<span style="color: #333333">+</span>C to quit)
+<span style="color: #888888"># click on the link (or copy this http address and paste it in your browser URL bar). You should see Hello, World!</span>
+</pre>
+<p><strong>Method #2:</strong></p>
+<p>Since environment variables such as the one created above (I mean <code>FLASK_APP</code>) aren&#39;t remembered across terminal sessions, you may find it tedious to always have to set the <code>FLASK_APP</code> environment variable when you open a new terminal window. </p>
+<p>Flask allows you to register environment variables that you want to be  automatically imported when you run <code>flask run</code> command. To use this option, you have to install the <code>python-dotenv</code> package in your activated virtual environment:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> pip3 install python<span style="color: #333333">-</span>dotenv
+</pre>
+<p>Register you environment variable in the top-level flaskenv file:</p>
+<p class="code-title">.flaskenv</p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py
+</pre>
+<p>Now, all you need to do as run <code>flask run</code> and you will be able to see the output in your browser.</p>
+<h4 id="adding-stripe">Adding Stripe</h4>
+<p>Start by installing <code>stripe</code>:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> pip3 install stripe
+</pre>
+<p><a href="https://dashboard.stripe.com/register">Register</a> for a stripe account. Once you are in the dashboard, navigate to the <em>Developers</em> menu on the left sidebar. Click on it to reveal <em>API Keys</em>.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe-developer.png') }}" alt="Stripe Developer"></p>
+<p>Click on <em>API Keys</em>. </p>
+<p>Each Stripe account has four <a href="https://stripe.com/docs/keys">API keys</a>: two keys for testing and two for production. Each pair has a &quot;secret key&quot; and a &quot;publishable key&quot;. Do not reveal the secret key to anyone; the publishable key will be embedded in the JavaScript on the page that anyone can see. </p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_API_Keys.png') }}" alt="Stripe API Keys"></p>
+<p>Currently the toggle for &quot;Viewing test data&quot; in the left sidebar indicates that we&#39;re using the test keys now. That&#39;s what we want. Now that we know where to find our API keys, we need to store them in system-wide variables within the top-level <code>config.py</code> file.</p>
+<p class="code-title">config.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    STRIPE_PUBLISHABLE_KEY<span style="color: #333333">=&lt;</span>YOUR_STRIPE_PUBLISHABLE_KEY<span style="color: #333333">&gt;</span>
+    STRIPE_SECRET_KEY<span style="color: #333333">=&lt;</span>YOUR_STRIPE_SECRET_KEY<span style="color: #333333">&gt;</span>
+</pre>
+<p>Let us register our configuration in the application package:</p>
+<p class="code-title">app/__init__.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config <span style="color: #888888"># new</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">stripe</span> <span style="color: #888888"># new</span>
+    
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config) <span style="color: #888888"># new</span>
+    
+<span style="color: #888888"># new</span>
+stripe_keys <span style="color: #333333">=</span> {
+    <span style="background-color: #fff0f0">&quot;secret_key&quot;</span>: app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_SECRET_KEY&quot;</span>],
+    <span style="background-color: #fff0f0">&quot;publishable_key&quot;</span>: app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_PUBLISHABLE_KEY&quot;</span>]
+}
+    
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p>The configuration items can be accessed with a dictionary syntax from <code>app.config</code>. Here, you can see a quick session with the Python interpreter where I check what the value of the secret key is:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+<span style="color: #333333">&gt;&gt;&gt;</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_SECRET_KEY&quot;</span>]
+    
+<span style="color: #888888"># Your stripe secret key will be displayed here:</span>
+<span style="color: #333333">&lt;&lt;</span>YOUR_STRIPE_SECRET_KEY<span style="color: #333333">&gt;&gt;</span>
+</pre>
+<p>Finally, you will need to add an account name. Click on the top-left sidebar where it says <em>Add account name</em>. You can change the details later in your <em>Account settings</em>.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/account_name.png') }}" alt="Account name"></p>
+<h4 id="create-a-product">Create a Product</h4>
+<p>We need to create a product to sell. Click <em>Products</em> on the left sidebar in your dashboard and <em>+Add Product</em></p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/add_stripe_product.png') }}" alt="Add Stripe Product"></p>
+<p>Add a product name, enter your price and select <em>One time</em>, then click on <em>Save Product</em> on the top-right corner:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/new_product.png') }}" alt="New Product"></p>
+<h4 id="get-publishable-key">Get Publishable Key</h4>
+<p>We will use <em>Javascript</em>. We will add a static folder which will hold our <code>.js</code> files.</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> mkdir app<span style="color: #333333">/</span>static <span style="color: #333333">&amp;&amp;</span> mkdir app<span style="color: #333333">/</span>static<span style="color: #333333">/</span>js 
+<span style="color: #888888"># this will create a js sub-folder in static</span>
+
+(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> touch app<span style="color: #333333">/</span>static<span style="color: #333333">/</span>js<span style="color: #333333">/</span>main<span style="color: #333333">.</span>js 
+<span style="color: #888888"># empty js file</span>
+</pre>
+<p>Update the JS file:</p>
+<p class="code-title">app/static/js/main.js</p>
+<pre style="margin: 30; line-height: 125%">console<span style="color: #333333">.</span>log(<span style="background-color: #fff0f0">&quot;Sanity check!&quot;</span>) <span style="color: #333333">//</span> this <span style="color: #000000; font-weight: bold">is</span> just a printout
+</pre>
+<p>In your <code>app/routes.py</code>, modify the file to now render your <code>index.html</code> file. We will use the <code>index.html</code> file to display a simple <em>Purchase</em> button:</p>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># your previous import</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+    
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">index</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;index.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Home&#39;</span>)
+</pre>
+<p>Then, update your <code>index.html</code> file to contain a <em>Purchase</em> button. You will first create a base template called <code>base.html</code> which will carry all the base presentation of your app.</p>
+<p class="code-title">app/templates/base.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Remove the back slashes <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;bootstrap/base.html&#39;</span> <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+        Flask<span style="color: #333333">-</span>Stripe<span style="color: #333333">-</span>Demo_Project <span style="color: #333333">|</span> \{\{ title \}\}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>} 
+        Welcome to Flask<span style="color: #333333">-</span>Stripe<span style="color: #333333">-</span>Demo_Project
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block head <span style="color: #333333">%</span>}
+    \{\{<span style="color: #007020">super</span>()\}\}
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;image/svg&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{url_for(&#39;static&#39;, filename = &#39;img/study.png&#39;)\}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block styles <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename=&#39;css/styles.css&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> This <span style="color: #000000; font-weight: bold">is</span> where your code will go <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    <span style="color: #333333">&lt;</span>script src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://js.stripe.com/v3/&quot;</span><span style="color: #333333">&gt;&lt;/</span>script<span style="color: #333333">&gt;</span> 
+    <span style="color: #333333">&lt;</span>script src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename = &#39;js/main.js&#39;) \}\}&quot;</span><span style="color: #333333">&gt;&lt;/</span>script<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>We have linked our <code>main.js</code> file with the base template. Your actual content will go into the <code>block content</code> section in the <code>index.html</code> file.</p>
+<p class="code-title">app/templates/index.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Remove the back slashes <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&quot;base.html&quot;</span> <span style="color: #333333">%</span>}
+    
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>section class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;section&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>button class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;button is-primary&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;submitBtn&quot;</span><span style="color: #333333">&gt;</span>Purchase<span style="color: #ff8080; ">!</span><span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>section<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>Run the development server:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> flask run
+</pre>
+<p>Navigate to <em><a href="http://localhost:5000">http://localhost:5000</a></em>, and open up the JavaScript console (ctrl +shift + I). You should see the <em>sanity check</em>:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/sanity_check.png') }}" alt="Sanity Check"></p>
+<p>Let us add a new route to handle the <a href="https://www.w3schools.com/js/js_ajax_intro.asp">AJAX</a> request:</p>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> stripe_keys
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> jsonify
+    
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">get_publishable_key</span>():
+    stripe_config <span style="color: #333333">=</span> {<span style="background-color: #fff0f0">&quot;publicKey&quot;</span>: stripe_keys[<span style="background-color: #fff0f0">&quot;publishable_key&quot;</span>]}
+    <span style="color: #008800; font-weight: bold">return</span> jsonify(stripe_config)
+</pre>
+<h5 id="create-an-ajax-request">Create an AJAX request</h5>
+<p>We will use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch API</a> to make an AJAX request to the new route <code>/config</code> endpoint.</p>
+<p class="code-title">app/static/main.js</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">//</span> previous code
+
+<span style="color: #333333">//</span> Get Stripe publishable key
+fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
+<span style="color: #333333">.</span>then((result) <span style="color: #333333">=&gt;</span> { <span style="color: #008800; font-weight: bold">return</span> result<span style="color: #333333">.</span>json(); })
+<span style="color: #333333">.</span>then((data) <span style="color: #333333">=&gt;</span> {
+    <span style="color: #333333">//</span> Initialize Stripe<span style="color: #333333">.</span>js
+    const stripe <span style="color: #333333">=</span> Stripe(data<span style="color: #333333">.</span>publicKey);
+});
+</pre>
+<p>A reposnse from a <code>fetch</code> request is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream">ReadableStream</a>. <code>result.json</code> returns a promise, which we resolve to a Javascript object such as <code>data</code>. We use dot notation to access the <code>publicKey</code> in order to obtain the publishable key.</p>
+<p>Now, after the page load, a call will be made to <code>/config</code>, which will respond with the Stripe publishable key. We&#39;ll then use this key to create a new instance of Stripe.js.</p>
+<h4 id="create-checkout-session">Create Checkout Session</h4>
+<p>We need to attach an event handler to the button&#39;s click event which will send another AJAX request to the server to generate a new Checkout session ID.</p>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&quot;/create-checkout-session&quot;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">create_checkout_session</span>():
+    domain_url <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;http://localhost:5000/&quot;</span>
+    stripe<span style="color: #333333">.</span>api_key <span style="color: #333333">=</span> stripe_keys[<span style="background-color: #fff0f0">&quot;secret_key&quot;</span>]
+    
+    <span style="color: #008800; font-weight: bold">try</span>:
+        <span style="color: #888888"># Create new Checkout Session for the order</span>
+        <span style="color: #888888"># Other optional params include:</span>
+        <span style="color: #888888"># [billing_address_collection] - to display billing address details on the page</span>
+            
+        <span style="color: #888888"># For full details see https://stripe.com/docs/api/checkout/sessions/create</span>
+    
+        <span style="color: #888888"># ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param</span>
+        checkout_session <span style="color: #333333">=</span> stripe<span style="color: #333333">.</span>checkout<span style="color: #333333">.</span>Session<span style="color: #333333">.</span>create(
+            success_url<span style="color: #333333">=</span>domain_url <span style="color: #333333">+</span> <span style="background-color: #fff0f0">&quot;success?session_id={CHECKOUT_SESSION_ID}&quot;</span>,
+            cancel_url<span style="color: #333333">=</span>domain_url <span style="color: #333333">+</span> <span style="background-color: #fff0f0">&quot;cancelled&quot;</span>,
+            payment_method_types<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&quot;card&quot;</span>],
+            billing_address_collection <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;required&#39;</span>,
+            mode<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;payment&quot;</span>,
+            line_items<span style="color: #333333">=</span>[
+                {
+                    <span style="background-color: #fff0f0">&quot;name&quot;</span>: <span style="background-color: #fff0f0">&quot;Arduino Board&quot;</span>,
+                    <span style="background-color: #fff0f0">&quot;quantity&quot;</span>: <span style="color: #0000DD; font-weight: bold">1</span>,
+                    <span style="background-color: #fff0f0">&quot;currency&quot;</span>: <span style="background-color: #fff0f0">&quot;usd&quot;</span>,
+                    <span style="background-color: #fff0f0">&quot;amount&quot;</span>: <span style="background-color: #fff0f0">&quot;3900&quot;</span>,
+                }
+            ]
+        )
+        <span style="color: #008800; font-weight: bold">return</span> jsonify({<span style="background-color: #fff0f0">&quot;sessionId&quot;</span>: checkout_session[<span style="background-color: #fff0f0">&quot;id&quot;</span>]})
+    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #ff8080; font-weight: bold">Exception</span> <span style="color: #008800; font-weight: bold">as</span> e:
+        <span style="color: #008800; font-weight: bold">return</span> jsonify(error<span style="color: #333333">=</span><span style="color: #007020">str</span>(e)), <span style="color: #0000DD; font-weight: bold">403</span>
+</pre>
+<ul>
+<li>We have defined  a <code>domain_url</code> for the redirects</li>
+<li>Assigned the Stripe key to <code>stripe.api_key</code> so that it be sent automatically when we make a request to create a new Checkout Session</li>
+<li>Created the Checkout Session</li>
+<li>Sent the ID back in the response</li>
+</ul>
+<p><code>success_url</code> and <code>cancel_url</code> both use the <code>domain_url</code>. The user will be redirected back to those URLs in the event of a successful payment or cancellation, respectively. This will help us redirect the user appropriately.</p>
+<p>Let us solve the <code>result.json</code> promise:</p>
+<p class="code-title">app.static/js/main.js</p>
+<pre style="margin: 30; line-height: 125%">console<span style="color: #333333">.</span>log(<span style="background-color: #fff0f0">&quot;Sanity check!&quot;</span>);
+
+<span style="color: #333333">//</span> Get Stripe publishable key
+fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
+<span style="color: #333333">.</span>then((result) <span style="color: #333333">=&gt;</span> { <span style="color: #008800; font-weight: bold">return</span> result<span style="color: #333333">.</span>json(); })
+<span style="color: #333333">.</span>then((data) <span style="color: #333333">=&gt;</span> {
+  <span style="color: #333333">//</span> Initialize Stripe<span style="color: #333333">.</span>js
+  const stripe <span style="color: #333333">=</span> Stripe(data<span style="color: #333333">.</span>publicKey);
+
+
+  <span style="color: #333333">//</span> Add Event handler
+  document<span style="color: #333333">.</span>querySelector(<span style="background-color: #fff0f0">&quot;#submitBtn&quot;</span>)<span style="color: #333333">.</span>addEventListener(<span style="background-color: #fff0f0">&quot;click&quot;</span>, () <span style="color: #333333">=&gt;</span> {
+    <span style="color: #333333">//</span> Get Checkout Session ID
+    fetch(<span style="background-color: #fff0f0">&quot;/create-checkout-session&quot;</span>)
+    <span style="color: #333333">.</span>then((result) <span style="color: #333333">=&gt;</span> { <span style="color: #008800; font-weight: bold">return</span> result<span style="color: #333333">.</span>json(); })
+    <span style="color: #333333">.</span>then((data) <span style="color: #333333">=&gt;</span> {
+      console<span style="color: #333333">.</span>log(data);
+      <span style="color: #333333">//</span> Redirect to Stripe Checkout
+      <span style="color: #008800; font-weight: bold">return</span> stripe<span style="color: #333333">.</span>redirectToCheckout({sessionId: data<span style="color: #333333">.</span>sessionId})
+    })
+    <span style="color: #333333">.</span>then((res) <span style="color: #333333">=&gt;</span> {
+      console<span style="color: #333333">.</span>log(res);
+    });
+  });
+});
+</pre>
+<p>As soon as we resolved the <code>result.json</code> promise, we called <a href="https://stripe.com/docs/js/checkout/redirect_to_checkout">redirectToCheckout</a> method with the Checkout Session ID from the resolved promise.</p>
+<p>Navigate to <a href="http://localhost:5000">http://localhost:5000</a>. Click the button and you should be redirected to an instance of the Stripe Checkout (a Stripe-hosted page to securely collect payment information) with your Product infomation:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_payment_form.png') }}" alt="Stripe Payment Form"></p>
+<p><em>My form is slightly modified and branded to have the orange-ish color. You can achive this through <a href="https://dashboard.stripe.com/settings/branding">Brand Setting</a>.</em></p>
+<p>Stripe provides us with several <a href="https://stripe.com/docs/testing#cards">test card numbers</a>. Pick one, depending on your region and fill in the form:</p>
+<ul>
+    <li>Provide a valid email address</li>
+    <li>Enter a test card number</li>
+    <li>Provide any expiration date </li>
+    <li>Provide any three-digit CVC number</li>
+    <li>Provide any name</li>
+    <li>Enter a random postal code and billing address</li>
+</ul>
+<p>If all goes well, the payment should be processed. Nothing will happen after a successful process because we have not set a <code>/success</code> redirect yet. So, below that is what we will do.</p>
+<h4 id="redirecting-user-appropriately">Redirecting User Appropriately</h4>
+<p>Let's create two templates that will have a link to redirect our users:</p>
+<p class="code-title">app/templates/success.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Remove the back slashes <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&quot;base.html&quot;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+  <span style="color: #333333">&lt;</span>section class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;section&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+      <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>Your payment succeeded<span style="color: #333333">.&lt;/</span>p<span style="color: #333333">&gt;</span>
+      <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;index&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Back to home page<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+  <span style="color: #333333">&lt;/</span>section<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p class="code-title">app/templates/cancel.html</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Remove the back slashes <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&quot;base.html&quot;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+  <span style="color: #333333">&lt;</span>section class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;section&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+      <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>Your payment was cancelled<span style="color: #333333">.&lt;/</span>p<span style="color: #333333">&gt;</span>
+      <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;index&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Back to home page<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+  <span style="color: #333333">&lt;/</span>section<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>We will now add routes for successful payment processing or any cancellation. </p>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/success&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">success</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;success.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Success&#39;</span>)
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/cancel&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">cancelled</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;cancel.html&#39;</span>, title <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Cancel&#39;</span>)
+</pre>
+<p>When you submit your payment by clicking on the payment button again from <a href="http://localhost:5000">http://localhost:5000</a>, you should be redirected back to  <a href="http://localhost:5000/success">http://localhost:5000/success</a>.</p>
+<p>You can confirm that the payment was actually successful by clicking on <em>Payments</em> on your Stripe dashboard:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/successful_stripe_payment.png') }}" alt="Successful Stripe Payment"></p>
+<p>You can test out <code>/cancel</code> by clicking on the back arrow in the Stripe payment form. You should be redirected appropriately.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_payment_form.png') }}" alt="Stripe Payment Form"></p>
+<h4 id="configure-payments-with-stripe-webhooks">Configure Payments with Stripe Webhooks</h4>
+<p>Our app works well at this point, but we still can&#39;t programmatically confirm payments and perhaps run some code if a payment was successful. We already redirected the user to the success page after they check out, but we can&#39;t rely on that page alone since payment confirmation happens asynchronously.</p>
+<p>One of the easiest ways to get notified when the payment goes through is to use a callback called <a href="https://stripe.com/docs/webhooks">Stripe webhook</a>. We&#39;ll need to create a simple endpoint in our application, which Stripe will call whenever an event occurs (i.e., when a user buys an Arduino). By using webhooks, we can be absolutely sure the payment went through successfully.</p>
+<blockquote>
+<p>There are two types of events in Stripe and programming in general: Synchronous events, which have an immediate effect and results (e.g., creating a customer), and asynchronous events, which don&#39;t have an immediate result (e.g., confirming payments). Because payment confirmation is done asynchronously, the user might get redirected to the success page before their payment is confirmed and before we receive their funds.</p>
+</blockquote>
+<p>We need to do three things in order to use webhooks:</p>
+<ol>
+<li>Set up a webhook endpoint</li>
+<li>Test the endpoint using the <a href="https://stripe.com/docs/stripe-cli">Stripe CLI</a></li>
+<li>Register the endpoint with Stripe</li>
+</ol>
+<h5 id="endpoint">Endpoint</h5>
+<p>Whenever a payment goes through successfully, we will print a message.</p>
+<p class="code-title">app/routes.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> request
+<span style="color: #888888"># Your previous code</span>
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&quot;/webhook&quot;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&quot;POST&quot;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">stripe_webhook</span>():
+    payload <span style="color: #333333">=</span> request<span style="color: #333333">.</span>get_data(as_text<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    sig_header <span style="color: #333333">=</span> request<span style="color: #333333">.</span>headers<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;Stripe-Signature&quot;</span>)
+
+    <span style="color: #008800; font-weight: bold">try</span>:
+        event <span style="color: #333333">=</span> stripe<span style="color: #333333">.</span>Webhook<span style="color: #333333">.</span>construct_event(
+            payload, sig_header, stripe_keys[<span style="background-color: #fff0f0">&quot;endpoint_secret&quot;</span>]
+        )
+
+    <span style="color: #008800; font-weight: bold">except</span> <span style="color: #ff8080; font-weight: bold">ValueError</span> <span style="color: #008800; font-weight: bold">as</span> e:
+        <span style="color: #888888"># Invalid payload</span>
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&quot;Invalid payload&quot;</span>, <span style="color: #0000DD; font-weight: bold">400</span>
+    <span style="color: #008800; font-weight: bold">except</span> stripe<span style="color: #333333">.</span>error<span style="color: #333333">.</span>SignatureVerificationError <span style="color: #008800; font-weight: bold">as</span> e:
+        <span style="color: #888888"># Invalid signature</span>
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&quot;Invalid signature&quot;</span>, <span style="color: #0000DD; font-weight: bold">400</span>
+
+    <span style="color: #888888"># Handle the checkout.session.completed event</span>
+    <span style="color: #008800; font-weight: bold">if</span> event[<span style="background-color: #fff0f0">&quot;type&quot;</span>] <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&quot;checkout.session.completed&quot;</span>:
+        <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&quot;Payment was successful.&quot;</span>)
+        <span style="color: #888888"># TODO: you can run some custom code here</span>
+
+    <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&quot;Success&quot;</span>, <span style="color: #0000DD; font-weight: bold">200</span>
+</pre>
+<p><code>stripe_webhook</code> function now serves our webhook endpoint. Here, we are only looking for <code>checkout.session.completed</code> events which are called whenever a checkout is successful. You can use the same pattern for other <a href="https://stripe.com/docs/api/events">Stripe Events</a>.</p>
+<h5 id="test-your-webhook">Test Your Webhook</h5>
+<p>We will use the Stripe CLI to test our webhook. First, install the Stripe CLI:</p>
+<ul>
+<li>Download the latest <code>linux</code> tar.gz file release from  <a href="https://github.com/stripe/stripe-cli/releases/latest">https://github.com/stripe/stripe-cli/releases/latest</a></li>
+<li>Unzip the downloaded file</li>
+<li>Run the executable <code>./stripe</code></li>
+</ul>
+<p>Login to stripe via the command line:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> stripe login
+
+<span style="color: #888888"># Your output</span>
+our pairing code <span style="color: #000000; font-weight: bold">is</span>: cushy<span style="color: #333333">-</span>classy<span style="color: #333333">-</span>fast<span style="color: #333333">-</span>shiny
+This pairing code verifies your authentication <span style="color: #008800; font-weight: bold">with</span> Stripe<span style="color: #333333">.</span>
+Press Enter to <span style="color: #007020">open</span> the browser (<span style="color: #333333">^</span>C to quit)
+</pre>
+<p>Press <code>Enter</code> to continue. Allow access from your pop-up Stripe browser tap and return to your terminal. You should see something similar to:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;</span> Done<span style="color: #ff8080; ">!</span> The Stripe CLI <span style="color: #000000; font-weight: bold">is</span> configured <span style="color: #008800; font-weight: bold">for</span> Bolder Learner <span style="color: #008800; font-weight: bold">with</span> account <span style="color: #007020">id</span> <span style="color: #333333">&lt;</span>ACCOUNT_ID<span style="color: #333333">&gt;</span>
+
+Please note: this key will expire after <span style="color: #0000DD; font-weight: bold">90</span> days, at which point you<span style="background-color: #fff0f0">&#39;ll need to re-authenticate.</span>
+</pre>
+<p>We will then start to listen to Stripe events and forward them to our endpoint using the command:</p>
+<pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> stripe listen <span style="color: #333333">--</span>forward<span style="color: #333333">-</span>to localhost:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span>webhook
+</pre>
+<p>This will generate a webhook signing secret:</p>
+<pre style="margin: 30; line-height: 125%">Ready<span style="color: #ff8080; ">!</span> Your webhook signing secret <span style="color: #000000; font-weight: bold">is</span> whsec_<span style="color: #333333">&lt;</span>your<span style="color: #333333">-</span>signing<span style="color: #333333">-</span>secret<span style="color: #333333">&gt;</span> (<span style="color: #333333">^</span>C to quit)
+</pre>
+<p>Add the signing secret to your <code>config.py</code> file then update your <code>_init_.py</code>:</p>
+<p class="code-title">config.py</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+  <span style="color: #888888"># Your previous code</span>
+  STRIPE_ENDPOINT_SECRET<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;your-actual-end-point-signing-secret&gt;&#39;</span>
+</pre>
+<p class="code-title">app/_init_.py</p>
+<pre style="margin: 30; line-height: 125%">stripe_keys <span style="color: #333333">=</span> {
+    <span style="background-color: #fff0f0">&quot;secret_key&quot;</span>: app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_SECRET_KEY&quot;</span>],
+    <span style="background-color: #fff0f0">&quot;publishable_key&quot;</span>: app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_PUBLISHABLE_KEY&quot;</span>],
+    <span style="background-color: #fff0f0">&quot;endpoint_secret&quot;</span>: app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;STRIPE_ENDPOINT_SECRET&quot;</span>], <span style="color: #888888"># new</span>
+}
+</pre>
+<p>Stripe will now forward events to our endpoint. Once again, test for a successful payment. You should see the message <code>Payment was successful</code></p>
+<p>At this point, you can stop the <code>stripe listen --forward-to localhost:5000/webhook</code> process.</p>
+<h5 id="register-your-endpoint">Register Your Endpoint</h5>
+<p>After deploying your app, you can register your endpoint in the stripe dashboard under <em>Developer &gt; Webhooks</em>. Click on the button <em>Add Enpoint</em>.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/register_webhook.png') }}" alt="Register Webhook"></p>
+<p>In production, you&#39;ll need to have HTTPS so your connection is secure. You&#39;ll probably want to store the domain_url as an environment variable as well. Finally, it&#39;s a good idea to confirm that the correct product and price are being used in the <code>/create-checkout-session</code> route before creating a Checkout Session:</p>
+<ol>
+<li>Add each of your products to a database.</li>
+<li>Then, when you dynamically create the product page, store the product database ID and price in data attributes within the purchase button.</li>
+<li>Update the /create-checkout-session route to only allow POST requests.</li>
+<li>Update the JavaScript event listener to grab the product info from the data attributes and send them along with the AJAX POST request to the /create-checkout-session route.</li>
+<li>Parse the JSON payload in the route handler and confirm that the product exists and that the price is correct before creating a Checkout Session.</li>
+</ol>
+<p><strong>Find an improved Flask project that uses stripe for payment <a href="https://github.com/GitauHarrison/integrating-stripe-payment-in-flask">here</a>.</strong></p>
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>
+{% endblock %}

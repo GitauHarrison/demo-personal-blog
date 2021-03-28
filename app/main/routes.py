@@ -6,7 +6,8 @@ from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
     installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
     FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
     UserCommentsPost, ElasticsearchPost, PortfolioList, FlaskBootstrapPost, \
-    DatesAndTimePost, GithubSSHPost, InstallGitPost, FileUploadsPost
+    DatesAndTimePost, GithubSSHPost, InstallGitPost, FileUploadsPost,\
+    StripeInFlaskPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -1134,6 +1135,51 @@ def file_uploads():
     total = len(all_posts)
     return render_template('file_uploads.html',
                            title='File Uploads',
+                           form=form,
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total=total
+                           )
+
+
+@bp.route('/stripe-in-flask', methods=['GET', 'POST'])
+def stripe_in_flask():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username=form.username.data, email=form.email.data)
+        post = StripeInFlaskPost(body=form.comment.data,
+                                 author=user,
+                                 language=language
+                                 )
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')
+        return redirect(url_for('main.stripe_in_flask',
+                                _anchor='comments'
+                                )
+                        )
+    page = request.args.get('page', 1, type=int)
+    posts = StripeInFlaskPost.query.order_by(
+        StripeInFlaskPost.timestamp.asc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.stripe_in_flask',
+                       _anchor='comments',
+                       page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.stripe_in_flask',
+                       _anchor='comments',
+                       page=posts.prev_num) \
+        if posts.has_prev else None
+    all_posts = StripeInFlaskPost.query.all()
+    total = len(all_posts)
+    return render_template('stripe_in_flask.html',
+                           title='Stripe In Flask',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
