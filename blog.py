@@ -5,7 +5,7 @@ from app.models import ArticlesList, User, PersonalBlogPost, VagrantPost, \
      FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
      UserCommentsPost, ElasticsearchPost, PortfolioList, DatesAndTimePost, \
      FlaskBootstrapPost, GithubSSHPost, InstallGitPost, FileUploadsPost,\
-     StripeInFlaskPost
+     StripeInFlaskPost, WhatsappChatbotPost
 
 
 app = create_app()
@@ -37,5 +37,6 @@ def make_shell_context():
             'GithubSSHPost': GithubSSHPost,
             'InstallGitPost': InstallGitPost,
             'FileUploadsPost': FileUploadsPost,
-            'StripeInFlaskPost': StripeInFlaskPost
+            'StripeInFlaskPost': StripeInFlaskPost,
+            'WhatsappChatbotPost': WhatsappChatbotPost
             }

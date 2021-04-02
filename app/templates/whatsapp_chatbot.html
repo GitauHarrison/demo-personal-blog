@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+<h1 id="build-a-simple-whatsapp-chatbot-using-flask-and-twilio">Build A Simple WhatsApp Chatbot Using Flask and Twilio</h1>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/whatsapp_chatbot/whatsapp_chatbot.gif') }}" alt="Simple WhatsApp Chatbot"></p>
+<p>A chatbot is a computer program designed to simulate conversation through voice commands or text chats (or both) with human users, especially over the internet. The level of intelligence among chatbots vary immensely, some (like the one used here) are very basic, while others can be very sophisticated by employing machine learning algorithms and artificial intelligence in order to attain near human-level conversation.</p>
+<h2 id="requirements">Requirements</h2>
+<p>These components will be needed for this tutorial:</p>
+<ul>
+<li>Python 3.6 or newer. For y&#39;all on Linux or Ubuntu 20.04, Python comes in the box. If your Operating System does not have Python installed, go to python.org to download a favourable installer.</li>
+<li><a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> web framework</li>
+<li>Twilio Account. Get <a href="https://www.twilio.com/try-twilio?promo=WNPWrR">one for free</a> now.</li>
+<li>A smartphone with an active number and WhatsApp installed.</li>
+<li>Ngrok for localhost testing.</li>
+</ul>
+<p><strong>NOTE:</strong> This project assumes you have a basic understanding of flask and a few dependencies. A reference to all components used will be provided in the conclusion section of this article.</p>
+<h2 id="twilio-for-whatsapp">Twilio for WhatsApp</h2>
+<p>You can easily develop and test your application using the Twilio <a href="https://www.twilio.com/console/sms/whatsapp/learn">WhatsApp Sandbox</a>. The first thing we need to do is to connect our smartphone to the sandbox. From your <a href="https://www.twilio.com/console">Twilio Console</a>,</p>
+<ul>
+<li>Select <a href="https://www.twilio.com/console/sms/dashboard">Programmable Messaging</a>, then</li>
+<li>Click on &#39;Try It Out&#39;, and finally,</li>
+<li>Click on <a href="https://www.twilio.com/console/sms/whatsapp/learn">Try WhatsApp</a>. </li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/whatsapp_chatbot/configure_whatsapp.png') }}" alt="Configure Your Smartphone with Twilio WhatsApp"></p>
+<p>This page provides you with a <code>join-</code> code, which is followed by a randomly generated two-word phrase.</p>
+<p>Send a WhatsApp message with the given code to the number assigned to your account in order to enable WhatsApp sandbox for your smartphone. Immediately after, you will receiver a response from Twilio indicating that your mobile number is connected to the sandbox. You can now send and receive messages!</p>
+<h2 id="creating-an-application">Creating An Application</h2>
+<p>These are the steps we will follow to create our chatbot:</p>
+<ol>
+<li>Create application structure</li>
+<li>Create and activate your virtual environment</li>
+<li>Install needed packages</li>
+<li>Build our application</li>
+<li>Test our application</li>
+</ol>
+<h4 id="1-create-application-structure">1. Create Application Structure</h4>
+<p>Our project will use a very simple structure:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/whatsapp_chatbot/chatbot_structure.png') }}" alt="WhatsApp chatbot structure"></p>
+<p>Go ahead and create your project structure using the <code>mkdir</code> and <code>touch</code> commands in your terminal to create folders and empty files respectively.</p>
+<h4 id="2-create-and-activate-virtual-environment">2. Create and Activate Virtual Environment</h4>
+<p>To ensure that we do not clutter our Operating System, we will create and activate a virtual environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv whatsapp_chatbot
+</pre>
+<p>I have used a <code>virtualenvwrapper</code> to create my virtual environment. If you are not familiar with <code>virtualenvwrapper</code>, learn what it is and how to use it <a href="virtualenvwrapper_setup.md">here</a>.</p>
+<h4 id="3-install-dependancies">3. Install Dependancies</h4>
+<p>It is now recommended to install the dependancies needed for this project inside your virtual environment. These dependencies are:</p>
+<ul>
+<li>flask</li>
+<li>requests</li>
+<li>twilio</li>
+<li>python-dotenv</li>
+<li>pyngrok</li>
+</ul>
+<p>To install all of them at once, run:</p>
+<pre style="margin: 30; line-height: 125%">(whatsapp_chatbot)<span style="color: #ff8080; ">$</span> pip3 install flask requests twilio python<span style="color: #333333">-</span>dotenv pyngrok
+</pre>
+<p>For the purposes of demonstration, I have kept this application very simple. All the chatbot does is to determine if two select words come in the conversation. Whenever a user&#39;s message includes the word &#39;quote&#39;, the chatbot will respond by giving a random quote. If the user&#39;s sentence includes the word &#39;cat&#39;, then an image of cat will be the response from the chatbot. What do you think will happen when a user sends a message that has both words?</p>
+<h4 id="4-build-application">4. Build Application</h4>
+<p>Let us now build our application:</p>
+<p><code>__init__.py: create application instance</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+
+app <span style="color: #333333">=</span> Flask(__name__)
+
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p>Above, we have instantiated our application.</p>
+<p><code>routes.py: Define application endpoint</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> request
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">twilio.twiml.messaging_response</span> <span style="color: #008800; font-weight: bold">import</span> MessagingResponse
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">requests</span>
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/bot&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">bot</span>():
+    incoming_msg <span style="color: #333333">=</span> request<span style="color: #333333">.</span>values<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;Body&#39;</span>, <span style="background-color: #fff0f0">&#39;&#39;</span>)<span style="color: #333333">.</span>lower()
+    resp <span style="color: #333333">=</span> MessagingResponse()
+    msg <span style="color: #333333">=</span> resp<span style="color: #333333">.</span>message()
+    responded <span style="color: #333333">=</span> <span style="color: #007020">False</span>
+    <span style="color: #008800; font-weight: bold">if</span> <span style="background-color: #fff0f0">&#39;quote&#39;</span> <span style="color: #000000; font-weight: bold">in</span> incoming_msg:
+        r <span style="color: #333333">=</span> requests<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;https://api.quotable.io/random&#39;</span>)
+        <span style="color: #008800; font-weight: bold">if</span> r<span style="color: #333333">.</span>status_code <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">200</span>:
+            data <span style="color: #333333">=</span> r<span style="color: #333333">.</span>json()
+            quote <span style="color: #333333">=</span> f<span style="background-color: #fff0f0">&#39;{data[&quot;content&quot;]} ({data[&quot;author&quot;]})&#39;</span>
+        <span style="color: #008800; font-weight: bold">else</span>:
+            quote <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;I could not retrieve a quote at this time, sorry.&#39;</span>
+        msg<span style="color: #333333">.</span>body(quote)
+        responded <span style="color: #333333">=</span> <span style="color: #007020">True</span>
+    <span style="color: #008800; font-weight: bold">if</span> <span style="background-color: #fff0f0">&#39;cat&#39;</span> <span style="color: #000000; font-weight: bold">in</span> incoming_msg:
+        msg<span style="color: #333333">.</span>media(<span style="background-color: #fff0f0">&#39;https://cataas.com/cat&#39;</span>)
+        responded <span style="color: #333333">=</span> <span style="color: #007020">True</span>
+    <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> responded:
+        msg<span style="color: #333333">.</span>body(<span style="background-color: #fff0f0">&#39;Apologies, I do not understand what you really asked.&#39;</span>)
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">str</span>(resp)
+</pre>
+<p>Our endpoint makes use of the <code>HTTP POST</code> method because we will be sending messages out. Each time an incoming message is received from a user, Twilio will invoke this endpoint.</p>
+<p><code>bot()</code> function is responsible for analyzing the message sent by a user and provide appropriate responses.</p>
+<p>We use the <code>request</code> object from flask to deduce the message payload from a user. <code>.lower()</code> makes certain that we take care of capitalizatioin or lack thereof in messages by returning all messages in lower case.</p>
+<p>The response that Twilio expects from a webhook needs to be given in <a href="https://www.twilio.com/docs/glossary/what-is-twilio-markup-language-twiml">Twilio Markup Language (or TwiML)</a> based on XML language.</p>
+<p>From a message&#39;s payload, we extract the body of that message and save it as an object.</p>
+<p>The logic employed simply checks where the words &#39;cat&#39; and &#39;quote&#39; are in a message. <code>responded</code> boolean value tracks for cases where the words are not included, in which case we offer a generic response.</p>
+<p>APIs from <a href="https://github.com/lukePeavey/quotable">Quotable</a> and <a href="https://cataas.com/">Cat as a Service</a> are used to generate random quotes in json format and random pictures respectively.</p>
+<p>Before we can run this application, we need to update <code>bot.py</code> file as follows:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<h4 id="5-test-application">5. Test Application</h4>
+<p>Envrionment variables are run before our application. Every time we fire up our server, these variables need to be run first. So, what environment variables are these?</p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;value&gt;&#39;</span>
+FLASK_ENV<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;value&gt;&#39;</span>
+FLASK_DEBUG<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;value&gt;&#39;</span>
+</pre>
+<p>We will store all our environment variables in <code>.flaskenv</code> file.</p>
+<p><code>.flaskenv: All environment variable go here</code></p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>bot<span style="color: #333333">.</span>py
+FLASK_ENV<span style="color: #333333">=</span>development
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">True</span>
+</pre>
+<p>Given that we have built this application following the principle of <em>separation of concerns</em>, we can run our application on the terminal:</p>
+<pre style="margin: 30; line-height: 125%">(whatsapp_chatbot)<span style="color: #ff8080; ">$</span> flask run
+
+<span style="color: #888888"># Output</span>
+
+<span style="color: #333333">*</span> Serving Flask app <span style="background-color: #fff0f0">&quot;bot.py&quot;</span> (lazy loading)
+ <span style="color: #333333">*</span> Environment: development
+ <span style="color: #333333">*</span> Debug mode: on
+ <span style="color: #333333">*</span> Running on http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span> (Press CTRL<span style="color: #333333">+</span>C to quit)
+ <span style="color: #333333">*</span> Restarting <span style="color: #008800; font-weight: bold">with</span> stat
+ <span style="color: #333333">*</span> Debugger <span style="color: #000000; font-weight: bold">is</span> active<span style="color: #ff8080; ">!</span>
+</pre>
+<p>This application is running on <code>localhost</code>. In order to test it, we will use <code>ngrok</code> to provide us with a temporary URL that redirects to our local port 5000. Let us update our application to run <code>ngrok</code> every time we fire up our server.</p>
+<p><code>.flaskenv: Add ngrok to environment variables</code></p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>bot<span style="color: #333333">.</span>py
+FLASK_ENV<span style="color: #333333">=</span>development
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">True</span>
+
+START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
+</pre>
+<p>Ngrok needs to be run every time the server is fired up.</p>
+<p><code>config.py: Configure ngrok</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    START_NGROK <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span> <span style="color: #000000; font-weight: bold">and</span> \
+        os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;WERKZEUG_RUN_MAIN&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="background-color: #fff0f0">&#39;true&#39;</span>
+
+    LOG_TO_STDOUT <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;LOG_TO_STDOUT&#39;</span>)
+</pre>
+<p><code>__init__.py: Register ngrok configuration in application</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">start_ngrok</span>():
+    <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">pyngrok</span> <span style="color: #008800; font-weight: bold">import</span> ngrok
+
+    url <span style="color: #333333">=</span> ngrok<span style="color: #333333">.</span>connect(<span style="color: #0000DD; font-weight: bold">5000</span>)
+    <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;* Tunnel: &#39;</span>, url)
+
+
+<span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;ENV&quot;</span>) <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&quot;development&quot;</span> <span style="color: #000000; font-weight: bold">and</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;START_NGROK&quot;</span>]:
+    start_ngrok()
+
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p><code>ngrok.connect(5000)</code> is used to connect us to the local port 5000. We then check whether that configuration is set in the <code>config.py</code> file. If it is set, then we call the <code>start_ngrok()</code> function. A ngork tunnel will be displayed in the terminal every time the application is running. </p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># This is how the terminal output will look like:</span>
+
+<span style="color: #333333">*</span> Serving Flask app <span style="background-color: #fff0f0">&quot;bot.py&quot;</span> (lazy loading)
+ <span style="color: #333333">*</span> Environment: development
+ <span style="color: #333333">*</span> Debug mode: on
+ <span style="color: #333333">*</span> Running on http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">5000</span><span style="color: #333333">/</span> (Press CTRL<span style="color: #333333">+</span>C to quit)
+ <span style="color: #333333">*</span> Restarting <span style="color: #008800; font-weight: bold">with</span> stat
+ <span style="color: #333333">*</span> Debugger <span style="color: #000000; font-weight: bold">is</span> active<span style="color: #ff8080; ">!</span>
+ <span style="color: #333333">*</span> Debugger PIN: <span style="color: #0000DD; font-weight: bold">199</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">894</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">753</span>
+t<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">2021</span><span style="color: #333333">-</span><span style="color: #4400EE; font-weight: bold">03</span><span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">09</span>T15:<span style="color: #0000DD; font-weight: bold">17</span>:<span style="color: #0000DD; font-weight: bold">57</span><span style="color: #333333">+</span><span style="color: #4400EE; font-weight: bold">0300</span> lvl<span style="color: #333333">=</span>warn msg<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;can&#39;t bind default web address, trying alternatives&quot;</span> obj<span style="color: #333333">=</span>web addr<span style="color: #333333">=</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">4040</span>
+<span style="color: #333333">*</span> Tunnel:  NgrokTunnel: <span style="background-color: #fff0f0">&quot;http://16d8304e3f61.ngrok.io&quot;</span> <span style="color: #333333">-&gt;</span> <span style="background-color: #fff0f0">&quot;http://localhost:5000&quot;</span>
+<span style="color: #333333">*</span> Tunnel:  NgrokTunnel: <span style="background-color: #fff0f0">&quot;http://b9d852fc5172.ngrok.io&quot;</span> <span style="color: #333333">-&gt;</span> <span style="background-color: #fff0f0">&quot;http://localhost:5000&quot;</span>
+</pre>
+<p>I am using a free tier package from <code>ngrok</code>. Every time I make changes to the application, a new URL will be generated.</p>
+<p>Alternatively, open a new window in your terminal and run:</p>
+<pre style="margin: 30; line-height: 125%">(whatsapp_chatbot)<span style="color: #ff8080; ">$</span> ngrok http <span style="color: #0000DD; font-weight: bold">5000</span>
+
+<span style="color: #888888"># Output</span>
+
+ngrok by <span style="color: #555555; font-weight: bold">@inconshreveable</span>                                                  (Ctrl<span style="color: #333333">+</span>C to quit)
+                                                                                           
+Session Status                online                                                       
+Session Expires               <span style="color: #0000DD; font-weight: bold">1</span> hour, <span style="color: #0000DD; font-weight: bold">59</span> minutes                                           
+Version                       <span style="color: #6600EE; font-weight: bold">2.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">35</span>                                                       
+Region                        United States (us)                                           
+Web Interface                 http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">4041</span>                                        
+Forwarding                    http:<span style="color: #333333">//</span><span style="color: #0000DD; font-weight: bold">13</span>c58a13e6c2<span style="color: #333333">.</span>ngrok<span style="color: #333333">.</span>io <span style="color: #333333">-&gt;</span> http:<span style="color: #333333">//</span>localhost:<span style="color: #0000DD; font-weight: bold">5000</span>        
+Forwarding                    https:<span style="color: #333333">//</span><span style="color: #0000DD; font-weight: bold">13</span>c58a13e6c2<span style="color: #333333">.</span>ngrok<span style="color: #333333">.</span>io <span style="color: #333333">-&gt;</span> http:<span style="color: #333333">//</span>localhost:<span style="color: #0000DD; font-weight: bold">5000</span>       
+                                                                                           
+Connections                   ttl     opn     rt1     rt5     p50     p90                  
+                              <span style="color: #0000DD; font-weight: bold">0</span>       <span style="color: #0000DD; font-weight: bold">0</span>       <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>
+</pre>
+<p>Note the lines beginning with &#39;Forwarding&#39;. These show the public URLs that <code>ngrok</code> uses to redirect requests into our service. We now need to tell Twilio to use either of this URLs to send incoming message notifications.</p>
+<ul>
+<li>Go back to <a href="https://www.twilio.com/console/sms/dashboard">Programmable Messaging</a>,</li>
+<li>Click on <a href="https://www.twilio.com/console/sms/settings">Settings</a>, and finally,</li>
+<li>Click on <a href="https://www.twilio.com/console/sms/whatsapp/sandbox">WhatsApp Sandbox Setting</a></li>
+<li>Copy the <code>ngrok</code> URL and paste it in the box that says &#39;WHEN A MESSAGE COMES IN&#39;. Remember to append <code>/bot</code> since our chatbot is exposed through this endpoint. </li>
+<li>Make sure to set the request method to <code>HTTP POST</code></li>
+<li>Scroll down and click the &#39;Save&#39; button</li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/whatsapp_chatbot/chatbot_msg_url.png') }}" alt="Public Chatbot URL"></p>
+<p>You can now start sending messages to the chatbot from the smartphone you connected to the sandbox.</p>
+<h2 id="references">References</h2>
+<ol>
+<li>If you are not familiar with the flask web framework, learn how you can create and build applications in the <a href="https://gitauharrison-blog.herokuapp.com/personal-blog">Personal Blog Tutorial</a> series.</li>
+<li><code>virtualenvwrapper</code> makes working with virtual environments very easy. Learn how to configure your machine to use <code>virtualenvwrapper</code> <a href="https://gitauharrison-blog.herokuapp.com/virtualenvwrapper">here</a>.</li>
+<li>Ngrok is very handy especially  when you want to test an application that is running in the local server. Learn more <a href="https://gitauharrison-blog.herokuapp.com/ngrok">here</a>.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h3 id="comments">{{ total }} Comments</h3>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
