@@ -83,7 +83,11 @@ class User(db.Model):
     whatsapp_chatbot = db.relationship('WhatsappChatbotPost',
                                        backref='author',
                                        lazy='dynamic'
-                                       )                                                                            
+                                       )
+    twilio_sendgrid = db.relationship('TwilioSendGridPost',
+                                      backref='author',
+                                      lazy='dynamic'
+                                      )
 
     # Start of Personal Blog Tutorial
     hello_world = db.relationship('HelloWorldPost',
@@ -529,6 +533,33 @@ class WhatsappChatbotPost(db.Model):
 db.event.listen(WhatsappChatbotPost.body,
                 'set',
                 WhatsappChatbotPost.on_changed_body
+                )
+
+
+class TwilioSendGridPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    def __repr__(self):
+        return 'Post: {}'.format(self.body)
+
+
+db.event.listen(TwilioSendGridPost.body,
+                'set',
+                TwilioSendGridPost.on_changed_body
                 )
 
 # -----------------------

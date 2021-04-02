@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 id="how-to-send-and-receive-emails-from-you-flask-app-using-twilio-sendgrid">How to Send and Receive Emails from Your Flask App using Twilio SendGrid</h1>
+<p><a href="http://sendgrid.com/">SendGrid</a> is a communication platform for transactional and marketing email. The goal of using SendGrid is technically delivering an exceptional email experience since email is the backbone of a business&#39; customer engagement. In this tutorial, I will show you how you can build a Flask application and integrate Twilio SendGrid APIs.</p>
+<h2 id="what-we-will-do-">What we will do:</h2>
+<ol>
+<li>Create a SendGrid account</li>
+<li>Build a Flask application</li>
+<li>Integrate Flask mail </li>
+<li>Integrate Twilio SendGrid</li>
+</ol>
+<h2 id="create-a-sendgrid-account">Create a SendGrid account</h2>
+<ul>
+<li>Create a <a href="https://signup.sendgrid.com/">free account</a> now</li>
+<li>Log into your account</li>
+<li>Select <em>Settings</em> then click on <a href="https://app.sendgrid.com/settings/api_keys">API Keys</a></li>
+<li>Create a new API Key by clicking on the blue button</li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/twilio_sendgrid/create_api_key.png') }}" alt="Create SendGrid API Key"></p>
+<ul>
+<li>Give the API Key a name</li>
+<li>Ensure you select <em>Full Access</em></li>
+<li>Click <em>Create and View</em> button</li>
+</ul>
+<p>Copy the API Key and save it somewhere safe. You will need it later.</p>
+<h2 id="build-a-flask-application">Build a Flask Application</h2>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/twilio_sendgrid/login_demo.gif') }}" alt="Login Demo"></p>
+<p>Build this application in Flask. The mandatory user authentication process can be optional for now. To get you started, consider to use this structure:</p>
+<pre style="margin: 30; line-height: 125%">sendgrid_project
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> sendgrid<span style="color: #333333">.</span>py
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> config<span style="color: #333333">.</span>py
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> <span style="color: #333333">.</span>env
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> <span style="color: #333333">.</span>env<span style="color: #333333">-</span>template
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> <span style="color: #333333">.</span>gitignore
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> <span style="color: #333333">.</span>flaskenv
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> requirements<span style="color: #333333">.</span>txt
+    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> app<span style="color: #333333">/</span>
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> routes<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> forms<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> __init__<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> models<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> emails<span style="color: #333333">.</span>py<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> errors<span style="color: #333333">.</span>py
+                   <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> templates<span style="color: #333333">/</span>
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> home<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> base<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> register<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> login<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> password_reset_request<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> password_reset<span style="color: #333333">.</span>html
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> emails<span style="color: #333333">/</span>
+                                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> password_reset<span style="color: #333333">.</span>html
+                                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> password_reset<span style="color: #333333">.</span>txt
+                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> static<span style="color: #333333">/</span>
+                                    <span style="color: #333333">|</span> <span style="color: #333333">-----------</span> styles<span style="color: #333333">.</span>css
+</pre>
+<p>Use the commands <code>mkdir</code> and <code>touch</code> in your terminal to quickly create this structure</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Create an empty directory</span>
+<span style="color: #ff8080; ">$</span> mkdir sendgrid_project
+
+<span style="color: #888888"># Create an empty file inside an existing directory</span>
+<span style="color: #ff8080; ">$</span> touch sendgrid_projcet<span style="color: #333333">/</span>config<span style="color: #333333">.</span>py
+</pre>
+<p>Activate your virtual environment:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv <span style="color: #888888"># I am using a virtualenvwrapper</span>
+</pre>
+<p>Next, install packages that will be used in the project:</p>
+<ul>
+<li>flask</li>
+<li>flask-sqlalchemy</li>
+<li>flask-migrate</li>
+<li>flask-mail</li>
+<li>flask_bootstrap</li>
+<li>flask-wtf</li>
+<li>flask-login</li>
+<li>email-valiator</li>
+<li>pyjwt</li>
+<li>pyngrok</li>
+</ul>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> pip3 install flask flask<span style="color: #333333">-</span>migrate <span style="color: #888888"># add the rest here</span>
+</pre>
+<p>Add the installed packages in <code>requirements.txt</code> file:</p>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+<p>Complete the application as seen in this <a href="https://github.com/GitauHarrison/how-to-add-email-support-in-a-flask-app">GitHub repository</a>.</p>
+<p>Noteworthy, the files in <code>app/templates/email</code> carry the message that will be sent to a user&#39;s email. This email message has a password reset link which will redirect a user to another page of the application where they can reset their password. This link has an expiration period after which it will become invalid.</p>
+<p>Also, it should be noted the application does send errors to the admin of the application whenever there is an internal server error. This email bears the message of the error so the admin can see the actual cause problem.</p>
+<h2 id="testing-how-to-send-password-reset-email-locally">Testing How to Send Password Reset Email Locally</h2>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/twilio_sendgrid/password_reset.gif') }}" alt="Password Reset"></p>
+<ul>
+<li>Register a user using a valid and working email, for example <em>johndoe@gmail.com</em>. You should be able to access this email. </li>
+<li>Log in to your app to make sure your credentials actually work.</li>
+<li>Log out of the app by clickig <em>Logout</em> link at the top-right of the navbar</li>
+<li>Click on <em>Reset Password</em> link</li>
+<li>Add the registered user&#39;s email</li>
+<li>Open the user&#39;s email to find the password reset request email</li>
+<li>Click on the expirable link in the email</li>
+<li>Type in your new password and confirm it</li>
+<li>Click <em>Reset Password</em> button</li>
+<li>Click on the <em>Login</em> link</li>
+<li>Enter your new password</li>
+</ul>
+<p>You should be able to log in. From your terminal, you should have seen how the email authentication works. </p>
+<h2 id="sending-emails-using-twilio-sendgrid">Sending Emails Using Twilio SendGrid</h2>
+<p>Now that you know how to send emails using Flask Mail, you can do the same for applications that are on production. If you host this application, say in Heroku, you will note that the password reset feature does not work. You have no errors, but still it does not work. This is because the email service we are using does not work on production. And that is where Twilio SendGrid comes it.</p>
+<p>In this section, I am going to show you how to send emails using Twilio SendGrid. The method I will use below will not work on a production software.</p>
+<p>You have already signed up for Twilio SendGrid and you have your API Key with you. We will make use of this email module we have set up to work with Twilio SendGrid.</p>
+<p>First, let us update the <code>config.py</code> file to use SendGrid configurations:</p>
+<p><code>config.py: Set SendGrid environment variables</code></p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Current Email configurations</span>
+MAIL_SERVER <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>)
+MAIL_PORT <span style="color: #333333">=</span> <span style="color: #007020">int</span>(os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PORT&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="color: #0000DD; font-weight: bold">25</span>)
+MAIL_USE_TLS <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USE_TLS&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>
+MAIL_USERNAME <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USERNAME&#39;</span>)
+MAIL_PASSWORD <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PASSWORD&#39;</span>)
+ADMINS <span style="color: #333333">=</span> [<span style="background-color: #fff0f0">&#39;your-email@example.com&#39;</span>]
+
+<span style="color: #888888"># SendGrid&#39;s email configurations</span>
+MAIL_SERVER <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>)
+MAIL_PORT <span style="color: #333333">=</span> <span style="color: #007020">int</span>(os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PORT&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="color: #0000DD; font-weight: bold">25</span>)
+MAIL_USE_TLS <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USE_TLS&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>
+MAIL_USERNAME <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USERNAME&#39;</span>)
+MAIL_PASSWORD <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;SENDGRID_API_KEY&#39;</span>)
+MAIL_DEFAULT_SENDER <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_DEFAULT_SENDER&#39;</span>)
+</pre>
+<p>To use SendGrid&#39;s SMTP Service, you have to properly update your configurations. </p>
+<ul>
+<li>The mail server will be <code>smpt.sendgrid.net</code></li>
+<li>The mail port should be 587 (or 25)</li>
+<li>TLS must be enabled</li>
+<li>For your username, do not use your <em>email address</em>, rather you must use the word &quot;apikey&quot;</li>
+</ul>
+<p>This is how your <code>.env</code> file will look like:</p>
+<pre style="margin: 30; line-height: 125%">MAIL_SERVER<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;smtp.sendgrid.net&#39;</span>
+MAIL_PORT<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;587&#39;</span>
+MAIL_USE_TLS<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;True&#39;</span>
+MAIL_USERNAME<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;apikey&#39;</span>
+SENDGRID_API_KEY<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;add-your-api-key-here&#39;</span>
+MAIL_DEFAULT_SENDER<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;a-valid-and-working-email-address&#39;</span>
+</pre>
+<p>In the current application, you will need to update all instances of the variable <code>ADMINS</code> to <code>MAIL_DEFAULT_SENDER</code>. </p>
+<p>Then run your flask shell:</p>
+<pre style="margin: 30; line-height: 125%">(venv) flask shell
+
+<span style="color: #888888"># Output</span>
+Python<span style="color: #333333">-</span>dotenv could <span style="color: #000000; font-weight: bold">not</span> parse statement starting at line <span style="color: #0000DD; font-weight: bold">1</span>
+Python <span style="color: #6600EE; font-weight: bold">3.8</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">5</span> (default, Jan <span style="color: #0000DD; font-weight: bold">27</span> <span style="color: #0000DD; font-weight: bold">2021</span>, <span style="color: #0000DD; font-weight: bold">15</span>:<span style="color: #0000DD; font-weight: bold">41</span>:<span style="color: #0000DD; font-weight: bold">15</span>) 
+[GCC <span style="color: #6600EE; font-weight: bold">9.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>] on linux
+App: app [development]
+Instance: <span style="color: #333333">/</span>home<span style="color: #333333">/</span>harry<span style="color: #333333">/</span>email_support_in_flask<span style="color: #333333">/</span>instance
+<span style="color: #333333">&gt;&gt;&gt;</span> app
+
+<span style="color: #888888"># Output</span>
+<span style="color: #333333">&lt;</span>Flask <span style="background-color: #fff0f0">&#39;app&#39;</span><span style="color: #333333">&gt;</span>
+</pre>
+<p>What does the <code>flask shell</code> command do? The purpose of the flask shell command is to start the Python interpreter  in the context of the application. Take this example:</p>
+<pre style="margin: 30; line-height: 125%">(venv)<span style="color: #ff8080; ">$</span> python <span style="color: #888888"># this starts the python intepreter</span>
+
+<span style="color: #888888"># Output</span>
+Python <span style="color: #6600EE; font-weight: bold">3.8</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">5</span> (default, Jan <span style="color: #0000DD; font-weight: bold">27</span> <span style="color: #0000DD; font-weight: bold">2021</span>, <span style="color: #0000DD; font-weight: bold">15</span>:<span style="color: #0000DD; font-weight: bold">41</span>:<span style="color: #0000DD; font-weight: bold">15</span>) 
+[GCC <span style="color: #6600EE; font-weight: bold">9.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">0</span>] on linux
+Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span style="background-color: #fff0f0">&quot;copyright&quot;</span>, <span style="background-color: #fff0f0">&quot;credits&quot;</span> <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&quot;license&quot;</span> <span style="color: #008800; font-weight: bold">for</span> more information<span style="color: #333333">.</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> app
+Traceback (most recent call last):
+  File <span style="background-color: #fff0f0">&quot;&lt;stdin&gt;&quot;</span>, line <span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #000000; font-weight: bold">in</span> <span style="color: #333333">&lt;</span>module<span style="color: #333333">&gt;</span>
+<span style="color: #ff8080; font-weight: bold">NameError</span>: name <span style="background-color: #fff0f0">&#39;app&#39;</span> <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> defined
+<span style="color: #333333">&gt;&gt;&gt;</span> 
+</pre>
+<p>Python does not recognize the <code>app</code> instance unless it is explicitly imported. From the <code>flask shell</code>example above, you will notice that the Python interpreter recongized the <code>app</code> instance. This is all defined in the application entry file <code>sendgrid.py</code> at the project&#39;s top-level directory.</p>
+<p>With your Python interpreter open using the <code>flask shell</code> command, we will import <code>flask_mail</code> to send out an example email. </p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> mail
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_mail</span> <span style="color: #008800; font-weight: bold">import</span> Message
+
+<span style="color: #333333">&gt;&gt;&gt;</span> msg <span style="color: #333333">=</span> Message(<span style="background-color: #fff0f0">&#39;Sending Email Using Twilio SendGrid&#39;</span>, recipients<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;a-working-recipient-email-address&#39;</span>])
+<span style="color: #333333">&gt;&gt;&gt;</span> msg<span style="color: #333333">.</span>body <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Hi, </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0"> This is a test email that I have sent you. It has no significance to you whatsoever, but to me it means a lot. You can ignore this message. </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">Flask Email Support Team&#39;</span>
+<span style="color: #333333">&gt;&gt;&gt;</span>msg<span style="color: #333333">.</span>html <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;&lt;p&gt;Hi, &lt;br&gt;&lt;br&gt; This is a test email that I have sent you. It has no significance to you whatsoever, but to me it means a lot. You can ignore this message. &lt;br&gt;&lt;br&gt;Flask Email Support Team&lt;/p&gt;&#39;</span>
+
+<span style="color: #333333">&gt;&gt;&gt;</span>mail<span style="color: #333333">.</span>send(msg)
+</pre>
+<p>You will get the error:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># ...</span>
+<span style="color: #ff8080; font-weight: bold">AssertionError</span>: The message does <span style="color: #000000; font-weight: bold">not</span> specify a sender <span style="color: #000000; font-weight: bold">and</span> a default sender has <span style="color: #000000; font-weight: bold">not</span> been configured
+</pre>
+<p>To fix this error, you need to configure your account to specify a <a href="https://sendgrid.com/docs/for-developers/sending-email/sender-identity/">Sender Identity</a>. We will use the <em>Single Sender Verification</em> which is a fast way to verify your Sender Identity when you don’t have access to the DNS settings for your domain. </p>
+<ul>
+<li>From your <a href="https://app.sendgrid.com/">SendGrid Dashboard</a>, select <em>Settings</em></li>
+<li>Click on <a href="https://app.sendgrid.com/settings/sender_auth">Sender Authentication</a>. You will see <em>Single Sender Verification</em> section</li>
+<li>Click  on <a href="https://app.sendgrid.com/settings/sender_auth/senders/new">Verify Single Sender</a> button.</li>
+<li>Create a new Sender by clicking on the blue button. You will see the form below:</li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/twilio_sendgrid/create_sender.png') }}" alt="Create Sender"></p>
+<ul>
+<li>Provide valid and working email addresses for <em>From Email Address</em> and <em>Reply To</em> form fields. You can fill in placeholder data in the other fields.</li>
+</ul>
+<p>That&#39;s how you specify a sender identity. Note that this is used for test purposes only. <em>With a trial account you can send 100 emails per day forever.</em></p>
+<p>In your <code>.env</code> file, update the <code>MAIL_DEFAULT_SENDER</code> variable to be the same as the one you have set up just now in your Sender Identity.</p>
+<p>Exit the Python interpreter above by pressing <code>Ctrl + Z</code>. Run <code>flask shell</code> to start all over again.</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> mail
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_mail</span> <span style="color: #008800; font-weight: bold">import</span> Message
+
+<span style="color: #333333">&gt;&gt;&gt;</span> msg <span style="color: #333333">=</span> Message(<span style="background-color: #fff0f0">&#39;Sending Email Using Twilio SendGrid&#39;</span>, recipients<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;any-working-recipient-email-address&#39;</span>])
+<span style="color: #333333">&gt;&gt;&gt;</span> msg<span style="color: #333333">.</span>body <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Hi, </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0"> This is a test email that I have sent you. It has no significance to you whatsoever, but to me it means a lot. You can ignore this message. </span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\n</span><span style="background-color: #fff0f0">Flask Email Support Team&#39;</span>
+<span style="color: #333333">&gt;&gt;&gt;</span>msg<span style="color: #333333">.</span>html <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;&lt;p&gt;Hi, &lt;br&gt;&lt;br&gt; This is a test email that I have sent you. It has no significance to you whatsoever, but to me it means a lot. You can ignore this message. &lt;br&gt;&lt;br&gt;Flask Email Support Team&lt;/p&gt;&#39;</span>
+
+<span style="color: #333333">&gt;&gt;&gt;</span>mail<span style="color: #333333">.</span>send(msg)
+</pre>
+<p>Hopefully everything goes well and you have received the test email in your inbox.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/twilio_sendgrid/email_received.png') }}"  alt="Test Email from SendGrid"></p>
+
+
+
+
+
+            </div>
+        </div><hr>
+        <!-- Comments Section -->
+        <div class="row">            
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h2 id="comments">{{ total }} Comments</h2>  
+                <div class="translate-info">Feel free to post your comment in your language</div>
+    
+                <!-- Display Flash Messages Here -->
+                {% include '_flash_message.html' %}
+    
+                <!-- Comments Go Here -->
+                {% for post in posts %}
+                    {% include '_comments.html' %}
+                {% endfor %}
+    
+                <!-- Pagination Links -->
+                <nav aria-label="...">
+                    <ul class="pager">
+                        <li class="previous{% if not prev_url %} disabled{% endif %}">
+                            <a href="{{ prev_url or '#' }}">
+                                <span aria-hidden="true">&larr;</span> Newer Comments
+                            </a>
+                        </li>
+                        <li class="next{% if not next_url %} disabled{% endif %}">
+                            <a href="{{ next_url or '#' }}">
+                                Older Comments <span aria-hidden="true">&rarr;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+    
+                <!-- Comment Form Goes Here -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
