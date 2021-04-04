@@ -7,7 +7,8 @@ from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
     FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
     UserCommentsPost, ElasticsearchPost, PortfolioList, FlaskBootstrapPost, \
     DatesAndTimePost, GithubSSHPost, InstallGitPost, FileUploadsPost,\
-    StripeInFlaskPost, WhatsappChatbotPost, TwilioSendGridPost, TOTP2faPost
+    StripeInFlaskPost, WhatsappChatbotPost, TwilioSendGridPost, TOTP2faPost,\
+    TwilioVerifyPost
 import stripe
 from guess_language import guess_language
 from app.translate import translate
@@ -1315,6 +1316,51 @@ def totp_2fa():
     total = len(all_posts)
     return render_template('2fa/totp.html',
                            title='TOTP 2fa',
+                           form=form,
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total=total
+                           )
+
+
+@bp.route('/2fa/twilio-verify', methods=['GET', 'POST'])
+def twilio_verify():
+    form = CommentForm()
+    if form.validate_on_submit():
+        language = guess_language(form.comment.data)
+        if language == 'UNKNOWN' or len(language) > 5:
+            language = ''
+        user = User(username=form.username.data, email=form.email.data)
+        post = TwilioVerifyPost(body=form.comment.data,
+                                author=user,
+                                language=language
+                                )
+        db.session.add(user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your comment is now live!')
+        return redirect(url_for('main.twilio_verify',
+                                _anchor='comments'
+                                )
+                        )
+    page = request.args.get('page', 1, type=int)
+    posts = TwilioVerifyPost.query.order_by(
+        TwilioVerifyPost.timestamp.asc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.twilio_verify',
+                       _anchor='comments',
+                       page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('main.twilio_verify',
+                       _anchor='comments',
+                       page=posts.prev_num) \
+        if posts.has_prev else None
+    all_posts = TwilioVerifyPost .query.all()
+    total = len(all_posts)
+    return render_template('2fa/twilio_verify.html',
+                           title='Optional 2fa',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,

@@ -30,7 +30,7 @@
 <p>You are not limited to these two. You can use any other if you like. Why these apps? We will need them to scan the application&#39;s QR Code when we try to register a new user. The apps will consistently generate 30-seconds one-time passwords for us.</p>
 <h2 id="testing">Testing</h2>
 <p>If you would like to test this project out, consider checking the <a href="https://simple-2fa.herokuapp.com/">hosted application</a> or <a href="https://github.com/GitauHarrison/how-to-implement-time-based-two-factor-auth-in-flask">test it locally</a>.</p>
-<p>To make the project a bit more complete, I have added features such as <em>password resets</em> and <em>email verification</em>, though they have nothing to do with what we will do in this article.</p>
+<p>To make the project a bit more complete, I have added features such as <em>password reset</em> and <em>email verification</em>, though they have nothing to do with what we will work on in this article.</p>
 <h2 id="generall-rules-about-passwords">General Rules About Passwords</h2>
 <ol>
 <li>Never store a password in the database; rather store its hash</li>
@@ -148,7 +148,7 @@ mail <span style="color: #333333">=</span> Mail(app)
 <p><code>ngrok</code> is a tool that will provide us with free public URLs that redirect to our service. This will be especially useful when we want to test our application, which is currently running on <code>localhost</code>, on other devices, say a smartphone or another computer. For security reasons, our computers are configured with firewalls, and are therefore inaccessible. If our application is running locally, then we need to find a way to by-pass this. This is where <code>ngork</code> excels at. What I have done here is I have set up <code>ngrok</code> to run as soon as we fire up our flask server.</p>
 <p>Our other modules are imported at the botton of the application instance to avoid the issue of circular dependencies.</p>
 <h3 id="application-configuration">Application Configuration</h3>
-<p>From the application instance section above, you have seen <code>app.config[&quot;START_NGROK&quot;]</code>. Here, we are referring to the data of <code>START_NGROK</code> variable which is found in the config file. All of the configurations needed to run our applications will be found in the <code>config.py</code> file. </p>
+<p>From the application instance section above, you have seen <code>app.config[&quot;START_NGROK&quot;]</code>. Here, we are referring to the data of <code>START_NGROK</code> variable which is found in the config file. All of the configurations needed to run our application will be found in the <code>config.py</code> file. </p>
 <p class="code-title">config.py: Add Application Configurations</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">dotenv</span> <span style="color: #008800; font-weight: bold">import</span> load_dotenv
@@ -191,7 +191,7 @@ MAIL_USERNAME<span style="color: #333333">=</span><span style="background-color:
 MAIL_PASSWORD<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;password-to-the-email-above&gt;&#39;</span>
 ADMINS<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;&lt;another-email-address-that-will-be-used-as-admin&gt;&#39;</span>]
 </pre>
-<p>This file should never be commited to version control because it contains sensitive data such as passwords and other secret keys. To provide guidance to people who would like to clone your project,say from <a href="https://github.com">GitHub</a>, the <code>.env.template</code> (a text-based file) is used as a guide, where no values are put.</p>
+<p>This file should never be commited to version control because it contains sensitive data such as passwords and other secret keys. To provide guidance to people who would like to clone your project, say from <a href="https://github.com">GitHub</a>, the <code>.env.template</code> (a text-based file) is used as a guide, where no values are put.</p>
 <p class="code-title">.env.template: Show .env template</p>
 <pre style="margin: 30; line-height: 125%">SECRET_KEY<span style="color: #333333">=</span>
 MAIL_SERVER<span style="color: #333333">=</span>
@@ -201,7 +201,7 @@ MAIL_USERNAME<span style="color: #333333">=</span>
 MAIL_PASSWORD<span style="color: #333333">=</span>
 ADMINS<span style="color: #333333">=</span>
 </pre>
-<p>We will need to register our application in the top-level file <code>app.py</code>. This will be the entry point to our application.</p>
+<p>We will then need to register our application in the top-level file <code>app.py</code>. This will be the entry point to our application.</p>
 <p class="code-title">app.py: Application Entry Point</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
 </pre>
@@ -1075,59 +1075,6 @@ INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #3
 </ol>
 <h2 id="optional-two-factor-authentication-in-flask">Optional Two-factor Authentication in Flask</h2>
 <p>Want to see how to implement optional two-factor authentication in a flask app? Read more <a href="twilio_verify_2fa.md">here</a>.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         </div>
