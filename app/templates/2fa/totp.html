@@ -1,0 +1,1174 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+<h1 id="enable-time-based-two-factor-authentication-in-flask">Enable Time-based Two-factor Authentication in Flask</h1>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/2fa_totp/totp_demo.gif') }}" alt="TOTP Demo"></p>
+<h2 id="overview">Overview</h2>
+<p>Two-factor authentication is basically a method that requires a user of an application to provide two forms of identification before being allowed to use the application. These two methods may include:</p>
+<ol>
+<li>Regular password</li>
+<li>One-time token</li>
+</ol>
+<p>In the event that the user&#39;s account is compromised, then an attacker will find it a bit hard to access the user&#39;s token, which is different every time, say within 30 minute intervals.</p>
+<p>This application requires all users to use two-factor authentication.</p>
+<h2 id="project-requirements">Project Requirements</h2>
+<ol>
+<li>A smartphone </li>
+<li>Access to Google Playstore or App Store</li>
+</ol>
+<p>Search for either of these two TOTP apps:</p>
+<ul>
+<li><a href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&amp;hl=en">FreeotOTP Authenticator</a></li>
+<li><a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Google Authenticator</a></li>
+</ul>
+<p>You are not limited to these two. You can use any other if you like. Why these apps? We will need them to scan the application&#39;s QR Code when we try to register a new user. The apps will consistently generate 30-seconds one-time passwords for us.</p>
+<h2 id="testing">Testing</h2>
+<p>If you would like to test this project out, consider checking the <a href="https://simple-2fa.herokuapp.com/">hosted application</a> or <a href="https://github.com/GitauHarrison/how-to-implement-time-based-two-factor-auth-in-flask">test it locally</a>.</p>
+<p>To make the project a bit more complete, I have added features such as <em>password resets</em> and <em>email verification</em>, though they have nothing to do with what we will do in this article.</p>
+<h2 id="generall-rules-about-passwords">General Rules About Passwords</h2>
+<ol>
+<li>Never store a password in the database; rather store its hash</li>
+<li>Always use secure <code>HTTP</code> to transmit passwords</li>
+<li>Compare a user&#39;s password against its hash in the database when authenticating a user</li>
+</ol>
+<h2 id="create-project-structure">Create project structure</h2>
+<p>This is the structure we will follow:</p>
+<pre style="margin: 30; line-height: 125%">project_folder
+    <span style="color: #333333">|-------</span> <span style="color: #333333">.</span>flaskenv
+    <span style="color: #333333">|-------</span> <span style="color: #333333">.</span>env
+    <span style="color: #333333">|-------</span> <span style="color: #333333">.</span>env<span style="color: #333333">.</span>template
+    <span style="color: #333333">|-------</span> config<span style="color: #333333">.</span>py
+    <span style="color: #333333">|-------</span> app<span style="color: #333333">.</span>py
+    <span style="color: #333333">|-------</span> requirements<span style="color: #333333">.</span>txt
+    <span style="color: #333333">|-------</span> <span style="color: #333333">.</span>gitignore
+    <span style="color: #333333">|-------</span> app<span style="color: #333333">/</span>
+              <span style="color: #333333">|-------</span> __init__<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> routes<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> models<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> forms<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> errors<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> email<span style="color: #333333">.</span>py
+              <span style="color: #333333">|-------</span> static<span style="color: #333333">/</span>
+                        <span style="color: #333333">|-------</span> images<span style="color: #333333">/</span>
+                        <span style="color: #333333">|-------</span> css<span style="color: #333333">/</span>styles<span style="color: #333333">.</span>css
+              <span style="color: #333333">|-------</span> templates<span style="color: #333333">/</span>
+                        <span style="color: #333333">|-------</span> base<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> home<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> login<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> register<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> <span style="color: #6600EE; font-weight: bold">404.</span>html
+                        <span style="color: #333333">|-------</span> <span style="color: #6600EE; font-weight: bold">500.</span>html
+                        <span style="color: #333333">|-------</span> reset_password_request<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> reset_password<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> two_factor_setup<span style="color: #333333">.</span>html
+                        <span style="color: #333333">|-------</span> email<span style="color: #333333">/</span>
+                                   <span style="color: #333333">|-----</span> reset_password<span style="color: #333333">.</span>html
+                                   <span style="color: #333333">|-----</span> reset_password<span style="color: #333333">.</span>txt
+</pre>
+<p>You can create this structure using the <code>mkdir</code> and <code>touch</code> terminal commands:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkdir project_folder <span style="color: #888888"># creates an empty directory called project_folder</span>
+<span style="color: #ff8080; ">$</span> touch project_folder<span style="color: #333333">/</span>config<span style="color: #333333">.</span>py <span style="color: #888888"># creates an empty config.py file inside project_folder</span>
+</pre>
+<p>Once you have completed this project structure, move into <code>project_folder</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> cd project_folder
+</pre>
+<p>Make it a <code>git</code> repository by running:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git init
+</pre>
+<p>We will use <code>git</code> to host our application in both GitHub and Heroku. If you have not set up <code>git</code> in your computer, learn how to do that <a href="install_git.md">here</a>. <code>git</code> allows you to work with both of GitHub&#39;s <code>ssh</code> and <code>http</code>. Find out what they are and how to use them <a href="github_ssh.md">here</a>.</p>
+<h2 id="activate-virtual-environment">Activate Virtual Environment</h2>
+<p>While working on multiple prjects, it is recommended that you isolate the requirements of each project from that running in your Operating System. Virtual environments are for this purpose; they create a virtual environment that allows you to work on multiple and independent projects.</p>
+<p>To create and activate your virtual environment, run:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv totp
+</pre>
+<p>The <code>mkvirtualenv</code> command creates and activates the virtual environment called <code>totp</code> for you. Here, I have used <code>virtualenvwrapper</code> to help me manage my workflow. Virtualenvwrapper has many more commands that makes it easier to work with virtual environments. Follow <a href="virtualenvwrapper_setup.md">this guide</a> to learn how to set up your machine to use <code>virtualenvwrapper</code>.</p>
+<h2 id="application-dependencies">Application Dependencies</h2>
+<p>This project will use several dependencies:</p>
+<ul>
+<li><a href="https://flask.palletsprojects.com/en/1.1.x/">flask</a></li>
+<li><a href="https://flask-sqlalchemy.palletsprojects.com/en/2.x/">flask-sqlalchemy</a></li>
+<li><a href="https://pythonhosted.org/Flask-Bootstrap/">flask-boostrap</a></li>
+<li><a href="https://flask-login.readthedocs.io/en/latest/">flask-login</a></li>
+<li><a href="https://flask-wtf.readthedocs.io/en/stable/">flask-wtf</a></li>
+<li><a href="https://pythonhosted.org/Flask-Mail/">flask-mail</a></li>
+<li><a href="https://flask-migrate.readthedocs.io/en/latest/">flask-migrate</a></li>
+<li><a href="https://pypi.org/project/python-dotenv/">python-dotenv</a></li>
+<li><a href="https://pyjwt.readthedocs.io/en/stable/">pyjwt</a></li>
+<li><a href="https://pypi.org/project/pyngrok/">pyngrok</a></li>
+<li><a href="https://pypi.org/project/PyQRCode/">pyqrcode</a></li>
+<li><a href="https://pypi.org/project/email-validator/">email-validator</a></li>
+</ul>
+<p>To install all of them at once, run:</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> pip3 install flask flask<span style="color: #333333">-</span>sqlalchemy flask<span style="color: #333333">-</span>bootstrap <span style="color: #888888"># Add all the other dependencies within this same line</span>
+</pre>
+<p>From your root directory (project_folder), update your <code>requirements.txt</code> to contain all the installed dependencies:</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+<h2 id="build-project">Build Project</h2>
+<p>Let&#39;s begin by creating an instance of our application:</p>
+<h3 id="application-instance">Application Instance</h3>
+<p class="code-title">__init__.py: Application Instance</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_bootstrap</span> <span style="color: #008800; font-weight: bold">import</span> Bootstrap
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_login</span> <span style="color: #008800; font-weight: bold">import</span> LoginManager
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_sqlalchemy</span> <span style="color: #008800; font-weight: bold">import</span> SQLAlchemy
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_migrate</span> <span style="color: #008800; font-weight: bold">import</span> Migrate
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_mail</span> <span style="color: #008800; font-weight: bold">import</span> Mail
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+bootstrap <span style="color: #333333">=</span> Bootstrap(app)
+login <span style="color: #333333">=</span> LoginManager(app)
+login<span style="color: #333333">.</span>login_view <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;login&#39;</span>
+db <span style="color: #333333">=</span> SQLAlchemy(app)
+migrate <span style="color: #333333">=</span> Migrate(app, db)
+mail <span style="color: #333333">=</span> Mail(app)
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">start_ngrok</span>():
+    <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">pyngrok</span> <span style="color: #008800; font-weight: bold">import</span> ngrok
+
+    url <span style="color: #333333">=</span> ngrok<span style="color: #333333">.</span>connect(<span style="color: #0000DD; font-weight: bold">5000</span>)
+    <span style="color: #008800; font-weight: bold">print</span>(<span style="background-color: #fff0f0">&#39;* Tunnel: &#39;</span>, url)
+
+
+<span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;ENV&quot;</span>) <span style="color: #333333">==</span> <span style="background-color: #fff0f0">&quot;development&quot;</span> <span style="color: #000000; font-weight: bold">and</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&quot;START_NGROK&quot;</span>]:
+    start_ngrok()
+
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes, models, errors
+</pre>
+<p>I have created an instance of the flask application. Additionally, I have instantiated dependencies we installed in the previous section. </p>
+<p><code>ngrok</code> is a tool that will provide us with free public URLs that redirect to our service. This will be especially useful when we want to test our application, which is currently running on <code>localhost</code>, on other devices, say a smartphone or another computer. For security reasons, our computers are configured with firewalls, and are therefore inaccessible. If our application is running locally, then we need to find a way to by-pass this. This is where <code>ngork</code> excels at. What I have done here is I have set up <code>ngrok</code> to run as soon as we fire up our flask server.</p>
+<p>Our other modules are imported at the botton of the application instance to avoid the issue of circular dependencies.</p>
+<h3 id="application-configuration">Application Configuration</h3>
+<p>From the application instance section above, you have seen <code>app.config[&quot;START_NGROK&quot;]</code>. Here, we are referring to the data of <code>START_NGROK</code> variable which is found in the config file. All of the configurations needed to run our applications will be found in the <code>config.py</code> file. </p>
+<p class="code-title">config.py: Add Application Configurations</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">dotenv</span> <span style="color: #008800; font-weight: bold">import</span> load_dotenv
+
+basedir <span style="color: #333333">=</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>abspath(os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>dirname(__file__))
+load_dotenv(basedir, <span style="background-color: #fff0f0">&#39;.env&#39;</span>)
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    <span style="color: #888888"># Form security</span>
+    SECRET_KEY <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;SECRET_KEY&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&#39;you-will-never-guess&#39;</span>
+
+    <span style="color: #888888"># Database configuration</span>
+    SQLALCHEMY_DATABASE_URI <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;DATABASE_URL&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> \
+        <span style="background-color: #fff0f0">&#39;sqlite:///&#39;</span> <span style="color: #333333">+</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>join(basedir, <span style="background-color: #fff0f0">&#39;app.db&#39;</span>)
+    SQLALCHEMY_TRACK_MODIFICATIONS <span style="color: #333333">=</span> <span style="color: #007020">False</span>
+
+    <span style="color: #888888"># Localhost testing</span>
+    START_NGROK <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span> <span style="color: #000000; font-weight: bold">and</span> \
+        os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;WERKZEUG_RUN_MAIN&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="background-color: #fff0f0">&#39;true&#39;</span>
+
+    <span style="color: #888888"># Email configurations</span>
+    MAIL_SERVER <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>)
+    MAIL_PORT <span style="color: #333333">=</span> <span style="color: #007020">int</span>(os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PORT&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="color: #0000DD; font-weight: bold">25</span>)
+    MAIL_USE_TLS <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USE_TLS&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>
+    MAIL_USERNAME <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_USERNAME&#39;</span>)
+    MAIL_PASSWORD <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PASSWORD&#39;</span>)
+    ADMINS <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;ADMINS&#39;</span>)
+</pre>
+<p>Our configurations are set up as secret environment variables. The <code>os.environ</code> is used to fetch our environment variables. This method of obtaining environment variables is extremely safe since the actual values of the environment variables are preserved, especially from version control.</p>
+<p>We use Python&#39;s <code>dotenv</code> package to load our enviroment variables.</p>
+<p><code>.env</code> file is used to store our actual environment variables. The <code>.</code>(dot) preceding the file name means that it is hidden. If you try to run the command <code>ls</code> in your root directory you will notice that the files starting with the <code>.</code> do not show up. However, to list every file, including the hidden files, you can run <code>ls -a</code>.</p>
+<p>Let us update <code>.env</code> file with our secret configurations:</p>
+<p class="code-title">.env: Environment Configurations</p>
+<pre style="margin: 30; line-height: 125%">SECRET_KEY<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;put-here-you-hard-to-guess-key&gt;&#39;</span>
+MAIL_SERVER<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;smtp.gmail.com&#39;</span>
+MAIL_PORT<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;587&#39;</span>
+MAIL_USE_TLS<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;True&#39;</span>
+MAIL_USERNAME<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;your-email-address&gt;&#39;</span>
+MAIL_PASSWORD<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;password-to-the-email-above&gt;&#39;</span>
+ADMINS<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;&lt;another-email-address-that-will-be-used-as-admin&gt;&#39;</span>]
+</pre>
+<p>This file should never be commited to version control because it contains sensitive data such as passwords and other secret keys. To provide guidance to people who would like to clone your project,say from <a href="https://github.com">GitHub</a>, the <code>.env.template</code> (a text-based file) is used as a guide, where no values are put.</p>
+<p class="code-title">.env.template: Show .env template</p>
+<pre style="margin: 30; line-height: 125%">SECRET_KEY<span style="color: #333333">=</span>
+MAIL_SERVER<span style="color: #333333">=</span>
+MAIL_PORT<span style="color: #333333">=</span>
+MAIL_USE_TLS<span style="color: #333333">=</span>
+MAIL_USERNAME<span style="color: #333333">=</span>
+MAIL_PASSWORD<span style="color: #333333">=</span>
+ADMINS<span style="color: #333333">=</span>
+</pre>
+<p>We will need to register our application in the top-level file <code>app.py</code>. This will be the entry point to our application.</p>
+<p class="code-title">app.py: Application Entry Point</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<p>Flask expects certain variables to be set before the server can be fired up. These variables need to stored in the <code>.flaskenv</code> file in the top-level directory. They are the flask environment variables.</p>
+<p class="code-title">.flaskenv: Add Flask Environment Variables</p>
+<pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py
+FLASK_ENV<span style="color: #333333">=</span>development
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">True</span>
+START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
+</pre>
+<p>Our application is in development so we have set our flask environment to development. Every time we make changes to the application, flask&#39;s debugger actively detects those changes and loads them immediately due to the setting <code>FLASK_DEBUG=True</code>.</p>
+<h3 id="working-with-database">Working with Database</h3>
+<p>This application involves adding and loading a user from a database. we will now set up a database table called <code>User</code> to handle a user&#39;s data.</p>
+<p class="code-title">models.py: Create database model</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db, login, app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">werkzeug.security</span> <span style="color: #008800; font-weight: bold">import</span> generate_password_hash, check_password_hash
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_login</span> <span style="color: #008800; font-weight: bold">import</span> UserMixin
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(UserMixin, db<span style="color: #333333">.</span>Model):
+    <span style="color: #007020">id</span> <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>Integer, primary_key<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    first_name <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>, unique<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    last_name <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>, unique<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    username <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">64</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>, unique<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    email <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">120</span>), index<span style="color: #333333">=</span><span style="color: #007020">True</span>, unique<span style="color: #333333">=</span><span style="color: #007020">True</span>)
+    password_hash <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">128</span>))
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__repr__</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;&lt;User {}&gt;&#39;</span><span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">set_password</span>(<span style="color: #007020">self</span>, password):
+        <span style="color: #007020">self</span><span style="color: #333333">.</span>password_hash <span style="color: #333333">=</span> generate_password_hash(password)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">check_password</span>(<span style="color: #007020">self</span>, password):
+        <span style="color: #008800; font-weight: bold">return</span> check_password_hash(<span style="color: #007020">self</span><span style="color: #333333">.</span>password_hash, password)
+
+
+<span style="color: #555555; font-weight: bold">@login.user_loader</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">load_user</span>(<span style="color: #007020">id</span>):
+    <span style="color: #008800; font-weight: bold">return</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>get(<span style="color: #007020">int</span>(<span style="color: #007020">id</span>))
+</pre>
+<p>Our database contains five entries. These will be populated using a web form, seen in sections below. As I had mentioned earlier, it is safe practice to store a user&#39;s password as a hash rather than the actual password. Above, I am using <code>generate_password_hash</code> and <code>check_password_hash</code> from <a href="http://werkzeug.pocoo.org/">Werkzeug</a> to handle all the hashing needs of the application.</p>
+<p>Look at this example run from a Python interpreter:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">werkzeug.security</span> <span style="color: #008800; font-weight: bold">import</span> generate_password_hash
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #007020">hash</span> <span style="color: #333333">=</span> generate_password_hash(<span style="background-color: #fff0f0">&#39;foobar&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #007020">hash</span>
+<span style="background-color: #fff0f0">&#39;pbkdf2:sha256:50000$vT9fkZM8$04dfa8f6a9c0s676acf7e788a1b5b3c35e217c78dc04539d295f011jfaosf96adfs68asf9a&#39;</span>
+</pre>
+<p>The password <code>foobar</code> is transformed into a long encoded string which makes it hard for anyone who gains access to the password hash to use it. Hashing the same password mutliple times gives a different result, making it even harder to know if two users have the same password.</p>
+<p>To verify a user&#39;s password, we use <code>check_password_hash</code>:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">werkzeug.security</span> <span style="color: #008800; font-weight: bold">import</span> check_password_hash
+<span style="color: #333333">&gt;&gt;&gt;</span> check_password_hash(<span style="color: #007020">hash</span>, <span style="background-color: #fff0f0">&#39;foobar&#39;</span>)
+<span style="color: #007020">True</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> check_password_hash(<span style="color: #007020">hash</span>, <span style="background-color: #fff0f0">&#39;trippin&#39;</span>)
+<span style="color: #007020">False</span>
+</pre>
+<p>In an actual application, this is how it will look like:</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #333333">&gt;&gt;&gt;</span> u <span style="color: #333333">=</span> User(username<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;rahima&#39;</span>, email<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;rahima@email.com&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>set_password(<span style="background-color: #fff0f0">&#39;rahima&#39;</span>)
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>check_password(<span style="background-color: #fff0f0">&#39;nassir&#39;</span>)
+<span style="color: #007020">False</span>
+<span style="color: #333333">&gt;&gt;&gt;</span> u<span style="color: #333333">.</span>check_password(<span style="background-color: #fff0f0">&#39;rahima&#39;</span>)
+<span style="color: #007020">True</span>
+</pre>
+<h3 id="web-forms">Web Forms</h3>
+<p>A user registers for an account by providing their names, username and password.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/2fa_totp/register.png') }}" alt="Register"></p>
+<p>Other forms we will need include the <em>Password Request</em>, <em>Password Reset</em> and <em>Login</em>. Flask-wtf allows for form creation as seen below:</p>
+<p class="code-title">forms.py: Capture User Input</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_wtf</span> <span style="color: #008800; font-weight: bold">import</span> FlaskForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms</span> <span style="color: #008800; font-weight: bold">import</span> StringField, PasswordField, SubmitField, BooleanField
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">wtforms.validators</span> <span style="color: #008800; font-weight: bold">import</span> Email, DataRequired, EqualTo, ValidationError
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">LoginForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    password <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Password&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    remember_me <span style="color: #333333">=</span> BooleanField(<span style="background-color: #fff0f0">&#39;Remember Me&#39;</span>)
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Login&#39;</span>)
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">RegistrationForm</span>(FlaskForm):
+    first_name <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;First Name&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    last_name <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Last Name&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Choose a Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired(), Email()])
+    password <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Password&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    confirm_password <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Confirm Password&#39;</span>,
+                                     validators<span style="color: #333333">=</span>[DataRequired(),
+                                                 EqualTo(<span style="background-color: #fff0f0">&#39;password&#39;</span>)
+                                                 ]
+                                     )
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Register&#39;</span>)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">validate_username</span>(<span style="color: #007020">self</span>, username):
+        user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(username<span style="color: #333333">=</span>username<span style="color: #333333">.</span>data)<span style="color: #333333">.</span>first()
+        <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>:
+            <span style="color: #008800; font-weight: bold">raise</span> ValidationError(<span style="background-color: #fff0f0">&#39;Please use a different username&#39;</span>)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">validate_email</span>(<span style="color: #007020">self</span>, email):
+        user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(email<span style="color: #333333">=</span>email<span style="color: #333333">.</span>data)<span style="color: #333333">.</span>first()
+        <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #007020">None</span>:
+            <span style="color: #008800; font-weight: bold">raise</span> ValidationError(<span style="background-color: #fff0f0">&#39;Please use a different email address&#39;</span>)
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">ResetPasswordRequestForm</span>(FlaskForm):
+    email <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Email&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired(), Email()])
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Request Password Reset&#39;</span>)
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">ResetPasswordForm</span>(FlaskForm):
+    password <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Password&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    password2 <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Repeat Password&#39;</span>,
+                              validators<span style="color: #333333">=</span>[DataRequired(), EqualTo(<span style="background-color: #fff0f0">&#39;password&#39;</span>)]
+                              )
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Request Password Reset&#39;</span>)
+</pre>
+<h3 id="handling-user-data">Handling User Data</h3>
+<p>We will update our <code>routes.py</code> file with functions that handle each data group from the user.</p>
+<p class="code-title">routes.py: Handle User Data</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template, redirect, url_for, flash, request
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">werkzeug.urls</span> <span style="color: #008800; font-weight: bold">import</span> url_parse
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_login</span> <span style="color: #008800; font-weight: bold">import</span> login_user, logout_user, current_user, login_required
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> db, app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.models</span> <span style="color: #008800; font-weight: bold">import</span> User
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.forms</span> <span style="color: #008800; font-weight: bold">import</span> LoginForm, RegistrationForm, ResetPasswordRequestForm,\
+    ResetPasswordForm
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app.email</span> <span style="color: #008800; font-weight: bold">import</span> send_password_reset_email
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/home&#39;</span>)
+<span style="color: #555555; font-weight: bold">@login_required</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">home</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;home.html&#39;</span>, title<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Home&#39;</span>)
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/login&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">login</span>():
+    <span style="color: #008800; font-weight: bold">if</span> current_user<span style="color: #333333">.</span>is_authenticated:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>))
+    form <span style="color: #333333">=</span> LoginForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(username<span style="color: #333333">=</span>form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data)<span style="color: #333333">.</span>first()
+        <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #007020">None</span> <span style="color: #000000; font-weight: bold">or</span> <span style="color: #000000; font-weight: bold">not</span> user<span style="color: #333333">.</span>check_password(form<span style="color: #333333">.</span>password<span style="color: #333333">.</span>data):
+            flash(<span style="background-color: #fff0f0">&#39;Invalid username or password&#39;</span>)
+            <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+        login_user(user, remember<span style="color: #333333">=</span>form<span style="color: #333333">.</span>remember_me<span style="color: #333333">.</span>data)
+        next_page <span style="color: #333333">=</span> request<span style="color: #333333">.</span>args<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;next&#39;</span>)
+        <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> next_page <span style="color: #000000; font-weight: bold">or</span> url_parse(next_page)<span style="color: #333333">.</span>netloc <span style="color: #333333">!=</span> <span style="background-color: #fff0f0">&#39;&#39;</span>:
+            next_page <span style="color: #333333">=</span> url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>)
+        <span style="color: #008800; font-weight: bold">return</span> redirect(next_page)
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;login.html&#39;</span>,
+                           title<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Login&#39;</span>,
+                           form<span style="color: #333333">=</span>form
+                           )
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/logout&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">logout</span>():
+    logout_user()
+    <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/register&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">register</span>():
+    <span style="color: #008800; font-weight: bold">if</span> current_user<span style="color: #333333">.</span>is_authenticated:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>))
+    form <span style="color: #333333">=</span> RegistrationForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User(first_name<span style="color: #333333">=</span>form<span style="color: #333333">.</span>first_name<span style="color: #333333">.</span>data,
+                    last_name<span style="color: #333333">=</span>form<span style="color: #333333">.</span>last_name<span style="color: #333333">.</span>data,
+                    username<span style="color: #333333">=</span>form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data,
+                    email<span style="color: #333333">=</span>form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>data
+                    )
+        user<span style="color: #333333">.</span>set_password(form<span style="color: #333333">.</span>password<span style="color: #333333">.</span>data)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>add(user)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+        flash(<span style="background-color: #fff0f0">&#39;Registration successful. Login to continue&#39;</span>)
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;register.html&#39;</span>,
+                           title<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Register&#39;</span>,
+                           form<span style="color: #333333">=</span>form
+                           )
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/reset_password_request&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">reset_password_request</span>():
+    <span style="color: #008800; font-weight: bold">if</span> current_user<span style="color: #333333">.</span>is_authenticated:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>))
+    form <span style="color: #333333">=</span> ResetPasswordRequestForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(email<span style="color: #333333">=</span>form<span style="color: #333333">.</span>email<span style="color: #333333">.</span>data)<span style="color: #333333">.</span>first()
+        <span style="color: #008800; font-weight: bold">if</span> user:
+            send_password_reset_email(user)
+        flash(<span style="background-color: #fff0f0">&#39;Check your email for the instructions to reset your password&#39;</span>)
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;reset_password_request.html&#39;</span>,
+                           title<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Reset Password&#39;</span>,
+                           form<span style="color: #333333">=</span>form
+                           )
+
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/reset_password/&lt;token&gt;&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">reset_password</span>(token):
+    <span style="color: #008800; font-weight: bold">if</span> current_user<span style="color: #333333">.</span>is_authenticated:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>))
+    user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>verify_reset_password_token(token)
+    <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> user:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;home&#39;</span>))
+    form <span style="color: #333333">=</span> ResetPasswordForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user<span style="color: #333333">.</span>set_password(form<span style="color: #333333">.</span>password<span style="color: #333333">.</span>data)
+        db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
+        flash(<span style="background-color: #fff0f0">&#39;Your password has been reset.&#39;</span>)
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;reset_password.html&#39;</span>, form<span style="color: #333333">=</span>form)
+</pre>
+<p>Every time a user is authenticated, they are redirected to the home page. Otherwise, the application checks and verifies the information from the database before issueing appropriate redirects.</p>
+<p>At this point, we need to complete setting up email support for our applicaiton. Our <em>route</em> module has imported functions from the <em>email</em> module such as <code>send_password_reset_email</code> which does not exist yet.</p>
+<h3 id="email-support">Email Support</h3>
+<p>This is where we use <code>flask-mail</code>, already installed and imported at the beginning of this article. We will use it to allow users to request for password resets.</p>
+<p>The <em>Login</em> page will have a link to request for a password reset.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/2fa_totp/login.png') }}" alt="Login Page"></p>
+<p class="code-title">email.py: Add Email Support</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_mail</span> <span style="color: #008800; font-weight: bold">import</span> Message
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> mail, app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">threading</span> <span style="color: #008800; font-weight: bold">import</span> Thread
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">send_async_email</span>(app, msg):
+    <span style="color: #008800; font-weight: bold">with</span> app<span style="color: #333333">.</span>app_context():
+        mail<span style="color: #333333">.</span>send(msg)
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">send_email</span>(subject, sender, recipients, text_body, html_body):
+    msg <span style="color: #333333">=</span> Message(subject, sender<span style="color: #333333">=</span>sender, recipients<span style="color: #333333">=</span>recipients)
+    msg<span style="color: #333333">.</span>body <span style="color: #333333">=</span> text_body
+    msg<span style="color: #333333">.</span>html <span style="color: #333333">=</span> html_body
+    Thread(target<span style="color: #333333">=</span>send_async_email, args<span style="color: #333333">=</span>(app, msg))<span style="color: #333333">.</span>start()
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">send_password_reset_email</span>(user):
+    token <span style="color: #333333">=</span> user<span style="color: #333333">.</span>get_reset_password_token()
+    send_email(<span style="background-color: #fff0f0">&#39;[2fa] Reset Your Password&#39;</span>,
+               sender<span style="color: #333333">=</span>app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;ADMINS&#39;</span>][<span style="color: #0000DD; font-weight: bold">0</span>],
+               recipients<span style="color: #333333">=</span>[user<span style="color: #333333">.</span>email],
+               text_body<span style="color: #333333">=</span>render_template(<span style="background-color: #fff0f0">&#39;email/reset_password.txt&#39;</span>,
+                                         user<span style="color: #333333">=</span>user, token<span style="color: #333333">=</span>token),
+               html_body<span style="color: #333333">=</span>render_template(<span style="background-color: #fff0f0">&#39;email/reset_password.html&#39;</span>,
+                                         user<span style="color: #333333">=</span>user, token<span style="color: #333333">=</span>token))
+</pre>
+<p>When the <em>ResetPasswordRequest</em> form is validated (seen in the <em>routes</em> module), the user is searched for in the database using the email they provided in the form. </p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/2fa_totp/request_password_reset.png') }}" alt="Request Password Reset Form"></p>
+<p><code>send_password_reset_email()</code> function is used to send a password reset email. Email to be sent is found in the <em>email</em> templates folder. A flash message is shown regardless of whether the user is known or unknown. This is to prevent any user from figuring out who is or is not a member.</p>
+<p>The password reset links will have a secure token in them. To generate these tokens, we will use <a href="https://jwt.io/">JSON Web Tokens</a>, already installed as <code>pyjwt</code>. The tokens belong to the users, hence we will need to update our <em>User</em> model to generate and validate these tokens.</p>
+<p class="code-title">models.py: Generate and Verify User Tokens</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Previous imports</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">time</span> <span style="color: #008800; font-weight: bold">import</span> time
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">jwt</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(UserMixin, db<span style="color: #333333">.</span>Model):
+    <span style="color: #888888"># ...</span>
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">get_reset_password_token</span>(<span style="color: #007020">self</span>, expires_in<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">600</span>):
+        <span style="color: #008800; font-weight: bold">return</span> jwt<span style="color: #333333">.</span>encode(
+            {<span style="background-color: #fff0f0">&#39;reset_password&#39;</span>: <span style="color: #007020">self</span><span style="color: #333333">.</span>id, <span style="background-color: #fff0f0">&#39;exp&#39;</span>: time() <span style="color: #333333">+</span> expires_in},
+            app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;SECRET_KEY&#39;</span>], algorithm<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;HS256&#39;</span>)
+
+    <span style="color: #555555; font-weight: bold">@staticmethod</span>
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">verify_reset_password_token</span>(token):
+        <span style="color: #008800; font-weight: bold">try</span>:
+            <span style="color: #007020">id</span> <span style="color: #333333">=</span> jwt<span style="color: #333333">.</span>decode(token, app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;SECRET_KEY&#39;</span>],
+                            algorithms<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;HS256&#39;</span>])[<span style="background-color: #fff0f0">&#39;reset_password&#39;</span>]
+        <span style="color: #008800; font-weight: bold">except</span>:
+            <span style="color: #008800; font-weight: bold">return</span>
+        <span style="color: #008800; font-weight: bold">return</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>get(<span style="color: #007020">id</span>)
+</pre>
+<p>The <code>get_reset_password_token()</code> function returns a JWT token as a string, which is generated directly by the <code>jwt.encode()</code> function. Upon token verification, if the token is valid, then the value of the <code>reset_password</code> key from the token&#39;s payload is the ID of the user, so we can load the user and return it.</p>
+<h3 id="template-pages">Template Pages</h3>
+<p>Note how we are using flask&#39;s <code>render_template</code> to return the <code>html</code> files that display our pages.</p>
+<p>These are the files&#39; content:</p>
+<p class="code-title">base.html: Base template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;bootstrap/base.html&#39;</span> <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Title Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+        <span style="color: #0000DD; font-weight: bold">2</span>fa <span style="color: #333333">|</span> \{\{ title \}\}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+        Flask Auth
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Head Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block head <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Add your own image <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;image/png&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{url_for(&#39;static&#39;, filename = &#39;images/&lt;choice-image.ext&gt;&#39;)\}\}&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;preconnect&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://fonts.gstatic.com&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>link href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://fonts.googleapis.com/css2?family=Roboto:wght@300&amp;display=swap&quot;</span> rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Link Styles <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block styles <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    <span style="color: #333333">&lt;</span>link <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename = &#39;css/styles.css&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Navbar Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block navbar <span style="color: #333333">%</span>}
+<span style="color: #333333">&lt;</span>nav class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar navbar-default&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-header&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>button <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;button&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-toggle collapsed&quot;</span> data<span style="color: #333333">-</span>toggle<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse&quot;</span> data<span style="color: #333333">-</span>target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#bs-example-navbar-collapse-1&quot;</span> aria<span style="color: #333333">-</span>expanded<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;false&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;sr-only&quot;</span><span style="color: #333333">&gt;</span>Toggle navigation<span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>a class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-brand&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;home&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span><span style="color: #0000DD; font-weight: bold">2</span>fa<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse navbar-collapse&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;bs-example-navbar-collapse-1&quot;</span><span style="color: #333333">&gt;</span>            
+            <span style="color: #333333">&lt;</span>ul class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;nav navbar-nav navbar-right&quot;</span><span style="color: #333333">&gt;</span>  
+                {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> current_user<span style="color: #333333">.</span>is_anonymous <span style="color: #333333">%</span>}
+                    <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;login&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Login<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+                {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}                                      
+                <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;logout&#39;) \}\} &quot;</span><span style="color: #333333">&gt;</span>Logout<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+                {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+            <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>                       
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>nav<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Main Content Goes Here <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">with</span> messages <span style="color: #333333">=</span> get_flashed_messages() <span style="color: #333333">%</span>}
+            {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> messages <span style="color: #333333">%</span>}
+                {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">for</span> message <span style="color: #000000; font-weight: bold">in</span> messages <span style="color: #333333">%</span>}
+                    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert alert-warning&quot;</span> role<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;alert&quot;</span><span style="color: #333333">&gt;</span> \{\{ message \}\} <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+                {<span style="color: #333333">%</span> endfor <span style="color: #333333">%</span>}
+            {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+        {<span style="color: #333333">%</span> endwith <span style="color: #333333">%</span>}
+
+        {<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+        
+        {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>If the user is anonymous, a link to log into the application is provided in the navbar. If the user is authenticated, a logout link is shown.</p>
+<p class="code-title">login.html: Login Page</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Login<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>                                              
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+                              
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4 my-form&quot;</span><span style="color: #333333">&gt;</span>                                   
+                \{\{ wtf<span style="color: #333333">.</span>quick_form(form) \}\}
+                <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+                    Forgot your Password<span style="color: #ff8080; ">?</span> <span style="color: #333333">&lt;</span>span<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;reset_password_request&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Reset Here<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;.</span>
+                <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+                    New here<span style="color: #ff8080; ">?</span> <span style="color: #333333">&lt;</span>span<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;register&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>Register Here<span style="color: #ff8080; ">!</span><span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;.</span>
+                <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>                                            
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+                           
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        
+
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>The <em>Login</em> page contains links to the <em>Register</em> and <em>Request Password Reset</em> forms.</p>
+<p class="code-title">register.html: Captures User&#39;s Data</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Register<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>                                              
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+                          
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4 my-form&quot;</span><span style="color: #333333">&gt;</span>                                  
+            \{\{ wtf<span style="color: #333333">.</span>quick_form(form) \}\}                                                       
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+                       
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>If registration is successful, the user will be redirected to the home page of the app.</p>
+<p class="code-title">home.html: Display home page</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> title <span style="color: #333333">--&gt;</span>
+                <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Time<span style="color: #333333">-</span>based OTP<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-3 col-lg-3 col-xl-3 &quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-6 col-lg-6 col-xl-6 &quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+                    To successfully test this application, you will need to do the following:
+                    <span style="color: #333333">&lt;</span>ul<span style="color: #333333">&gt;</span>
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;</span>Have a Smartphone<span style="color: #333333">&lt;/</span>li<span style="color: #333333">&gt;</span>
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;</span>Have access to PlayStore <span style="color: #000000; font-weight: bold">or</span> App Store <span style="color: #333333">&lt;/</span>li<span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+                    You can choose either of these applications to help <span style="color: #008800; font-weight: bold">with</span> the QR Code scanning:
+                    <span style="color: #333333">&lt;</span>ul<span style="color: #333333">&gt;</span>
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en_US&amp;gl=US&quot;</span><span style="color: #333333">&gt;</span>Google Authenticator<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+                        <span style="color: #333333">&lt;</span>li<span style="color: #333333">&gt;&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&amp;hl=en_US&amp;gl=US&quot;</span><span style="color: #333333">&gt;</span>Free OTP<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;&lt;/</span>li<span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;/</span>ul<span style="color: #333333">&gt;</span>
+                    Or <span style="color: #007020">any</span> other you may like<span style="color: #ff8080; ">!</span>
+                <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-3 col-lg-3 col-xl-3 &quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+
+        <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Add your own image <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>img class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;img-fluid&quot;</span> style<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;max-width: 100%; height: auto;&quot;</span> src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename=&#39;images/&lt;your-demo-image.png&gt;&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>           
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>Provide for password resetting as seen below:</p>
+<p class="code-title">reset_password_request.html: User can request for a password reset</p>
+<pre style="margin: 30; line-height: 125%">Remove the back slashes
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Request Reset Password<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>        
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4 my-form&quot;</span><span style="color: #333333">&gt;</span>                                  
+            \{\{ wtf<span style="color: #333333">.</span>quick_form(form) \}\}                                                       
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>A user&#39;s registration email is needed to send a <em>password reset</em> email. If this user exists, the email is sent, otherwise, no email is sent.</p>
+<p class="code-title">reset_password.html: Form to set new password</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Reset Password<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>        
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4 my-form&quot;</span><span style="color: #333333">&gt;</span>                                  
+            \{\{ wtf<span style="color: #333333">.</span>quick_form(form) \}\}                                                       
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-4 col-lg-4 col-xl-4&quot;</span><span style="color: #333333">&gt;</span>                
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Empty div <span style="color: #333333">--&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>This new password will be added to the database to be used by the user in subsequent logins.</p>
+<p class="code-title">emails/reset_password.html: Email template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>Dear \{\{ user<span style="color: #333333">.</span>username \}\},<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+    To reset your password
+    <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;reset_password&#39;, token=token, _external=True) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+        click here
+    <span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;.</span>
+<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>Alternatively, you can paste the following link <span style="color: #000000; font-weight: bold">in</span> your browser<span style="background-color: #fff0f0">&#39;s address bar:&lt;/p&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>\{\{ url_for(<span style="background-color: #fff0f0">&#39;reset_password&#39;</span>, token<span style="color: #333333">=</span>token, _external<span style="color: #333333">=</span><span style="color: #007020">True</span>) \}\}<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>If you have <span style="color: #000000; font-weight: bold">not</span> requested a password reset simply ignore this message<span style="color: #333333">.&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>Sincerely,<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>The <span style="color: #0000DD; font-weight: bold">2</span>fa Team<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+</pre>
+<p>This is how the email sent to the user will look like in both HTML form above and text form below:</p>
+<p class="code-title">emails/reset_password.txt: Email template</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+Dear \{\{ user<span style="color: #333333">.</span>username \}\},
+
+To reset your password click on the following link:
+
+\{\{ url_for(<span style="background-color: #fff0f0">&#39;reset_password&#39;</span>, token<span style="color: #333333">=</span>token, _external<span style="color: #333333">=</span><span style="color: #007020">True</span>) \}\}
+
+If you have <span style="color: #000000; font-weight: bold">not</span> requested a password reset simply ignore this message<span style="color: #333333">.</span>
+
+Sincerely,
+
+The <span style="color: #0000DD; font-weight: bold">2</span>fa Team
+</pre>
+<h3 id="error-handling">Error Handling</h3>
+<p>Currently, the <em>home</em> route is accessed through <code>/home</code>. What happens when you try to access the <em>home</em> route through <code>/home/</code>? Obviously, this will throw a 404 error because we do not have a page like that. Instead of our application displaying a rather scary and possibly too revealing an error message, we can catch it and redirect a user to an existing page. We need to update our <em>errors</em> module to handle these eventualities.</p>
+<p class="code-title">errors.py: Handle Errors</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app, db
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+
+
+<span style="color: #555555; font-weight: bold">@app.errorhandler</span>(<span style="color: #0000DD; font-weight: bold">404</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">not_found_error</span>(error):
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;404.html&#39;</span>), <span style="color: #0000DD; font-weight: bold">404</span>
+
+
+<span style="color: #555555; font-weight: bold">@app.errorhandler</span>(<span style="color: #0000DD; font-weight: bold">500</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">internal_error</span>(error):
+    db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>rollback()
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;500.html&#39;</span>), <span style="color: #0000DD; font-weight: bold">500</span>
+</pre>
+<p>You probably have already noticed that we imported the <em>errors</em> module at the bottom of <code>__init__.py</code> file.</p>
+<p class="code-title">404.html: Page Not Found</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Page <span style="color: #000000; font-weight: bold">not</span> Found<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+            The requested page cannot be found<span style="color: #333333">.</span> Click <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;home&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>here<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span> to <span style="color: #008800; font-weight: bold">return</span> to the home page<span style="color: #333333">.</span>
+        <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>If a requested page is not found, this page will be displayed.</p>
+<p class="code-title">500.html: Internal Error</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>An unexpected internal error<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+            An unexpected internal error has occurred<span style="color: #333333">.</span> The administrator has been notified<span style="color: #333333">.</span> Sorry <span style="color: #008800; font-weight: bold">for</span> the inconvinience<span style="color: #333333">.</span>
+        <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+            Click <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;home&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>here<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span> to <span style="color: #008800; font-weight: bold">return</span> to the home page<span style="color: #333333">.</span>
+        <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>In case there is an error with the server, then this <code>500.html</code> template will be displayed. It would be necessary to notfy the application&#39;s admin about the error. Since we have already set up our email feature, we can take advantage of it and update the admin through email. Let us update <code>__init__.py</code> file to not only send out error emails but to also log these error messages.</p>
+<p class="code-title">__init__.py: Log errors and send out error emails</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Previous imports</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">logging</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">logging.handlers</span> <span style="color: #008800; font-weight: bold">import</span> SMTPHandler, RotatingFileHandler
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+
+<span style="color: #888888"># Previous code</span>
+
+<span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> app<span style="color: #333333">.</span>debug <span style="color: #000000; font-weight: bold">and</span> <span style="color: #000000; font-weight: bold">not</span> app<span style="color: #333333">.</span>testing:
+    <span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>]:
+        auth <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+        <span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_USERNAME&#39;</span>] <span style="color: #000000; font-weight: bold">or</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_PASSWORD&#39;</span>]:
+            auth <span style="color: #333333">=</span> (app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_USERNAME&#39;</span>],
+                    app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_PASSWORD&#39;</span>]
+                    )
+        secure <span style="color: #333333">=</span> <span style="color: #007020">None</span>
+        <span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_USE_TLS&#39;</span>]:
+            secure <span style="color: #333333">=</span> ()
+        mail_handler <span style="color: #333333">=</span> SMTPHandler(
+            mailhost<span style="color: #333333">=</span>(app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>], app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_PORT&#39;</span>]),
+            fromaddr<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;noreply@&#39;</span> <span style="color: #333333">+</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>],
+            toaddrs<span style="color: #333333">=</span>app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;ADMINS&#39;</span>],
+            subject<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Flask 2fa Failure&#39;</span>,
+            credentials<span style="color: #333333">=</span>auth, secure<span style="color: #333333">=</span>secure
+        )
+        mail_handler<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>ERROR)
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>addHandler(mail_handler)
+    <span style="color: #008800; font-weight: bold">else</span>:
+        <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> os<span style="color: #333333">.</span>path<span style="color: #333333">.</span>exists(<span style="background-color: #fff0f0">&#39;logs&#39;</span>):
+            os<span style="color: #333333">.</span>mkdir(<span style="background-color: #fff0f0">&#39;logs&#39;</span>)
+        file_handler <span style="color: #333333">=</span> RotatingFileHandler(
+            <span style="background-color: #fff0f0">&#39;logs/2fa_flask.log&#39;</span>,
+            maxBytes<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">10240</span>,
+            backupCount<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">10</span>
+        )
+        file_handler<span style="color: #333333">.</span>setFormatter(logging<span style="color: #333333">.</span>Formatter(
+            <span style="background-color: #fff0f0">&#39;</span><span style="background-color: #eeeeee">%(asctime)s</span><span style="background-color: #fff0f0"> </span><span style="background-color: #eeeeee">%(levelname)s</span><span style="background-color: #fff0f0">: </span><span style="background-color: #eeeeee">%(message)s</span><span style="background-color: #fff0f0"> [in </span><span style="background-color: #eeeeee">%(pathname)s</span><span style="background-color: #fff0f0">:</span><span style="background-color: #eeeeee">%(lineno)d</span><span style="background-color: #fff0f0">]&#39;</span>
+        ))
+        file_handler<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>INFO)
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>addHandler(file_handler)
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>setLevel(logging<span style="color: #333333">.</span>INFO)
+        app<span style="color: #333333">.</span>logger<span style="color: #333333">.</span>info(<span style="background-color: #fff0f0">&#39;2fa Testing&#39;</span>)
+
+<span style="color: #888888"># previous imports</span>
+</pre>
+<p>These error templates provide a polite message with a gently redirect link to the home page.</p>
+<h3 id="creating-migration-repository">Creating Migration Repository</h3>
+<p>We will use SQLite database due to its convinience working with small applications. Flask-migrate becomes very handy at this stage.</p>
+<p>We have created a database structure (or schema) for our application already. To apply these changes, we need to create a migration script which will be stored in the <em>migrations</em> sub-directory.</p>
+<p>We will follow this order to apply any changes we make to our schema:</p>
+<ol>
+<li><code>flask db init</code></li>
+<li><code>flask db migrate -m &#39;name-your-migration-script&#39;</code></li>
+<li><code>flask db upgrade</code></li>
+</ol>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> flask db init 
+
+<span style="color: #888888"># Output</span>
+Creating directory <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_foldermigrations <span style="color: #333333">...</span> done
+  Creating directory <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>versions <span style="color: #333333">...</span> done
+  Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>alembic<span style="color: #333333">.</span>ini <span style="color: #333333">...</span> done
+  Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>env<span style="color: #333333">.</span>py <span style="color: #333333">...</span> done
+  Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>README <span style="color: #333333">...</span> done
+  Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>script<span style="color: #333333">.</span>py<span style="color: #333333">.</span>mako <span style="color: #333333">...</span> done
+  Please edit configuration<span style="color: #333333">/</span>connection<span style="color: #333333">/</span>logging settings <span style="color: #000000; font-weight: bold">in</span>
+  <span style="background-color: #fff0f0">&#39;/home/me/project_folder/migrations/alembic.ini&#39;</span> before proceeding<span style="color: #333333">.</span>
+</pre>
+<p>This command creates a <em>migrations</em> directory which contains a <em>versions</em> sub-directory.</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;user table&#39;</span>
+
+<span style="color: #888888"># Output</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Context impl SQLiteImpl<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Will assume non<span style="color: #333333">-</span>transactional DDL<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added table <span style="background-color: #fff0f0">&#39;user&#39;</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added index <span style="background-color: #fff0f0">&#39;ix_user_email&#39;</span> on <span style="background-color: #fff0f0">&#39;[&#39;</span>email<span style="background-color: #fff0f0">&#39;]&#39;</span>
+INFO  [alembic<span style="color: #333333">.</span>autogenerate<span style="color: #333333">.</span>compare] Detected added index <span style="background-color: #fff0f0">&#39;ix_user_username&#39;</span> on <span style="background-color: #fff0f0">&#39;[&#39;</span>username<span style="background-color: #fff0f0">&#39;]&#39;</span>
+  Generating <span style="color: #333333">/</span>home<span style="color: #333333">/</span>me<span style="color: #333333">/</span>project_folder<span style="color: #333333">/</span>migrations<span style="color: #333333">/</span>versions<span style="color: #333333">/</span>e517276bb1c2_users_table<span style="color: #333333">.</span>py <span style="color: #333333">...</span> done
+</pre>
+<p>This command creates a <code>user table</code> which maps to the schema of the database model.</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> flask db upgrade
+
+<span style="color: #888888"># Output</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Context impl SQLiteImpl<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Will assume non<span style="color: #333333">-</span>transactional DDL<span style="color: #333333">.</span>
+INFO  [alembic<span style="color: #333333">.</span>runtime<span style="color: #333333">.</span>migration] Running upgrade  <span style="color: #333333">-&gt;</span> e517276bb1c2, users table
+</pre>
+<p>This command applies the changes we have made. <code>flask db upgrade</code> does not make any changes to the database.</p>
+<p><em>Every time we make changes to our database schema, we will be following the order of these commands to apply those changes.</em></p>
+<h3 id="run-the-application">Run the Application</h3>
+<p>With the application setup complete (we have not yet added two-factor authentication), we can test its functionality. On your terminal, run:</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> flask run
+</pre>
+<p>You should be able to access localhost on <a href="http://127.0.0.1:5000/">http://127.0.0.1:5000/</a>. Click this link or paste it on a new browser tab to see the output.</p>
+<h2 id="two-factor-authentication">Two Factor Authentication</h2>
+<p>I will use <a href="https://github.com/tadeck/onetimepass/"><code>onetimepass</code></a> package. There are other packages that implement TOTP algorithms. A simple search on <a href="https://pypi.python.org/pypi?%3Aaction=search&amp;term=totp&amp;submit=search">pypi</a> will reveal them.</p>
+<h3 id="update-the-user-model">Update the User Model</h3>
+<p>We will need to add a new field called <code>otp_secret</code> to our User model. This field will store the shared secret that the TOTP algorithm uses as input.</p>
+<p class="code-title">models.py: Add token</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">base64</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">onetimepass</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">User</span>(UserMixin, db<span style="color: #333333">.</span>Model):
+    <span style="color: #888888"># previous code</span>
+    otp_secret <span style="color: #333333">=</span> db<span style="color: #333333">.</span>Column(db<span style="color: #333333">.</span>String(<span style="color: #0000DD; font-weight: bold">16</span>))
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">__init__</span>(<span style="color: #007020">self</span>, <span style="color: #333333">**</span>kwargs):
+        <span style="color: #007020">super</span>(User, <span style="color: #007020">self</span>)<span style="color: #333333">.</span>__init__(<span style="color: #333333">**</span>kwargs)
+        <span style="color: #008800; font-weight: bold">if</span> <span style="color: #007020">self</span><span style="color: #333333">.</span>otp_secret <span style="color: #000000; font-weight: bold">is</span> <span style="color: #007020">None</span>:
+            <span style="color: #888888"># generate a random secret</span>
+            <span style="color: #007020">self</span><span style="color: #333333">.</span>otp_secret <span style="color: #333333">=</span> base64<span style="color: #333333">.</span>b32encode(os<span style="color: #333333">.</span>urandom(<span style="color: #0000DD; font-weight: bold">10</span>))<span style="color: #333333">.</span>decode(<span style="background-color: #fff0f0">&#39;utf-8&#39;</span>)
+
+    <span style="color: #888888"># previous</span>
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">get_totp_uri</span>(<span style="color: #007020">self</span>):
+        <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&#39;otpauth://totp/2FA-Demo:{0}?secret={1}&amp;issuer=2FA-Demo&#39;</span> \
+            <span style="color: #333333">.</span>format(<span style="color: #007020">self</span><span style="color: #333333">.</span>username, <span style="color: #007020">self</span><span style="color: #333333">.</span>otp_secret)
+
+    <span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">verify_totp</span>(<span style="color: #007020">self</span>, token):
+        <span style="color: #008800; font-weight: bold">return</span> onetimepass<span style="color: #333333">.</span>valid_totp(token, <span style="color: #007020">self</span><span style="color: #333333">.</span>otp_secret)
+</pre>
+<p>The <code>otp_secret</code> is encoded as a <a href="http://en.wikipedia.org/wiki/Base32">base32</a> string, which makes it a printable string with 16 characters. </p>
+<p>The <code>get_totp_uri()</code> function returns an authentication URI. The secret token is shared with the smartphone through this URI. The URI is rendered as a QRCode which you will need to scan with your phone.</p>
+<p>This is how that URI looks like:</p>
+<pre style="margin: 30; line-height: 125%">otpauth:<span style="color: #333333">//&lt;</span>protocol<span style="color: #333333">&gt;/&lt;</span>service<span style="color: #333333">-</span>name<span style="color: #333333">&gt;</span>:<span style="color: #333333">&lt;</span>user<span style="color: #333333">-</span>account<span style="color: #333333">&gt;</span><span style="color: #ff8080; ">?</span>secret<span style="color: #333333">=&lt;</span>shared<span style="color: #333333">-</span>secret<span style="color: #333333">&gt;&amp;</span>issuer<span style="color: #333333">=&lt;</span>service<span style="color: #333333">-</span>name<span style="color: #333333">&gt;</span>
+</pre>
+<ul>
+<li><code>&lt;protocol&gt;</code>: can be <code>totp</code></li>
+<li><code>&lt;service-name&gt;</code>: is the name of the service or application that  a user is authenticating to</li>
+<li><p><code>&lt;user-account&gt;</code>: anything that identifies the user account. It can be the user&#39;s username or email address</p>
+</li>
+<li><p><code>&lt;shared-secret&gt;</code>: the code used to seed the token generator algorithm</p>
+</li>
+<li><code>&lt;issuer&gt;</code>: normally set to the service name</li>
+</ul>
+<p>The <code>verify_totp()</code> function takes a token as input, and validates using the support provided by the onetimepass package.</p>
+<p>Since we have made some changes to the database schema, we need to generate and apply a new migration script. Run the commands below in their order:</p>
+<pre style="margin: 30; line-height: 125%">(totp)<span style="color: #ff8080; ">$</span> flask db migrate <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;add totp field&#39;</span>
+(totp)<span style="color: #ff8080; ">$</span> flask db upgrade
+</pre>
+<h3 id="authentication-logic">Authentication Logic</h3>
+<p>An application can implement two-factor authentication in two ways:</p>
+<ol>
+<li>Making it optional</li>
+<li>Making it mandatory</li>
+</ol>
+<p>When two-factor authentication is optional, the application can provide a use with a link to either enable or disable this feature. Other applications can make two-factor authentication part of the user registration process, such that before the user is successfully registered, then they have to set up two-factor authentication. Subsequent access to the account will always require additional one-time passwords.</p>
+<p>We will make use of the mandatory two-factor authentication by incorporating it right after a user has registered.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/2fa_totp/qrcode.png') }}" alt="QRCode"></p>
+<p>Upon registration, the user is redirected to another route before being sent to the <em>Login</em> page.</p>
+<p class="code-title">routes.py: 2fa Redirect</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/register&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">register</span>():
+    <span style="color: #888888"># ...</span>
+    form <span style="color: #333333">=</span> RegisterForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        <span style="color: #888888"># ...</span>
+
+        <span style="color: #888888"># redirect to the two-factor auth page, passing username in session</span>
+        session[<span style="background-color: #fff0f0">&#39;username&#39;</span>] <span style="color: #333333">=</span> user<span style="color: #333333">.</span>username
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;two_factor_setup&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;register.html&#39;</span>, form<span style="color: #333333">=</span>form)
+</pre>
+<p>Before being redirected, the user&#39;s <code>username</code> is passed in the session so the QRCode knows what user is registering.</p>
+<p class="code-title">routes.py: Set Up 2fa</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/twofactor&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">two_factor_setup</span>():
+    <span style="color: #008800; font-weight: bold">if</span> <span style="background-color: #fff0f0">&#39;username&#39;</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #000000; font-weight: bold">in</span> session:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;index&#39;</span>))
+    user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(username<span style="color: #333333">=</span>session[<span style="background-color: #fff0f0">&#39;username&#39;</span>])<span style="color: #333333">.</span>first()
+    <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #007020">None</span>:
+        <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;index&#39;</span>))
+    <span style="color: #888888"># since this page contains the sensitive qrcode, make sure the browser</span>
+    <span style="color: #888888"># does not cache it</span>
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;two-factor-setup.html&#39;</span>), <span style="color: #0000DD; font-weight: bold">200</span>, {
+        <span style="background-color: #fff0f0">&#39;Cache-Control&#39;</span>: <span style="background-color: #fff0f0">&#39;no-cache, no-store, must-revalidate&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;Pragma&#39;</span>: <span style="background-color: #fff0f0">&#39;no-cache&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;Expires&#39;</span>: <span style="background-color: #fff0f0">&#39;0&#39;</span>}
+</pre>
+<p>The <code>two_factor_setup</code> validates whether there is a username in the user&#39;s session. If it exists, all it does is to render a two-factor setup page. The page tells the browser not to do any caching so as to prevent an attacker from getting access to the QR code which has time-based tokens .</p>
+<h3 id="display-the-qrcode-page">Display the QRCode Page</h3>
+<p>The page includes a reference the the QRcode image, but the url to this image is not the usual image link. </p>
+<p class="code-title">two-factor-setup.html: Display QR code image</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">import</span> <span style="background-color: #fff0f0">&#39;bootstrap/wtf.html&#39;</span> <span style="color: #008800; font-weight: bold">as</span> wtf <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span><span style="color: #0000DD; font-weight: bold">2</span>fa Authentication SetUp<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>You are almost done<span style="color: #ff8080; ">!</span> Please start FreeOTP on your smartphone <span style="color: #000000; font-weight: bold">and</span> scan the following QR Code <span style="color: #008800; font-weight: bold">with</span> it:<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>p<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>img <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;qrcode&quot;</span> src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;qrcode&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>a href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;login&#39;) \}\}&quot;</span><span style="color: #333333">&gt;&lt;</span>button <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;button&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;btn btn-light&quot;</span><span style="color: #333333">&gt;</span>Login<span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>    
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>The image is dynamically generated using <code>url_for</code> function from <code>flask</code>. This is because the QRCode image needs to be generated specifically for each user so a flask route is invoked to do the work.</p>
+<p class="code-title">route.py: Return image data</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Previous imports</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> abort
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">io</span> <span style="color: #008800; font-weight: bold">import</span> BytesIO
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">pyqrcode</span>
+
+<span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/qrcode&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">qrcode</span>():
+    <span style="color: #008800; font-weight: bold">if</span> <span style="background-color: #fff0f0">&#39;username&#39;</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #000000; font-weight: bold">in</span> session:
+        abort(<span style="color: #0000DD; font-weight: bold">404</span>)
+    user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(username<span style="color: #333333">=</span>session[<span style="background-color: #fff0f0">&#39;username&#39;</span>])<span style="color: #333333">.</span>first()
+    <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #007020">None</span>:
+        abort(<span style="color: #0000DD; font-weight: bold">404</span>)
+
+    <span style="color: #888888"># remove username from session for added security</span>
+    <span style="color: #008800; font-weight: bold">del</span> session[<span style="background-color: #fff0f0">&#39;username&#39;</span>]
+
+    <span style="color: #888888"># render qrcode from FreeOTP</span>
+    url <span style="color: #333333">=</span> pyqrcode<span style="color: #333333">.</span>create(user<span style="color: #333333">.</span>get_totp_uri())
+    stream <span style="color: #333333">=</span> BytesIO()
+    url<span style="color: #333333">.</span>svg(stream, scale<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">5</span>)
+    <span style="color: #008800; font-weight: bold">return</span> stream<span style="color: #333333">.</span>getvalue(), <span style="color: #0000DD; font-weight: bold">200</span>, {
+        <span style="background-color: #fff0f0">&#39;Content-Type&#39;</span>: <span style="background-color: #fff0f0">&#39;image/svg+xml&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;Cache-Control&#39;</span>: <span style="background-color: #fff0f0">&#39;no-cache, no-store, must-revalidate&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;Pragma&#39;</span>: <span style="background-color: #fff0f0">&#39;no-cache&#39;</span>,
+        <span style="background-color: #fff0f0">&#39;Expires&#39;</span>: <span style="background-color: #fff0f0">&#39;0&#39;</span>
+    }
+</pre>
+<p>Rather than return a template as is the case with all other routes, the <code>qrcode</code> route returns an image data. Again, we check whether the <code>username</code> is in the session. If any of those validations fail, then we return a 404 error. </p>
+<p>If the user is valid, we remove it from the session because once the user has requested for the QR Code, we make sure that this image cannot be requested again. This means that if the user fails to scan the QR code in this occassion, then the account will become inaccessible.</p>
+<p>The information stored in the QR codes is the URL that contains TOTP data. This is what the TOTP smartphones expect. <code>pyqrcode</code> simply renders the TOTP URL as an SVG image, saved in a <code>StringIO</code> stream in memory.</p>
+<p>We ensure that the browser does not cache the page by including some headers.</p>
+<h3 id="login-token">Login Token</h3>
+<p>We now need to include a token field in our <em>Login</em> page.</p>
+<p class="code-title">forms.py: Token field in Login page</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">LoginForm</span>(FlaskForm):
+    username <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Username&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    password <span style="color: #333333">=</span> PasswordField(<span style="background-color: #fff0f0">&#39;Password&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    token <span style="color: #333333">=</span> StringField(<span style="background-color: #fff0f0">&#39;Token&#39;</span>, validators<span style="color: #333333">=</span>[DataRequired()])
+    remember_me <span style="color: #333333">=</span> BooleanField(<span style="background-color: #fff0f0">&#39;Remember Me&#39;</span>)
+    submit <span style="color: #333333">=</span> SubmitField(<span style="background-color: #fff0f0">&#39;Login&#39;</span>)
+</pre>
+<p>When this <em>Login</em> data is submitted, we need to modify our <code>login()</code> function to allow for an additional validation check:</p>
+<p class="code-title">routes.py: Token authentication</p>
+<pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&#39;/login&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;GET&#39;</span>, <span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">login</span>():
+    <span style="color: #888888"># ...</span>
+    form <span style="color: #333333">=</span> LoginForm()
+    <span style="color: #008800; font-weight: bold">if</span> form<span style="color: #333333">.</span>validate_on_submit():
+        user <span style="color: #333333">=</span> User<span style="color: #333333">.</span>query<span style="color: #333333">.</span>filter_by(username<span style="color: #333333">=</span>form<span style="color: #333333">.</span>username<span style="color: #333333">.</span>data)<span style="color: #333333">.</span>first()
+        <span style="color: #008800; font-weight: bold">if</span> user <span style="color: #000000; font-weight: bold">is</span> <span style="color: #007020">None</span> <span style="color: #000000; font-weight: bold">or</span> <span style="color: #000000; font-weight: bold">not</span> user<span style="color: #333333">.</span>check_password(form<span style="color: #333333">.</span>password<span style="color: #333333">.</span>data) <span style="color: #000000; font-weight: bold">or</span> \
+                <span style="color: #000000; font-weight: bold">not</span> user<span style="color: #333333">.</span>verify_totp(form<span style="color: #333333">.</span>token<span style="color: #333333">.</span>data):
+            flash(<span style="background-color: #fff0f0">&#39;Invalid username, password or token.&#39;</span>)
+            <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;login&#39;</span>))
+
+        <span style="color: #888888"># log user in</span>
+        <span style="color: #888888"># ...</span>
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;login.html&#39;</span>, form<span style="color: #333333">=</span>form)
+</pre>
+<p>We have added <code>user.verify_totp()</code> to check tokens using the <code>onetimepass</code> package.</p>
+<p>That&#39;s it! You now have a mandatory two-factor authentication set up in your flask application.</p>
+<h2 id="deployment">Deployment</h2>
+<p>Heroku is a free Platform-as-a-Service which you can use to deploy your application. I have previously covered <a href="https://gitauharrison-blog.herokuapp.com/heroku-deployment">how to deploy an app to Heroku</a> in another article. The method is exactly the same, with a few modifications to suite this app&#39;s features.</p>
+<p>Note that before you can commit any changes to a <code>git</code> repository, it is necessary that you do not commit files which contain sensitive data. In our case, we have <code>.env</code> file. <code>git</code> provides a file called <code>.gitignore</code> to which we can add any files that we wish to exclude from version control. Find out <a href="https://github.com/github/gitignore">here</a> what files you can ignore from version control. Ensure <code>.env</code> file is added to <code>.gitignore</code> before adding and commiting your application files.</p>
+<p>In summary, this is what you will need to do to deploy your app to Heroku:</p>
+<ol>
+<li>Login to heroku on your terminal (<code>$ heroku login</code>)</li>
+<li>Ensure your application is in a git repository (<code>$ git remote -v</code>)</li>
+<li>Create a Heroku application (<code>$ heroku apps:create totp-app</code>)</li>
+<li>Create Postgres database (<code>$ heroku addons:add heroku-postgresql:hobby-dev</code>)</li>
+<li>Login errors to STDOUT</li>
+<li>Set environment variables in Heroku (<code>$ heroku config:set LOG_TO_STDOUT=1 # Add the others</code>)</li>
+<li>Install <code>gunicorn</code> and <code>psycopg2</code> (<code>$ pip3 install gunicorn psycopg2</code>)</li>
+<li>Add <code>Procfile</code> to root directory and update it (<code>$ touch Procfile</code>)</li>
+<li>Commit your changes (<code>$ git commit -m &#39;&lt;your-commit-message&gt;&#39;</code>)</li>
+<li>A remote Heroku repository (<code>$ heroku git:remote -a &lt;your-heroku-app-name&gt;</code>)</li>
+<li>Push to Heroku (<code>$ git push heroku master</code>)</li>
+</ol>
+<h2 id="optional-two-factor-authentication-in-flask">Optional Two-factor Authentication in Flask</h2>
+<p>Want to see how to implement optional two-factor authentication in a flask app? Read more <a href="twilio_verify_2fa.md">here</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h2 id="comments">{{ total }} Comments</h2>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
