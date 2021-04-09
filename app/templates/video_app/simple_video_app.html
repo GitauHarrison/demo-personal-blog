@@ -1,0 +1,600 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+<h1 id="build-a-video-conference-application-using-flask-and-twilio">Build a Video Conference Application Using Flask and Twilio</h1>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/ona_ana.gif') }}" alt="Ona Ana Video Call App"></p>
+<p>The Covid-19 pandemic has forced many businesses to close shop and ask their employees to work from home. Almost everyone was forced into remote work. The use of video calling applications (such as Zoom and Google Meet among others) rose as more and more people began embracing this new norm. In this article, I will show you how to build similar video calling applications that offer satisfactory levels and quality of features.</p>
+<h2 id="testing">Testing</h2>
+<p>If you would like to test this project out, consider checking the <a href="https://ona-ana-video-app.herokuapp.com/">hosted application</a> or <a href="https://github.com/GitauHarrison/video-conferencing-app-using-flask-and-twilio">you can test it locally</a>. This applicatin has a lot more features added to it. However, this article begins from the basics of setting up a video call application from scratch until a user can join the video call. At <a href="#going-further">the very end</a>, I will share with you links to other articles showing how to add specific features to your application. I recommend that you look them up to learn more.</p>
+<h2 id="project-requirements">Project Requirements</h2>
+<p>There are a number of things we need in order to build our project:</p>
+<ul>
+<li>A Twilio account. Create a <a href="https://www.twilio.com/try-twilio?promo=WNPWrR">free Twilio account</a> now.</li>
+<li>A web browser compatible with the Twilio Programmable Video JavaScript library. Check your browser among <a href="https://www.twilio.com/docs/video/javascript">this list</a>.</li>
+<li>Python 3.6 and above.</li>
+<li>This project makes use of <code>Ngrok</code>. Ngrok provides public URLs that redirect to the application. If you do not know what it is or how to use it, refer to the reference section at the end of this article.</li>
+</ul>
+<p>Once you have an account with Twilio:</p>
+<ul>
+<li>Click <a href="https://www.twilio.com/console">Console Dashboard</a>, </li>
+<li>Click <a href="https://www.twilio.com/console/project/settings">Settings</a> then,</li>
+<li>Click <a href="https://www.twilio.com/console/project/api-keys">API Keys</a></li>
+<li>Create your project API Key by clicking on the Red Plus(+) button. You will be provided with API Key SID and API Key Secret. </li>
+<li>Click &#39;Create API Key&#39; button to save.</li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/new_api_key.png') }}" alt="New API Key"></p>
+<p>Note that when you save your keys, the API Secret Key will never be shown again. Make sure to save it somewhere else safe because you will need to use it. This is what you will get:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/actual_video_api_keys.png') }}" alt="Actual Video API Key"></p>
+<p>Typically, these keys should be kept secret. I not worried showing you these keys because soon I will generate another pair. </p>
+<ul>
+<li>Additionally, you will need your <em>Account SID</em> from the <a href="https://twilio.com/console">Twilio console</a></li>
+</ul>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/twilio_account_SID.png') }}"  alt="Twilio Account SID"></p>
+<p>Make sure you save these keys somewhere safe. We will need them later in the application.</p>
+<h2 id="project-dependencies">Project Dependencies</h2>
+<p>Before we can begin working with any python package for this project, it is recommended that you install them within an activated virtual environment. Run the command below in your terminal to create and activate one:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #ff8080; ">$</span> mkvirtualenv video_app <span style="color: #888888"># I am using a virtualenvwrapper</span>
+
+<span style="color: #888888"># Output</span>
+(video_app)<span style="color: #ff8080; ">$</span>
+</pre>
+<p>Virtual environments help us isolate our machine&#39;s Operating System from those needed by the many projects we may build. Install the following dependencies in your virtual environment:</p>
+<ul>
+<li>flask</li>
+<li>twilio</li>
+<li>python-dotenv</li>
+<li>pyngrok</li>
+<li>flask-bootstrap</li>
+<li>flask_wtf</li>
+</ul>
+<p>Run:</p>
+<pre style="margin: 0; line-height: 125%">(video_app)<span style="color: #ff8080; ">$</span> pip3 install flask pyngrok twilio python<span style="color: #333333">-</span>dotenv flask<span style="color: #333333">-</span>bootstrap flask<span style="color: #333333">-</span>wtf
+</pre>
+<h2 id="project-structure">Project Structure</h2>
+<p>Use the terminal commands <code>mkdir</code> and <code>touch</code> to create the project structure below. For example:</p>
+<pre style="margin: 0; line-height: 125%">(video_app)<span style="color: #ff8080; ">$</span> mkdir video_app <span style="color: #888888"># this create an empty directory</span>
+(video_app)<span style="color: #ff8080; ">$</span> touch video_app<span style="color: #333333">/</span>config<span style="color: #333333">.</span>py <span style="color: #888888"># this creates an empty config file in video_app directory</span>
+</pre>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/video_structure.png') }}" alt="Project Struture"></p>
+<p>To begin with, we will save all the application&#39;s dependencies in <code>requirements.txt</code> as follows:</p>
+<pre style="margin: 0; line-height: 125%">(video_app)<span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
+</pre>
+<h2 id="page-layout">Page Layout</h2>
+<p>The <code>home.html</code> page will inherit base styles and layout from <code>base.html</code> as seen below:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #888888"># Remove the back slashes</span>
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span>base<span style="color: #333333">.</span>html<span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;bootstrap/base.html&#39;</span> <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Head image goes here <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block head <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Google Fonts <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;preconnect&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://fonts.gstatic.com&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>link href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;https://fonts.googleapis.com/css2?family=Roboto:wght@300&amp;display=swap&quot;</span> rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span><span style="color: #333333">&gt;</span>
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Head image <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;image/png&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename = &#39;img/video-call.png&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Title Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block title <span style="color: #333333">%</span>}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">if</span> title <span style="color: #333333">%</span>}
+        Ona Ana <span style="color: #333333">|</span> \{\{ title \}\}
+    {<span style="color: #333333">%</span> <span style="color: #008800; font-weight: bold">else</span> <span style="color: #333333">%</span>}
+        Sample Video Call App
+    {<span style="color: #333333">%</span> endif <span style="color: #333333">%</span>}
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Import styles <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block styles <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    <span style="color: #333333">&lt;</span>link rel<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;stylesheet&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/css&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;\{\{ url_for(&#39;static&#39;, filename = &#39;css/styles.css&#39;) \}\}&quot;</span><span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Navbar Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block navbar <span style="color: #333333">%</span>}
+<span style="color: #333333">&lt;</span>nav class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar navbar-default&quot;</span><span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-header&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>button <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;button&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-toggle collapsed&quot;</span> data<span style="color: #333333">-</span>toggle<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse&quot;</span> data<span style="color: #333333">-</span>target<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#bs-example-navbar-collapse-1&quot;</span> aria<span style="color: #333333">-</span>expanded<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;false&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;sr-only&quot;</span><span style="color: #333333">&gt;</span>Toggle navigation<span style="color: #333333">&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>span class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;icon-bar&quot;</span><span style="color: #333333">&gt;&lt;/</span>span<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>a class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;navbar-brand&quot;</span> href<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;#&quot;</span><span style="color: #333333">&gt;</span>Ona Ana<span style="color: #333333">&lt;/</span>a<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;collapse navbar-collapse&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;bs-example-navbar-collapse-1&quot;</span><span style="color: #333333">&gt;</span>                                   
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+<span style="color: #333333">&lt;/</span>nav<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Blog Content Goes Here <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;container&quot;</span><span style="color: #333333">&gt;</span>
+        {<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+        
+        {<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Scripts Section <span style="color: #333333">--&gt;</span>
+{<span style="color: #333333">%</span> block scripts <span style="color: #333333">%</span>}
+    \{\{ <span style="color: #007020">super</span>() \}\}
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Twilio JS <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>script src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;//media.twiliocdn.com/sdk/js/video/releases/2.3.0/twilio-video.min.js&quot;</span><span style="color: #333333">&gt;&lt;/</span>script<span style="color: #333333">&gt;</span>
+    
+    <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Custom JS <span style="color: #333333">--&gt;</span>
+    <span style="color: #333333">&lt;</span>script <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text/javascript&quot;</span> src<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot; \{\{ url_for(&#39;static&#39;, filename=&#39;js/app.js&#39;) \}\} &quot;</span><span style="color: #333333">&gt;&lt;/</span>script<span style="color: #333333">&gt;</span>
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+
+
+
+
+<span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> home<span style="color: #333333">.</span>html <span style="color: #333333">--&gt;</span>
+
+{<span style="color: #333333">%</span> extends <span style="background-color: #fff0f0">&#39;base.html&#39;</span> <span style="color: #333333">%</span>}
+
+{<span style="color: #333333">%</span> block app_content <span style="color: #333333">%</span>}
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-md-12 text-center&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span>h1<span style="color: #333333">&gt;</span>Ona Ana Video Conferencing App<span style="color: #333333">&lt;/</span>h1<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-md-12 my_form&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Join<span style="color: #333333">/</span>Leave Actions <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;</span>form class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;form-inline&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;form-group&quot;</span><span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;</span>label class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;mb-2 mr-sm-2&quot;</span> <span style="color: #008800; font-weight: bold">for</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;username&quot;</span><span style="color: #333333">&gt;</span>Username: <span style="color: #333333">&lt;/</span>label<span style="color: #333333">&gt;</span>
+                    <span style="color: #333333">&lt;</span><span style="color: #007020">input</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;form-control mb2 mr-sm-2&quot;</span> <span style="color: #007020">type</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;text&quot;</span> name<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;username&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;username&quot;</span><span style="color: #333333">&gt;</span>                    
+                <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>button class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;btn&quot;</span> <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;join_leave&quot;</span><span style="color: #333333">&gt;</span>Join Call<span style="color: #333333">&lt;/</span>button<span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;/</span>form<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-md-12&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Participants Count <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;</span>p <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;count&quot;</span><span style="color: #333333">&gt;</span>You need to join the call<span style="color: #333333">&lt;/</span>p<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;row&quot;</span><span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;</span>div class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;col-md-12&quot;</span><span style="color: #333333">&gt;</span>
+            <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Video Feed <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;</span>div <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;video_container&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;video_container&quot;</span><span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span>div <span style="color: #007020">id</span><span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;local&quot;</span> class<span style="color: #333333">=</span><span style="background-color: #fff0f0">&quot;participant&quot;</span><span style="color: #333333">&gt;&lt;</span>div<span style="color: #333333">&gt;&lt;/</span>div<span style="color: #333333">&gt;&lt;</span>div<span style="color: #333333">&gt;</span>Me<span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;&lt;/</span>div<span style="color: #333333">&gt;</span>
+                <span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> More participants will be added dynamicly <span style="color: #333333">--&gt;</span>
+            <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+        <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+    <span style="color: #333333">&lt;/</span>div<span style="color: #333333">&gt;</span>
+     
+{<span style="color: #333333">%</span> endblock <span style="color: #333333">%</span>}
+</pre>
+<p>Flask&#39;s <code>url_for</code> has been used to help generate the correct URL for <code>styles.css</code> and <code>app.js</code> files. We also need the official release of the <em>twilio-video.js</em> library. All these files are added to the base template and are inherited by the home template using the keyword <code>extends</code>.</p>
+<p>We will update the style of our application in <code>styles.css</code> as seen below:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #BB0066; font-weight: bold">.video_container</span> {
+    <span style="color: #008800; font-weight: bold">margin-top</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">20px</span>;
+    <span style="color: #008800; font-weight: bold">width</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">100</span><span style="color: #333333">%</span>;
+    <span style="color: #008800; font-weight: bold">display</span><span style="color: #333333">:</span> flex;
+    flex<span style="color: #333333">-</span>wrap<span style="color: #333333">:</span> wrap;
+    <span style="color: #008800; font-weight: bold">text-align</span><span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">center</span>;
+    
+}
+<span style="color: #BB0066; font-weight: bold">.participant</span> {
+    <span style="color: #008800; font-weight: bold">margin-bottom</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">5px</span>;
+    <span style="color: #008800; font-weight: bold">margin-right</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">5px</span>;
+}
+<span style="color: #BB0066; font-weight: bold">.participant</span> <span style="color: #007700">div</span><span style="color: #555555; font-weight: bold">:first-child</span> {
+    <span style="color: #008800; font-weight: bold">width</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">320px</span>;
+    <span style="color: #008800; font-weight: bold">height</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">250px</span>;
+    <span style="color: #008800; font-weight: bold">background-color</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">#ddd</span>;
+    <span style="color: #008800; font-weight: bold">border</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">1px</span> <span style="color: #008800; font-weight: bold">solid</span> <span style="color: #007020">black</span>;
+}
+<span style="color: #BB0066; font-weight: bold">.participant</span> <span style="color: #007700">video</span> {
+    <span style="color: #008800; font-weight: bold">width</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">100</span><span style="color: #333333">%</span>;
+    <span style="color: #008800; font-weight: bold">height</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">100</span><span style="color: #333333">%</span>;
+}
+
+
+<span style="color: #888888">/* Optional General Styling */</span>
+<span style="color: #BB0066; font-weight: bold">.title</span><span style="color: #333333">,</span> <span style="color: #BB0066; font-weight: bold">.my_form</span><span style="color: #333333">,</span> <span style="color: #0066BB; font-weight: bold">#count</span>{
+    <span style="color: #008800; font-weight: bold">text-align</span><span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">center</span>;
+    <span style="color: #008800; font-weight: bold">padding-bottom</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">20px</span>;
+    <span style="color: #008800; font-weight: bold">padding-top</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">20px</span>;
+}
+<span style="color: #BB0066; font-weight: bold">.btn</span>{
+    <span style="color: #008800; font-weight: bold">border</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">1px</span> <span style="color: #008800; font-weight: bold">solid</span> <span style="color: #6600EE; font-weight: bold">#F2F2F2</span>;
+    <span style="color: #008800; font-weight: bold">color</span><span style="color: #333333">:</span> <span style="color: #007020">black</span>;
+}
+<span style="color: #007700">h1</span>{
+    <span style="color: #008800; font-weight: bold">font-size</span><span style="color: #333333">:</span> <span style="color: #6600EE; font-weight: bold">50px</span>;
+}
+<span style="color: #007700">body</span>{
+    <span style="color: #008800; font-weight: bold">font-family</span><span style="color: #333333">:</span> <span style="background-color: #fff0f0">&#39;Roboto&#39;</span><span style="color: #333333">,</span> <span style="color: #008800; font-weight: bold">sans-serif</span>;
+}
+</pre>
+<p>Flask-bootstrap makes use of the class <code>container</code>. So that we do not overide the default styles associated with this class, I have created a new class called <code>video_container</code>. This way, there is no conflict. If you have noted, this is the same class I have passed to the video feed <code>div</code> in the home template.</p>
+<p><code>.participant div:first-child</code> class applies to all first child elements of <code>div</code>s that have the class <code>participant</code>. We are limiting the size of the video to 320 by 250 pixels. To make this video noticable, we pass a background color to it and also define a border around it.</p>
+<h2 id="starting-the-flask-server">Starting the Flask Server</h2>
+<p>With the templates in place, we need to complete the application so that we can started the flask server. Let us create an application instance and create object of the packages we have imported.</p>
+<p><code>app/__init__.py: Create application instance</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask_bootstrap</span> <span style="color: #008800; font-weight: bold">import</span> Bootstrap
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
+
+app <span style="color: #333333">=</span> Flask(__name__)
+app<span style="color: #333333">.</span>config<span style="color: #333333">.</span>from_object(Config)
+
+bootstrap <span style="color: #333333">=</span> Bootstrap(app)
+
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">start_ngrok</span>():
+    <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">pyngrok</span> <span style="color: #008800; font-weight: bold">import</span> ngrok
+
+    url <span style="color: #333333">=</span> ngrok<span style="color: #333333">.</span>connect(<span style="color: #0000DD; font-weight: bold">5000</span>)
+    <span style="color: #007020">print</span>(<span style="background-color: #fff0f0">&#39;*Tunnel: &#39;</span>, url)
+
+
+<span style="color: #008800; font-weight: bold">if</span> app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>]:
+    start_ngrok()
+
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
+</pre>
+<p>We have created an instance of <code>flask-bootstrap</code> which we installed earlier. We are also setting our application to download and run <code>ngrok</code>, a service that provides free public URLs to help access our application, which is currently running on <a href="http://127.0.0.1:5000/">localhost</a>, from another device. Everytime we start th flask server, <code>ngrok</code> will also start and generate useful URLs for us.</p>
+<p>We have imported configurations to our flask instance but it does not exist yet. Let us define our application&#39;s configurations. </p>
+<p><code>config.py: Load environment variables</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">dotenv</span> <span style="color: #008800; font-weight: bold">import</span> load_dotenv
+
+load_dotenv()
+
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Config</span>(<span style="color: #007020">object</span>):
+    START_NGROK <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;START_NGROK&#39;</span>) <span style="color: #000000; font-weight: bold">is</span> <span style="color: #000000; font-weight: bold">not</span> <span style="color: #008800; font-weight: bold">None</span>
+    SECRET_KEY <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;SECRET_KEY&quot;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="background-color: #fff0f0">&#39;you-will-never-guess&#39;</span>
+
+    TWILIO_ACCOUNT_SID <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;TWILIO_ACCOUNT_SID&quot;</span>)
+    TWILIO_API_KEY_SID <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;TWILIO_API_KEY_SID&quot;</span>)
+    TWILIO_API_KEY_SECRET <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&quot;TWILIO_API_KEY_SECRET&quot;</span>)
+</pre>
+<p>Remember at the beginning of this article we saved some keys that we promised to use. <code>python-dotenv</code> package will be used to load these keys from environent variables. </p>
+<p>Let us update <code>.env</code> file we created ealier to hold these secret keys.</p>
+<p><code>.env: Secret application configurations</code></p>
+<pre style="margin: 0; line-height: 125%">TWILIO_ACCOUNT_SID<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;add-your-account-sid&#39;</span>
+TWILIO_API_KEY_SID<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;add-your-api-key-sid&#39;</span>
+TWILIO_API_KEY_SECRET<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;add-your-api-secret&#39;</span>
+</pre>
+<p>It is good practice to use <code>os.environ.get()</code> method to load these keys rather than passing them directly to variables in the <code>config.py</code> file. These keys should not be committed to version control. To guide users who might be interested in our project from a version control site like GitHub, we will update the <code>.env-template</code> file to show what keys they will need before running this application.</p>
+<p><code>.env-template: Show needed configurations</code></p>
+<pre style="margin: 0; line-height: 125%">TWILIO_ACCOUNT_SID<span style="color: #333333">=</span>
+TWILIO_API_KEY_SID<span style="color: #333333">=</span>
+TWILIO_API_KEY_SECRET<span style="color: #333333">=</span>
+</pre>
+<p>Our application instance imports the routes module. We need to update this module to render the home page.</p>
+<p><code>app/routes.py</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> render_template
+
+
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/&#39;</span>)
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/home&#39;</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">home</span>():
+    <span style="color: #008800; font-weight: bold">return</span> render_template(<span style="background-color: #fff0f0">&#39;home.html&#39;</span>, title<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;Home&#39;</span>)
+</pre>
+<p>Flask will need to know the application&#39;s entry point. So, in <code>app.py</code>, we will add this code:</p>
+<p><code>app.py: Application entry point</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
+</pre>
+<p>Just before we start the flask server, let us pass Flask&#39;s environment variables:</p>
+<p><code>.flaskenv: Pass Flask&#39;s environment variables</code></p>
+<pre style="margin: 0; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py
+FLASK_ENV<span style="color: #333333">=</span>development
+FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>
+START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
+</pre>
+<p>We are on a development server, and it is okay to enable Flask&#39;s auto-reload feature that is quite useful when debugging. Now, we can start the flask server from the terminal:</p>
+<pre style="margin: 0; line-height: 125%">(video_app)<span style="color: #ff8080; ">$</span> flask run
+</pre>
+<p>This is what we have at the moment:</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/initial_app_look.png') }}" alt="Initial Look of Video App"></p>
+<h2 id="display-video-feed">Display Video Feed</h2>
+<p>First, let us display our own video feed. We will add this to the first child of the div that has class <code>local</code>.</p>
+<p><code>js/app.js: Display own video feed</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">function</span> addLocalVideo() {
+    Twilio.Video.createLocalVideoTrack().then(track <span style="color: #333333">=&gt;</span> {
+        <span style="color: #008800; font-weight: bold">let</span> video <span style="color: #333333">=</span> <span style="color: #007020">document</span>.getElementById(<span style="background-color: #fff0f0">&#39;local&#39;</span>).firstChild;
+        video.appendChild(track.attach());
+    });
+};
+
+addLocalVideo();
+</pre>
+<p>You should be able to see your own video feed after calling the <code>addLocalVideo</code> function.</p>
+<p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='/images/video_app/own_video_feed.png') }}" alt="Own Video Feed"></p>
+<p>The video gets attached to the first <code>div</code> whose parent has the ID <code>local</code>. We have set this <code>div</code> to be empty (if you look carefully at the home template). This is because the video feed will be attached here.</p>
+<h2 id="generate-access-token">Generate Access Token</h2>
+<p>The fact that you have built an application which can access a user&#39;s camera and microphone raises the issue of security. Thankfully, Twilio takes security seriously. Before any user can join the call, we need our application to verify that the user is allowed and the application must generate an access token for them. This is done in the Python server. The <code>.env</code> secrets will be required.</p>
+<p><code>app/routes.py: Generate access token</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">twilio.jwt.access_token</span> <span style="color: #008800; font-weight: bold">import</span> AccessToken
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">twilio.jwt.access_token.grants</span> <span style="color: #008800; font-weight: bold">import</span> VideoGrant
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> request, abort
+
+<span style="color: #555555; font-weight: bold">@app</span><span style="color: #333333">.</span>route(<span style="background-color: #fff0f0">&#39;/login&#39;</span>, methods<span style="color: #333333">=</span>[<span style="background-color: #fff0f0">&#39;POST&#39;</span>])
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">login</span>():
+    username <span style="color: #333333">=</span> request<span style="color: #333333">.</span>get_json(force<span style="color: #333333">=</span><span style="color: #008800; font-weight: bold">True</span>)<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;username&#39;</span>)
+    <span style="color: #008800; font-weight: bold">if</span> <span style="color: #000000; font-weight: bold">not</span> username:
+        abort(<span style="color: #0000DD; font-weight: bold">401</span>)
+    token <span style="color: #333333">=</span> AccessToken(
+        app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;TWILIO_ACCOUNT_SID&#39;</span>],
+        app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;TWILIO_API_KEY_SID&#39;</span>],
+        app<span style="color: #333333">.</span>config[<span style="background-color: #fff0f0">&#39;TWILIO_API_KEY_SECRET&#39;</span>],
+        identity<span style="color: #333333">=</span>username
+    )
+    token<span style="color: #333333">.</span>add_grant(VideoGrant(room<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;My Room&#39;</span>))
+    <span style="color: #008800; font-weight: bold">return</span> {<span style="background-color: #fff0f0">&#39;token&#39;</span>: token<span style="color: #333333">.</span>to_jwt()<span style="color: #333333">.</span>decode()}
+</pre>
+<p>Our current form of authentication will only involve the use of <code>username</code>, but more robust applications will require better user authentication. </p>
+<p>Basically, we are getting the user&#39;s identity in a JSON payload. We check that the <code>username</code> is not empty, otherwise we abort and return a <a href="https://httpstatuses.com/401"><code>401 Unauthorized</code></a> error. The <code>AccessToken</code> helper class is used to generate the token before attaching a video grant to a room called <code>My Room</code>. Read more from the <a href="https://www.twilio.com/docs/video/javascript-getting-started">Twilio Programmable Video JavaScript SDK documentation</a>. The token is returned as a JSON payload in this format:</p>
+<pre style="margin: 0; line-height: 125%">{
+    <span style="background-color: #fff0f0">&#39;token&#39;</span>: <span style="background-color: #fff0f0">&#39;token-will-go-here&#39;</span>
+}
+</pre>
+<p>An application can work with more than one video room and decide which video room a user can enter.</p>
+<h2 id="connect-disconnect-using-the-form-button">Connect/Disconnect Using the Form Button</h2>
+<p>What does the &#39;Join Call&#39; button really do?</p>
+<ul>
+<li>It can be used to connect a user to the video call</li>
+<li>It can also be used to disconnect a user from the video call</li>
+</ul>
+<p>Let us see how such an event can be handled in JavaScript;</p>
+<p><code>app/js/app.js: Button Event Handler</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">let</span> connected <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">false</span>;
+<span style="color: #008800; font-weight: bold">let</span> room;
+<span style="color: #008800; font-weight: bold">const</span> usernameInput <span style="color: #333333">=</span> <span style="color: #007020">document</span>.getElementById(<span style="background-color: #fff0f0">&#39;username&#39;</span>);
+<span style="color: #008800; font-weight: bold">const</span> button <span style="color: #333333">=</span> <span style="color: #007020">document</span>.getElementById(<span style="background-color: #fff0f0">&#39;join_leave&#39;</span>);
+<span style="color: #008800; font-weight: bold">const</span> container <span style="color: #333333">=</span> <span style="color: #007020">document</span>.getElementById(<span style="background-color: #fff0f0">&#39;video_container&#39;</span>)
+<span style="color: #008800; font-weight: bold">const</span> count <span style="color: #333333">=</span> <span style="color: #007020">document</span>.getElementById(<span style="background-color: #fff0f0">&#39;count&#39;</span>);
+
+<span style="color: #008800; font-weight: bold">function</span> addLocalVideo() { <span style="color: #888888">/* no changes */</span> }
+
+<span style="color: #008800; font-weight: bold">function</span> connectButtonHandler(event) {
+    event.preventDefault();
+    <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>connected) {
+        <span style="color: #008800; font-weight: bold">let</span> username <span style="color: #333333">=</span> usernameInput.value;
+        <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>username) {
+            alert(<span style="background-color: #fff0f0">&#39;Enter your name before connecting&#39;</span>);
+            <span style="color: #008800; font-weight: bold">return</span>;
+        }
+        button.disabled <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">true</span>;
+        button.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Connecting...&#39;</span>;
+        connect(username).then(() <span style="color: #333333">=&gt;</span> {
+            button.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Leave call&#39;</span>;
+            button.disabled <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">false</span>;
+        }).<span style="color: #008800; font-weight: bold">catch</span>(() <span style="color: #333333">=&gt;</span> {
+            alert(<span style="background-color: #fff0f0">&#39;Connection failed. Is the backend running?&#39;</span>);
+            button.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Join call&#39;</span>;
+            button.disabled <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">false</span>;    
+        });
+    }
+    <span style="color: #008800; font-weight: bold">else</span> {
+        disconnect();
+        button.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Join call&#39;</span>;
+        connected <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">false</span>;
+    }
+};
+
+addLocalVideo();
+button.addEventListener(<span style="background-color: #fff0f0">&#39;click&#39;</span>, connectButtonHandler);
+</pre>
+<p>We begin by defining a few global varibles which are used to access elements in our home page. For the button, we will work with <code>button</code>. If a user is not connected, we get their useranme and store it in the variable <code>username</code>. We will pass this variable to the <code>connect</code> function. We make sure that the <code>username</code> variable is not empty before initiating a connection. </p>
+<p>Just before the conncetion is successful, we rename the button to &#39;Connecting&#39; and effectively disable it during this process. Once connected, we enable the button to make it active one more time. We also rename it to &#39;Leave call&#39;. If the connection fails, we provide a fallback using the <code>catch</code> function.</p>
+<p>In the case where a user is already connected, we disconnect him by calling the function <code>disconnect</code> and renaming the button to &#39;Join call&#39;.</p>
+<h2 id="connect-to-a-video-room">Connect to A Video Room</h2>
+<p>Here is where we define the <code>connect</code> function is seen the click event <code>connectButtonHandler</code>. Two sequential operations have to take place before a successful connection:</p>
+<ul>
+<li>Request an access token by calling the we server</li>
+<li>Calling the Twilio Video Library with the token received to make the connection</li>
+</ul>
+<p><code>app/js/app.js: Connecting to a video room</code></p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">function</span> connect(username) {
+    <span style="color: #008800; font-weight: bold">let</span> promise <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">new</span> Promise((resolve, reject) <span style="color: #333333">=&gt;</span> {
+        <span style="color: #888888">// get token from the back end</span>
+        fetch(<span style="background-color: #fff0f0">&#39;/login&#39;</span>, {
+            method<span style="color: #333333">:</span> <span style="background-color: #fff0f0">&#39;POST&#39;</span>,
+            body<span style="color: #333333">:</span> JSON.stringify({<span style="background-color: #fff0f0">&#39;username&#39;</span><span style="color: #333333">:</span> username})
+        }).then(res <span style="color: #333333">=&gt;</span> res.json()).then(data <span style="color: #333333">=&gt;</span> {
+            <span style="color: #888888">// join the video call</span>
+            <span style="color: #008800; font-weight: bold">return</span> Twilio.Video.connect(data.token);
+        }).then(_room <span style="color: #333333">=&gt;</span> {
+            room <span style="color: #333333">=</span> _room;
+            room.participants.forEach(participantConnected);
+            room.on(<span style="background-color: #fff0f0">&#39;participantConnected&#39;</span>, participantConnected);
+            room.on(<span style="background-color: #fff0f0">&#39;participantDisconnected&#39;</span>, participantDisconnected);
+            connected <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">true</span>;
+            updateParticipantCount();
+            resolve();
+        }).<span style="color: #008800; font-weight: bold">catch</span>(() <span style="color: #333333">=&gt;</span> {
+            reject();
+        });
+    });
+    <span style="color: #008800; font-weight: bold">return</span> promise;
+};
+</pre>
+<p>A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promise</a> constructor is returned when the <code>connect</code> function is called, which is controlled by the <code>resolve()</code> and the <code>reject()</code> functions. A call to <code>resolve()</code> triggers a success callback whereas <code>reject()</code> does the same for the error callback.</p>
+<p>This is how the <code>connect()</code> function is structured:</p>
+<pre style="margin: 0; line-height: 125%">connect() { promise <span style="color: #333333">=</span> { fetch(<span style="color: #888888">/*token*/</span>).then(<span style="color: #888888">/*join video call*/</span>).then(<span style="color: #888888">/*enter room*/</span>).<span style="color: #008800; font-weight: bold">catch</span>(<span style="color: #888888">/*error*/</span>); }; <span style="color: #008800; font-weight: bold">return</span> promise; };
+</pre>
+<p>Two steps create a connection logic:</p>
+<ul>
+<li>First, the <code>fetch()</code> function is used to send a request to the <code>/login</code> route and return a promise. After a successful call, we decode the JSON payload into the <code>data</code> variable and then call <code>connect()</code> from the Twilio video library by passing the newly acquired token.</li>
+<li>Secondly, if the <code>fetch()</code> fails, we call <code>reject()</code>on our promise.</li>
+</ul>
+<p>Once we are connected and in a video call room, we need to arrange the <code>video_container</code> part of the page to reflect this. We have passed <code>_room</code> argument to represent the the global <code>room</code> variable, therefore making it available to the rest of the application.</p>
+<p>We find out and list the participants already connected to the room, encapsulated in <code>participantConnected</code> function. There are two events that are likely to happen inside a video call room:</p>
+<ul>
+<li>Another participant can join the call</li>
+<li>A participant can disconnect from the room</li>
+</ul>
+<p>We, therefore make calls to the <code>participantConnected</code> and <code>participantDisconnected</code> functions to handle these events. The final action would be to count the number of participants and update the <code>&lt;p&gt;</code> element based on the length of <code>room.participants</code> array. </p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">function</span> updateParticipantCount() {
+    <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>connected)
+        count.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Disconnected&#39;</span>;
+    <span style="color: #008800; font-weight: bold">else</span>
+        count.innerHTML <span style="color: #333333">=</span> (room.participants.size <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #333333">+</span> <span style="background-color: #fff0f0">&#39;participants online&#39;</span>;
+};
+</pre>
+<p>The total length of <code>room.participants</code> includes ourselves. </p>
+<h2 id="connecting-and-disconnecting-participants">Connecting and Disconnecting Participants</h2>
+<p>The function <code>participantConnect</code> has been used to connect a user to a video call room. So what exactly happens?</p>
+<p>Technically, this function creates a new <code>div</code> inside the <code>video_container</code> element just like the <code>local</code> element.</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">function</span> participantConnected(participant) {
+    <span style="color: #008800; font-weight: bold">let</span> participantDiv <span style="color: #333333">=</span> <span style="color: #007020">document</span>.createElement(<span style="background-color: #fff0f0">&#39;div&#39;</span>);
+    participantDiv.setAttribute(<span style="background-color: #fff0f0">&#39;id&#39;</span>, participant.sid);
+    participantDiv.setAttribute(<span style="background-color: #fff0f0">&#39;class&#39;</span>, <span style="background-color: #fff0f0">&#39;participant&#39;</span>);
+
+    <span style="color: #008800; font-weight: bold">let</span> tracksDiv <span style="color: #333333">=</span> <span style="color: #007020">document</span>.createElement(<span style="background-color: #fff0f0">&#39;div&#39;</span>);
+    participantDiv.appendChild(tracksDiv);
+
+    <span style="color: #008800; font-weight: bold">let</span> labelDiv <span style="color: #333333">=</span> <span style="color: #007020">document</span>.createElement(<span style="background-color: #fff0f0">&#39;div&#39;</span>);
+    labelDiv.innerHTML <span style="color: #333333">=</span> participant.identity;
+    participantDiv.appendChild(labelDiv);
+
+    container.appendChild(participantDiv);
+
+    participant.tracks.forEach(publication <span style="color: #333333">=&gt;</span> {
+        <span style="color: #008800; font-weight: bold">if</span> (publication.isSubscribed)
+            trackSubscribed(tracksDiv, publication.track);
+    });
+    participant.on(<span style="background-color: #fff0f0">&#39;trackSubscribed&#39;</span>, track <span style="color: #333333">=&gt;</span> trackSubscribed(tracksDiv, track));
+    participant.on(<span style="background-color: #fff0f0">&#39;trackUnsubscribed&#39;</span>, trackUnsubscribed);
+
+    updateParticipantCount();
+};
+
+<span style="color: #008800; font-weight: bold">function</span> participantDisconnected(participant) {
+    <span style="color: #007020">document</span>.getElementById(participant.sid).remove();
+    updateParticipantCount();
+};
+
+<span style="color: #008800; font-weight: bold">function</span> trackSubscribed(div, track) {
+    div.appendChild(track.attach());
+};
+
+<span style="color: #008800; font-weight: bold">function</span> trackUnsubscribed(track) {
+    track.detach().forEach(element <span style="color: #333333">=&gt;</span> element.remove());
+};
+</pre>
+<p>This will create a dynamic HTML structure such as this:</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #888888">&lt;!--Disregard the back slashes--&gt;</span>
+
+<span style="color: #007700">&lt;div</span> <span style="color: #0000CC">id=</span><span style="background-color: #fff0f0">&quot;\{\{ participant.sid \}\}&quot;</span> <span style="color: #0000CC">class=</span><span style="background-color: #fff0f0">&quot;participant&quot;</span><span style="color: #007700">&gt;</span>
+    <span style="color: #007700">&lt;div&gt;&lt;/div&gt;</span>  <span style="color: #888888">&lt;!-- video and audio tracks will be attached to this div --&gt;</span>
+    <span style="color: #007700">&lt;div&gt;</span>\{\{ participant.name \}\}<span style="color: #007700">&lt;/div&gt;</span>
+<span style="color: #007700">&lt;/div&gt;</span>
+</pre>
+<p><code>participantConnected()</code> function gets a <a href="https://media.twiliocdn.com/sdk/js/video/releases/2.3.0/docs/Participant.html#toc0__anchor"><code>participant</code></a> object from the Twilio video library. As a result, we are able to obtain <code>participant.id</code> and <code>participant.identity</code> objects which are unique session identifiers and name respectively. The <code>identity</code> was used in the Python token generation function in our routes module.</p>
+<p>After creating the HTML structure, we now attach the video and audio tracks tot he <code>tracksDiv</code> element. We follow the guidance shown in the <a href="https://media.twiliocdn.com/sdk/js/video/releases/2.3.0/docs/">library&#39;s documentation</a> to attach looped tracks to which we are subscribed. The auxillary <code>trackSubscribed()</code> function handles the actual track attachment. </p>
+<h2 id="disconnect-from-the-chat-room">Disconnect From the Chat Room</h2>
+<p>If a user can <code>connect()</code> to a video call room, then they can possible <code>disconnect()</code>. We can achieve this by removing the child elements of <code>video_container</code> except our own local video stream.</p>
+<pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">function</span> disconnect() {
+    room.disconnect();
+    <span style="color: #008800; font-weight: bold">while</span> (container.lastChild.id <span style="color: #333333">!=</span> <span style="background-color: #fff0f0">&#39;local&#39;</span>)
+        container.removeChild(container.lastChild);
+    button.innerHTML <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;Join call&#39;</span>;
+    connected <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">false</span>;
+    updateParticipantCount();
+};
+</pre>
+<p>We remove all the children of the <code>video_container</code> element starting from the last up until we come to <code>local</code> div, which was non-dynamically created.</p>
+<h2 id="start-your-flask-server">Start Your Flask Server</h2>
+<p>Run the command <code>flask run</code> in your terminal and you should be able to access your localhost. You can connect to your application from another device using <code>ngrok</code>. You have probably noticed something such as <code>* Tunnel URL: NgrokTunnel: &quot;http://4209c9af6d43.ngrok.io&quot; -&gt; &quot;http://localhost:5000&quot;</code> in your terminal as soon as your flask server stated. This is a free public URL that <code>ngrok</code> provides to allow for access to your video service. </p>
+<p>Most web browsers do not allow <code>http//:</code> when working with video calls. Therefore we need to generate a secure public URL that redirects to the application.</p>
+<p>Open a new terminal window (consider using <a href="https://www.byobu.org/">byobu</a>) and run <code>ngrok</code>:</p>
+<pre style="margin: 0; line-height: 125%">(video_app)<span style="color: #ff8080; ">$</span> ngrok http <span style="color: #0000DD; font-weight: bold">5000</span>
+
+<span style="color: #888888"># Output</span>
+
+ngrok by <span style="color: #555555; font-weight: bold">@inconshreveable</span>                                                  (Ctrl<span style="color: #333333">+</span>C to quit)
+                                                                                           
+Session Status                online                                                       
+Session Expires               <span style="color: #0000DD; font-weight: bold">1</span> hour, <span style="color: #0000DD; font-weight: bold">59</span> minutes                                           
+Version                       <span style="color: #6600EE; font-weight: bold">2.3</span><span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">35</span>                                                       
+Region                        United States (us)                                           
+Web Interface                 http:<span style="color: #333333">//</span><span style="color: #6600EE; font-weight: bold">127.0</span><span style="color: #333333">.</span><span style="color: #6600EE; font-weight: bold">0.1</span>:<span style="color: #0000DD; font-weight: bold">4041</span>                                        
+Forwarding                    http:<span style="color: #333333">//</span><span style="color: #0000DD; font-weight: bold">13</span>c58a13e6c2<span style="color: #333333">.</span>ngrok<span style="color: #333333">.</span>io <span style="color: #333333">-&gt;</span> http:<span style="color: #333333">//</span>localhost:<span style="color: #0000DD; font-weight: bold">5000</span>        
+Forwarding                    https:<span style="color: #333333">//</span><span style="color: #0000DD; font-weight: bold">13</span>c58a13e6c2<span style="color: #333333">.</span>ngrok<span style="color: #333333">.</span>io <span style="color: #333333">-&gt;</span> http:<span style="color: #333333">//</span>localhost:<span style="color: #0000DD; font-weight: bold">5000</span>       
+                                                                                           
+Connections                   ttl     opn     rt1     rt5     p50     p90                  
+                              <span style="color: #0000DD; font-weight: bold">0</span>       <span style="color: #0000DD; font-weight: bold">0</span>       <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>    <span style="color: #6600EE; font-weight: bold">0.00</span>
+</pre>
+<p>Note the lines beginning with &#39;Forwarding&#39;. These show the public URLs that ngrok uses to redirect requests into our service. We will make use of the <code>https//:</code> URL.</p>
+<p>Copy the <code>https//:</code> url to another device, say your smartphone or another computer. You should be able to access the application. Click the &#39;Join Call&#39; button to test it out.</p>
+<h2 id="going-further">Going Further</h2>
+<p>To make the project a bit more complete, I have added more features such as:</p>
+<ul>
+<li><a href="#">Screen Share</a></li>
+<li><a href="#">In-built chat conversation</a></li>
+<li><a href="#">Mute/Unmute</a></li>
+<li><a href="#">Dominant Speaker Detection</a></li>
+<li><a href="#">How to add presentation mode</a></li>
+<li><a href="#">Improved User Authentication</a></li>
+<li><a href="#">Emoji Overlay</a></li>
+</ul>
+
+
+
+        </div>
+    </div><hr>
+    <!-- Comments Section -->
+    <div class="row">            
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <h2 id="comments">{{ total }} Comments</h2>  
+            <div class="translate-info">Feel free to post your comment in your language</div>
+
+            <!-- Display Flash Messages Here -->
+            {% include '_flash_message.html' %}
+
+            <!-- Comments Go Here -->
+            {% for post in posts %}
+                {% include '_comments.html' %}
+            {% endfor %}
+
+            <!-- Pagination Links -->
+            <nav aria-label="...">
+                <ul class="pager">
+                    <li class="previous{% if not prev_url %} disabled{% endif %}">
+                        <a href="{{ prev_url or '#' }}">
+                            <span aria-hidden="true">&larr;</span> Newer Comments
+                        </a>
+                    </li>
+                    <li class="next{% if not next_url %} disabled{% endif %}">
+                        <a href="{{ next_url or '#' }}">
+                            Older Comments <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Comment Form Goes Here -->
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 my-form">
+                    {{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
