@@ -64,3 +64,7 @@ $ flask run
 Once your application is running, you can access your `localhost` on http://127.0.0.1:5000/. Additionally, if you look carefully in your terminal, you will see `* Tunnel URL: NgrokTunnel: "http://4209c9af6d43.ngrok.io" -> "http://localhost:5000"`
 
 The `HTTP` value may be different from the one shown here because I am using the free tier package of `ngrok`. Paste the link http://4209c9af6d43.ngrok.io on another device, say your mobile phone, to test the application while it is on `localhost`.
+
+### Build Your Own Blog
+
+A personal blog side project sounds like a great idea. If you would like to learn how you can build your own blog from scratch using Python and Flask, something like the one here, [look here](https://github.com/GitauHarrison/notes/blob/master/web_development/personal_blog/personal_blog.md).

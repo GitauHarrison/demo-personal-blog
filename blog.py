@@ -6,7 +6,7 @@ from app.models import ArticlesList, User, PersonalBlogPost, VagrantPost, \
      UserCommentsPost, ElasticsearchPost, PortfolioList, DatesAndTimePost, \
      FlaskBootstrapPost, GithubSSHPost, InstallGitPost, FileUploadsPost,\
      StripeInFlaskPost, WhatsappChatbotPost, TwilioSendGridPost, TOTP2faPost,\
-     TwilioVerifyPost
+     TwilioVerifyPost, TwilioAuthyPost
 
 
 app = create_app()
@@ -42,5 +42,6 @@ def make_shell_context():
             'WhatsappChatbotPost': WhatsappChatbotPost,
             'TwilioSendGridPost': TwilioSendGridPost,
             'TOTP2faPost': TOTP2faPost,
-            'TwilioVerifyPost': TwilioVerifyPost
+            'TwilioVerifyPost': TwilioVerifyPost,
+            'TwilioAuthyPost': TwilioAuthyPost
             }

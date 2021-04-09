@@ -96,6 +96,10 @@ class User(db.Model):
                                     backref='author',
                                     lazy='dynamic'
                                     )
+    twilio_authy = db.relationship('TwilioAuthyPost',
+                                   backref='author',
+                                   lazy='dynamic'
+                                   )
 
     # Start of Personal Blog Tutorial
     hello_world = db.relationship('HelloWorldPost',
@@ -622,6 +626,33 @@ class TwilioVerifyPost(db.Model):
 db.event.listen(TwilioVerifyPost.body,
                 'set',
                 TwilioVerifyPost.on_changed_body
+                )
+
+
+class TwilioAuthyPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500))
+    body_html = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    language = db.Column(db.String(5))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+            'h1', 'h2', 'h3', 'p'
+        ]
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+
+    def __repr__(self):
+        return 'Post: {}'.format(self.body)
+
+
+db.event.listen(TwilioAuthyPost.body,
+                'set',
+                TwilioAuthyPost.on_changed_body
                 )
 
 # -----------------------
