@@ -63,7 +63,7 @@
 <p>For the purposes of demonstration, I have kept this application very simple. All the chatbot does is to determine if two select words come in the conversation. Whenever a user&#39;s message includes the word &#39;quote&#39;, the chatbot will respond by giving a random quote. If the user&#39;s sentence includes the word &#39;cat&#39;, then an image of cat will be the response from the chatbot. What do you think will happen when a user sends a message that has both words?</p>
 <h4 id="4-build-application">4. Build Application</h4>
 <p>Let us now build our application:</p>
-<p><code>__init__.py: create application instance</code></p>
+<p class="code-title">__init__.py: create application instance</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
 
 app <span style="color: #333333">=</span> Flask(__name__)
@@ -71,7 +71,7 @@ app <span style="color: #333333">=</span> Flask(__name__)
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> routes
 </pre>
 <p>Above, we have instantiated our application.</p>
-<p><code>routes.py: Define application endpoint</code></p>
+<p class="code-title">routes.py: Define application endpoint</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> request
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">twilio.twiml.messaging_response</span> <span style="color: #008800; font-weight: bold">import</span> MessagingResponse
@@ -117,7 +117,7 @@ FLASK_ENV<span style="color: #333333">=</span><span style="background-color: #ff
 FLASK_DEBUG<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;&lt;value&gt;&#39;</span>
 </pre>
 <p>We will store all our environment variables in <code>.flaskenv</code> file.</p>
-<p><code>.flaskenv: All environment variable go here</code></p>
+<p class="code-title">.flaskenv: All environment variable go here</p>
 <pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>bot<span style="color: #333333">.</span>py
 FLASK_ENV<span style="color: #333333">=</span>development
 FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">True</span>
@@ -135,7 +135,7 @@ FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">Tru
  <span style="color: #333333">*</span> Debugger <span style="color: #000000; font-weight: bold">is</span> active<span style="color: #ff8080; ">!</span>
 </pre>
 <p>This application is running on <code>localhost</code>. In order to test it, we will use <code>ngrok</code> to provide us with a temporary URL that redirects to our local port 5000. Let us update our application to run <code>ngrok</code> every time we fire up our server.</p>
-<p><code>.flaskenv: Add ngrok to environment variables</code></p>
+<p class="code-title">.flaskenv: Add ngrok to environment variables</p>
 <pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>bot<span style="color: #333333">.</span>py
 FLASK_ENV<span style="color: #333333">=</span>development
 FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">True</span>
@@ -143,7 +143,7 @@ FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">Tru
 START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span>
 </pre>
 <p>Ngrok needs to be run every time the server is fired up.</p>
-<p><code>config.py: Configure ngrok</code></p>
+<p class="code-title">config.py: Configure ngrok</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span>
 
 
@@ -153,7 +153,7 @@ START_NGROK<span style="color: #333333">=</span><span style="color: #0000DD; fon
 
     LOG_TO_STDOUT <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;LOG_TO_STDOUT&#39;</span>)
 </pre>
-<p><code>__init__.py: Register ngrok configuration in application</code></p>
+<p class="code-title">__init__.py: Register ngrok configuration in application</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> Flask
 <span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">config</span> <span style="color: #008800; font-weight: bold">import</span> Config
 
