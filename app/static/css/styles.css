@@ -260,3 +260,9 @@ a:active{
     padding-left: 20px;
     padding-right: 20px;
 }
+/* ------------------------------------------ */
+/* TIMESTAMP */
+/* ------------------------------------------ */
+.my_timestamp {    
+    font-family: 'Poiret One', cursive;
+}
