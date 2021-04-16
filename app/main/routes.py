@@ -156,8 +156,14 @@ def my_interests():
     return render_template('my_interests.html', title='My Interests')
 
 
-@bp.route('/web-development', methods=['GET', 'POST'])
+@bp.route('/web-development')
 def web_development():
+    return render_template('web_development.html', title='Web Development')
+
+
+# The database to this view function is called WebDevelopmentPost
+@bp.route('/getting-started', methods=['GET', 'POST'])
+def getting_started():
     form = CommentForm()
     if form.validate_on_submit():
         language = guess_language(form.comment.data)
@@ -172,24 +178,24 @@ def web_development():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')
-        return redirect(url_for('main.web_development', _anchor='comments'))
+        return redirect(url_for('main.getting_started', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = WebDevelopmentPost.query.order_by(
         WebDevelopmentPost.timestamp.asc()).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
         )
-    next_url = url_for('main.web_development',
+    next_url = url_for('main.getting_started',
                        _anchor='comments',
                        page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('main.web_development',
+    prev_url = url_for('main.getting_started',
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
     all_posts = WebDevelopmentPost.query.all()
     total = len(all_posts)
-    return render_template('web_development.html',
-                           title='Web Development',
+    return render_template('getting_started.html',
+                           title='Getting Started',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
