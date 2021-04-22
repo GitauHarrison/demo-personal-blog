@@ -1,5 +1,7 @@
 # Personal Blog
 
+![GitHub Open Issues](https://img.shields.io/github/issues/GitauHarrison/my-blog) ![GitHub Closed Issues](https://img.shields.io/github/issues-closed/GitauHarrison/my-blog) ![GitHub Pull Request Open](https://img.shields.io/github/issues-pr/GitauHarrison/my-blog) ![GitHub Pull Request Closed](https://img.shields.io/github/issues-pr-closed/GitauHarrison/my-blog) ![GitHub forks](https://img.shields.io/github/forks/GitauHarrison/my-blog) ![GitHub Stars](https://img.shields.io/github/stars/GitauHarrison/my-blog)
+
 ![Personal Blog](app/static/images/personal_blog.gif)
 
 ### Overview
