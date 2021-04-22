@@ -1,4 +1,4 @@
-# I Am Found Here 100% of The Time
+# Personal Blog
 
 ![Personal Blog](app/static/images/personal_blog.gif)
 
@@ -34,11 +34,17 @@ Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Pe
 * Ngrok for Localhost Testing
 * Flask PageDown for form editing
 
+## Application Design
+
+* [Personal Blog Design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog%2FPortfolio?node-id=0%3A1&scaling=min-zoom&page-id=0%3A1)
+
 ### Contributors:
-* [Gitau Harrison](https://github.com/GitauHarrison)
+
+[![GitHub Contributors](https://img.shields.io/github/contributors/GitauHarrison/my-blog)](https://github.com/GitauHarrison/my-blog/graphs/contributors)
+
 
 ### Deployed Application
-* [Gitau Harrison Blog on Heroku](https://gitauharrison-blog.herokuapp.com/home)
+* [Gitau Harrison Blog](https://gitauharrison-blog.herokuapp.com/home)  on Heroku
 
 ### Testing
 To test the project out, you can clone this repo to your local machine:
@@ -68,3 +74,5 @@ The `HTTP` value may be different from the one shown here because I am using the
 ### Build Your Own Blog
 
 A personal blog side project sounds like a great idea. If you would like to learn how you can build your own blog from scratch using Python and Flask, something like the one here, [look here](https://github.com/GitauHarrison/notes/blob/master/web_development/personal_blog/personal_blog.md).
+
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/GitauHarrison/)
