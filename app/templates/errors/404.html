@@ -3,14 +3,23 @@
 
 {% block app_content %}
     <div class="container">
+        <div class="row">            
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                <img class="img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/404.svg')}}" class="card-img-top web-dev" alt="Web Development">
+            </div>
+        </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                <h1>Page not found</h1>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                <h1>Page not found</h1>                
+            </div>
+        </div>        
+        <div class="row">            
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
                 <p>
                     Sorry, the page you have requested cannot be found.
                 </p>
                 <p>
-                    Return safely to the <a href=" {{ url_for('main.home') }} ">home page</a>.
+                    Click <a href=" {{ url_for('main.home') }} ">here</a> to return to the home page.
                 </p>
             </div>
         </div>
