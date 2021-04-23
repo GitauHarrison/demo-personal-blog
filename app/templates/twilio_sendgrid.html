@@ -119,11 +119,11 @@
 </ul>
 <p>You should be able to log in. From your terminal, you should have seen how the email authentication works. </p>
 <h2 id="sending-emails-using-twilio-sendgrid">Sending Emails Using Twilio SendGrid</h2>
-<p>Now that you know how to send emails using Flask Mail, you can do the same for applications that are on production. If you host this application, say in Heroku, you will note that the password reset feature does not work. You have no errors, but still it does not work. This is because the email service we are using does not work on production. And that is where Twilio SendGrid comes it.</p>
+<p>Now that you know how to send emails using Flask Mail, you can do the same for applications that are on production. If you host this application, say in Heroku, you will note that the password reset feature does not work. You have no errors, but still it does not work. This is because the email service we are using does not work on production. And that is where Twilio SendGrid comes in.</p>
 <p>In this section, I am going to show you how to send emails using Twilio SendGrid. The method I will use below will not work on a production software.</p>
 <p>You have already signed up for Twilio SendGrid and you have your API Key with you. We will make use of this email module we have set up to work with Twilio SendGrid.</p>
 <p>First, let us update the <code>config.py</code> file to use SendGrid configurations:</p>
-<p><code>config.py: Set SendGrid environment variables</code></p>
+<p class="code-title">config.py: Set SendGrid environment variables</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #888888"># Current Email configurations</span>
 MAIL_SERVER <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_SERVER&#39;</span>)
 MAIL_PORT <span style="color: #333333">=</span> <span style="color: #007020">int</span>(os<span style="color: #333333">.</span>environ<span style="color: #333333">.</span>get(<span style="background-color: #fff0f0">&#39;MAIL_PORT&#39;</span>) <span style="color: #000000; font-weight: bold">or</span> <span style="color: #0000DD; font-weight: bold">25</span>)
@@ -156,7 +156,7 @@ SENDGRID_API_KEY<span style="color: #333333">=</span><span style="background-col
 MAIL_DEFAULT_SENDER<span style="color: #333333">=</span><span style="background-color: #fff0f0">&#39;a-valid-and-working-email-address&#39;</span>
 </pre>
 <p>In the current application, you will need to update all instances of the variable <code>ADMINS</code> to <code>MAIL_DEFAULT_SENDER</code>. </p>
-<p>Then run your flask shell:</p>
+<p>Then run <code>flask shell</code> in your terminal:</p>
 <pre style="margin: 30; line-height: 125%">(venv) flask shell
 
 <span style="color: #888888"># Output</span>
