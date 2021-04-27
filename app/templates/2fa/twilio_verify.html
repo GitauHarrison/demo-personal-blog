@@ -1083,6 +1083,7 @@ phonenumbers<span style="color: #333333">.</span>phonenumberutil<span style="col
                 current_user<span style="color: #333333">.</span>verification_phone <span style="color: #333333">=</span> phone
                 db<span style="color: #333333">.</span>session<span style="color: #333333">.</span>commit()
                 flash(<span style="background-color: #fff0f0">&#39;You have enabled two-factor authentication&#39;</span>)
+                <span style="color: #008800; font-weight: bold">return</span> redirect(url_for(<span style="background-color: #fff0f0">&#39;user&#39;</span>, username=current_user.username))
             <span style="color: #008800; font-weight: bold">else</span>:
                 username <span style="color: #333333">=</span> session[<span style="background-color: #fff0f0">&#39;username&#39;</span>]
                 <span style="color: #008800; font-weight: bold">del</span> session[<span style="background-color: #fff0f0">&#39;username&#39;</span>]
