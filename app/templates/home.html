@@ -1,16 +1,12 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <h1>Available Updates</h1>                
             </div>
         </div>
 
-        <!-- Flash Message -->
-        {% include '_flash_message.html' %}
 
         <!-- Actual Article -->
         {% for post in posts %}
@@ -33,5 +29,4 @@
                 </li>
             </ul>
         </nav> 
-    </div>
 {% endblock %}

@@ -2,7 +2,9 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<div class="container">
+<!-- Display Flash Messages Here -->
+{% include '_flash_message.html' %}
+
     <div class="row">            
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
             <h1>Admin Registration</h1>
@@ -19,5 +21,4 @@
             <!-- Empty -->
         </div>
     </div>
-</div>
 {% endblock %}

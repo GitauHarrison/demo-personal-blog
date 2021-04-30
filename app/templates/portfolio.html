@@ -2,36 +2,39 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <h1>Portfolio</h1>                
             </div>
         </div>
 
-        <!-- Flash Message -->
-        {% include '_flash_message.html' %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                
+                <!-- Flash Message -->
+                {% include '_flash_message.html' %}
 
-        <!-- Portfolio -->
-        {% for post in posts %}
-            {% include '_portfolio_updates.html' %}
-        {% endfor %}
+                <!-- Portfolio -->
+                {% for post in posts %}
+                    {% include '_portfolio_updates.html' %}
+                {% endfor %}
 
 
-        <!-- Pagination Links -->
-        <nav aria-label="...">
-            <ul class="pager">
-                <li class="previous{% if not prev_url %} disabled{% endif %}">
-                    <a href="{{ prev_url or '#' }}">
-                        <span aria-hidden="true">&larr;</span> Newer Posts
-                    </a>
-                </li>
-                <li class="next{% if not next_url %} disabled{% endif %}">
-                    <a href="{{ next_url or '#' }}">
-                        Older Posts <span aria-hidden="true">&rarr;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav> 
-    </div>
+                <!-- Pagination Links -->
+                <nav aria-label="...">
+                    <ul class="pager">
+                        <li class="previous{% if not prev_url %} disabled{% endif %}">
+                            <a href="{{ prev_url or '#' }}">
+                                <span aria-hidden="true">&larr;</span> Newer Posts
+                            </a>
+                        </li>
+                        <li class="next{% if not next_url %} disabled{% endif %}">
+                            <a href="{{ next_url or '#' }}">
+                                Older Posts <span aria-hidden="true">&rarr;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav> 
+            </div>
+        </div>
 {% endblock %}
