@@ -17,10 +17,6 @@
         <div class="col-md-4 my-form">
             {{ wtf.quick_form(form) }}
             <p>
-                New here?
-                <a href="{{ url_for('auth.register') }}">Click here to register</a>
-            </p>
-            <p>
                 Forgot password?
                 <a href="{{ url_for('auth.request_password_reset') }}">Reset here</a>
             </p>

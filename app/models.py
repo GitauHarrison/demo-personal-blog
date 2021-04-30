@@ -14,7 +14,7 @@ class Admin(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
 
     def __repr__(self):
-        return f'Admin {self.username} {self.email}'
+        return f'Admin: {self.id} {self.username} {self.email}'
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -183,6 +183,17 @@ blockquote{
     font-size: 15px;
     color: #706d6c;
 }
+.btn-delete {
+    border-radius: 3px;
+    border: 1px solid #e6e6e6;
+    padding: 5px;
+    background-color: #f7a9a9;
+    font-size: 15px;
+    color: #706d6c;
+}
+.btn-delete:hover {
+    color: red;
+}
 .btn:hover{
     background-color: #f2f2f2;
     color:  #706d6c;
@@ -276,5 +287,8 @@ a:active{
     border-radius: 3px;
     padding: 20px;
     box-shadow: 5px 5px 5px#fca5a5;
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
 }

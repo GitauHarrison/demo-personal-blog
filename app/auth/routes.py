@@ -30,7 +30,7 @@ def register():
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('admin'))
+        return redirect(url_for('auth.admin'))
     form = LoginForm()
     if form.validate_on_submit():
         admin = Admin.query.filter_by(username=form.username.data).first()
@@ -96,3 +96,12 @@ def admin():
     return render_template('admin/comment_moderation/admin.html',
                            title='Admin'
                            )
+
+
+@bp.route('admin/<username>/delete-account')
+def delete_admin_account(username):
+    admin = Admin.query.filter_by(username=username).first()
+    db.session.delete(admin)
+    db.session.commit()
+    flash('You have deleted your admin account')
+    return redirect(url_for('main.home'))
