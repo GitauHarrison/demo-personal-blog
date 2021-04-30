@@ -15,7 +15,8 @@ from app.translate import translate
 from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
-from flask_login import login_required, current_user
+from flask_login import login_required
+from app.models import Admin
 
 
 @bp.route('/')
@@ -37,15 +38,34 @@ def home():
                            prev_url=prev_url
                            )
 
-# ---------------------------------------------------------------
-# Updating Articles in Blog
-# ---------------------------------------------------------------
+# ------------
+# ADMIN ACTION
+# ------------
 
 
 @bp.route('/update-blog')
 @login_required
 def update_blog():
-    return render_template('update_blog.html', title='Updating Blog')
+    return render_template('admin/blog_updates/update_blog.html',
+                           title='Updating Blog'
+                           )
+
+
+@bp.route('/admin')
+@login_required
+def admin():
+    return render_template('admin/admin.html',
+                           title='Admin'
+                           )
+
+
+@bp.route('/admin/<username>/delete-account')
+def delete_admin_account(username):
+    admin = Admin.query.filter_by(username=username).first()
+    db.session.delete(admin)
+    db.session.commit()
+    flash('You have deleted your admin account')
+    return redirect(url_for('main.home'))
 
 
 @bp.route('/posting-portfolio-projects', methods=['GET', 'POST'])
@@ -74,7 +94,7 @@ def posting_portfolio_projects():
     prev_url = url_for('main.portfolio',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('posting_portfolio_projects.html',
+    return render_template('admin/blog_updates/posting_portfolio_projects.html',
                            title='Posting Portfolio Projects',
                            form=form,
                            posts=posts.items,
@@ -118,7 +138,7 @@ def posting_home_page_articles():
         if posts.has_next else None
     prev_url = url_for('main.home', page=posts.prev_num) \
         if posts.has_prev else None
-    return render_template('posting_home_page_articles.html',
+    return render_template('admin/blog_updates/posting_home_page_articles.html',
                            title='Posting Home Page Articles',
                            form=form,
                            posts=posts.items,

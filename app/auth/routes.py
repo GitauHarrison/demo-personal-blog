@@ -3,7 +3,7 @@ from werkzeug.urls import url_parse
 from app import db
 from app.auth import bp
 from app.models import Admin
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user
 from app.auth.forms import RegistrationForm, LoginForm,\
     RequestPasswordResetForm, ResetPasswordForm
 from app.auth.email import send_password_reset_email
@@ -12,7 +12,7 @@ from app.auth.email import send_password_reset_email
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('auth.admin'))
+        return redirect(url_for('main.admin'))
     form = RegistrationForm()
     if form.validate_on_submit():
         admin = Admin(username=form.username.data, email=form.email.data)
@@ -30,7 +30,7 @@ def register():
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('auth.admin'))
+        return redirect(url_for('main.admin'))
     form = LoginForm()
     if form.validate_on_submit():
         admin = Admin.query.filter_by(username=form.username.data).first()
@@ -40,7 +40,7 @@ def login():
         login_user(admin, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('auth.admin')
+            next_page = url_for('main.admin')
         return redirect(next_page)
     return render_template('admin/auth/login.html',
                            title='Login',
@@ -74,7 +74,7 @@ def request_password_reset():
 @bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('auth.admin'))
+        return redirect(url_for('main.admin'))
     admin = Admin.verify_reset_password_token(token)
     if not admin:
         return redirect(url_for('main.home'))
@@ -88,20 +88,3 @@ def reset_password(token):
                            title='Reset Password',
                            form=form
                            )
-
-
-@bp.route('/admin')
-@login_required
-def admin():
-    return render_template('admin/comment_moderation/admin.html',
-                           title='Admin'
-                           )
-
-
-@bp.route('admin/<username>/delete-account')
-def delete_admin_account(username):
-    admin = Admin.query.filter_by(username=username).first()
-    db.session.delete(admin)
-    db.session.commit()
-    flash('You have deleted your admin account')
-    return redirect(url_for('main.home'))

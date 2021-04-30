@@ -2,26 +2,29 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-        <h1>Update Portfolio Page</h1>
+    <div class="row">
+        <h1>Update Home Page</h1>
+    </div>
+        
 
         <!-- Flash Message -->
         {% include '_flash_message.html' %}
 
                 <!-- Comment Form -->
                 <div class="row posting-articles">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 my-form">
                         {{ wtf.quick_form(form) }}
                     </div>
                 </div>
         
                 <p class="delete">
-                    <a href=" {{ url_for('main.delete_portfolio_page_projects') }} ">Delete projects in portfolio page one by one</a>
+                    <a href=" {{ url_for('main.delete_home_page_articles') }} ">Delete article post in home page one by one</a>
                 </p>
 
 
         <!-- Actual Article -->
         {% for post in posts %}
-            {% include '_portfolio_updates.html' %}
+            {% include '_actual_articles.html' %}
         {% endfor %}
 
         <!-- Pagination Links -->
@@ -39,5 +42,4 @@
                 </li>
             </ul>
         </nav> 
-
 {% endblock %}
