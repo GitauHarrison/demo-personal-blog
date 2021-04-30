@@ -15,6 +15,7 @@ from app.translate import translate
 from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
+from flask_login import login_required, current_user
 
 
 @bp.route('/')
@@ -42,11 +43,13 @@ def home():
 
 
 @bp.route('/update-blog')
+@login_required
 def update_blog():
     return render_template('update_blog.html', title='Updating Blog')
 
 
 @bp.route('/posting-portfolio-projects', methods=['GET', 'POST'])
+@login_required
 def posting_portfolio_projects():
     form = PortfolioForm()
     if form.validate_on_submit():
@@ -81,6 +84,7 @@ def posting_portfolio_projects():
 
 
 @bp.route('/delete-portfolio-page-projects')
+@login_required
 def delete_portfolio_page_projects():
     posts = PortfolioList.query.all()
     for post in posts:
@@ -94,6 +98,7 @@ def delete_portfolio_page_projects():
 
 
 @bp.route('/posting-home-page-articles', methods=['GET', 'POST'])
+@login_required
 def posting_home_page_articles():
     form = ArticlesForm()
     if form.validate_on_submit():
