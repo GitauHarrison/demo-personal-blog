@@ -16,12 +16,13 @@ from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 from flask_login import login_required
-from app.models import Admin
+from app.models import Admin, ArticlesList
 
 
 @bp.route('/')
 @bp.route('/home')
 def home():
+    all_allowed_articles = ArticlesList.query.filter_by(allowed_article=1).all()
     page = request.args.get('page', 1, type=int)
     posts = ArticlesList.query.order_by(
         ArticlesList.date_posted.desc()).paginate(
@@ -31,11 +32,14 @@ def home():
         if posts.has_next else None
     prev_url = url_for('main.home', page=posts.prev_num) \
         if posts.has_prev else None
+    total_articles = len(all_allowed_articles)
     return render_template('home.html',
                            title='Home',
                            posts=posts.items,
                            next_url=next_url,
-                           prev_url=prev_url
+                           prev_url=prev_url,
+                           all_allowed_articles=all_allowed_articles,
+                           total_articles=total_articles
                            )
 
 # =============
@@ -113,7 +117,7 @@ def posting_home_page_articles():
                             )
         db.session.add(post)
         db.session.commit()
-        flash('Review your post,then take action!')
+        flash('Review your post, then take action!')
         return redirect(url_for('main.posting_home_page_articles'))
     page = request.args.get('page', 1, type=int)
     posts = ArticlesList.query.order_by(
@@ -163,7 +167,7 @@ def allow_home_page_articles(id):
     post.allowed_article = 1
     db.session.add(post)
     db.session.commit()
-    flash(f'Article {post.id} allowed')
+    flash(f"Article {post.id} allowed")
     return redirect(url_for('main.posting_home_page_articles',
                             _anchor='allow'))
 
