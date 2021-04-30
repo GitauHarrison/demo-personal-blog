@@ -24,6 +24,7 @@ babel = Babel()
 pagedown = PageDown()
 ckeditor = CKEditor()
 login = LoginManager()
+login.login_view = 'auth.login'
 mail = Mail()
 
 stripe_keys = {
