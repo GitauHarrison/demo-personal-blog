@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+            <h1>Blog Management</h1>            
+        </div> 
+        <div class="col-md-4">
+            <p>
+                Hi {{ current_user.username }},<br>
+                Manage your blog below:
+            </p>
+        </div>
+    </div><hr>
+
+    <!-- Articles Cards -->
+    <!-- Row 1 Cards -->
+    <div class="row">
+        <div class="col-md-4">
+          <!-- Card 1 -->
+          <div class="card-deck">
+            <div class="card">
+              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
+              <div class="card-body">
+                <h4 class="card-title">Update Your Blog Content</h4><hr>
+                <p class="card-text">
+                  Here. you will add or modify the contents of your blog
+                </p>
+                <a href=" {{ url_for('main.update_blog') }} " class="btn">Update Blog</a>
+              </div>            
+            </div>
+            <!-- End of card 1 -->
+          </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Card 2 -->
+            <div class="card-deck">
+              <div class="card">
+                <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
+                <div class="card-body">
+                  <h4 class="card-title">Comment Moderation</h4><hr>
+                  <p class="card-text">
+                    Moderate the comments you receive from your blog
+                  </p>
+                  <a href=" # " class="btn">Take Action</a>
+                </div>            
+              </div>
+              <!-- End of card 2 -->
+            </div>
+        </div>
+        <!-- More columns will appear here-->
+    </div> 
+    <div class="row danger_zone">
+      <div class="col-md-12">
+        <h3>Danger Zone</h3>
+        <p>
+          This action is permanent and cannot be reversed!
+        </p>
+        <p>
+          <a href=" # " class="btn">Delete Your Account</a>
+        </p>
+      </div>
+    </div>
+</div>
+{% endblock %}

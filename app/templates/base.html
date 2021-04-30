@@ -40,12 +40,20 @@
             <a class="navbar-brand" href=" {{ url_for('main.home') }} ">Gitau Harrison</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">            
-            <ul class="nav navbar-nav navbar-right">                                 
-                <li><a href=" {{ url_for('main.about_me') }} ">About Me</a></li>            
-                <li><a href=" {{ url_for('main.portfolio') }} ">Portfolio</a></li>                
-                <li><a href=" {{ url_for('main.hire_me') }} ">Hire Me</a></li>            
-                <li><a href=" {{ url_for('main.my_interests') }} ">My Interests</a></li> 
-                <!-- <li><a href=" {{ url_for('main.update_blog') }} ">Update Blog</a></li>  -->
+            <ul class="nav navbar-nav navbar-right">                                  
+                {% if current_user.is_anonymous %}
+                    <li><a href=" {{ url_for('main.about_me') }} ">About Me</a></li>            
+                    <li><a href=" {{ url_for('main.portfolio') }} ">Portfolio</a></li>                
+                    <li><a href=" {{ url_for('main.hire_me') }} ">Hire Me</a></li>            
+                    <li><a href=" {{ url_for('main.my_interests') }} ">My Interests</a></li>
+                {% else %}
+                    <li><a href=" {{ url_for('main.about_me') }} ">About Me</a></li>            
+                    <li><a href=" {{ url_for('main.portfolio') }} ">Portfolio</a></li>                
+                    <li><a href=" {{ url_for('main.hire_me') }} ">Hire Me</a></li>            
+                    <li><a href=" {{ url_for('main.my_interests') }} ">My Interests</a></li>
+                    <li><a href=" {{ url_for('auth.admin') }} ">Admin</a></li> 
+                    <li><a href=" {{ url_for('auth.logout') }} ">Logout</a></li> 
+                {% endif %}
             </ul>                       
         </div>
     </div>

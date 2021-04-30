@@ -251,6 +251,9 @@ a:active{
 /* ------------------------------------------ */
 .my-form{
     margin-bottom: 5px;
+    border: 1px solid #e6e6e6;
+    padding: 20px;
+    border-radius: 3px;
 }
 
 /* ------------------------------------------ */
@@ -265,4 +268,13 @@ a:active{
 /* ------------------------------------------ */
 .my_timestamp {    
     font-family: 'Poiret One', cursive;
+}
+
+/* Danger Zone */
+.danger_zone {
+    border: 1px solid #ca4747;
+    border-radius: 3px;
+    padding: 20px;
+    box-shadow: 5px 5px 5px#fca5a5;
+    margin-top: 10px;
 }
