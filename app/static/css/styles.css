@@ -292,3 +292,9 @@ a:active{
     margin-left: 5px;
     margin-right: 5px;
 }
+.delete:hover {
+    color: red;
+}
+.allow:hover {
+    color: green;
+}

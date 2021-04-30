@@ -38,9 +38,9 @@ def home():
                            prev_url=prev_url
                            )
 
-# ------------
+# =============
 # ADMIN ACTION
-# ------------
+# =============
 
 
 @bp.route('/update-blog')
@@ -103,20 +103,6 @@ def posting_portfolio_projects():
                            )
 
 
-@bp.route('/delete-portfolio-page-projects')
-@login_required
-def delete_portfolio_page_projects():
-    posts = PortfolioList.query.all()
-    for post in posts:
-        db.session.delete(post)
-        db.session.commit()
-        flash('Deletion successful: One portfolio project was successfully deleted')
-        return redirect(url_for('main.posting_portfolio_projects',
-                                _anchor='delete'))
-    return render_template('posting_portfolio_projects.html',
-                           title='Deleting Portfolio Page Projects')
-
-
 @bp.route('/posting-home-page-articles', methods=['GET', 'POST'])
 @login_required
 def posting_home_page_articles():
@@ -127,43 +113,69 @@ def posting_home_page_articles():
                             )
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
-        return redirect(url_for('main.home'))
+        flash('Review your post,then take action!')
+        return redirect(url_for('main.posting_home_page_articles'))
     page = request.args.get('page', 1, type=int)
     posts = ArticlesList.query.order_by(
         ArticlesList.date_posted.desc()).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('main.home', page=posts.next_num) \
+    next_url = url_for('main.posting_home_page_articles', page=posts.next_num)\
         if posts.has_next else None
-    prev_url = url_for('main.home', page=posts.prev_num) \
+    prev_url = url_for('main.posting_home_page_articles', page=posts.prev_num)\
         if posts.has_prev else None
-    return render_template('admin/blog_updates/posting_home_page_articles.html',
-                           title='Posting Home Page Articles',
+    return render_template('admin/blog_updates/review_posting_home_page_articles.html',
+                           title='Review Home Page Articles',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url
                            )
 
-
-@bp.route('/delete-home-page-articles')
-def delete_home_page_articles():
-    posts = ArticlesList.query.all()
-    for post in posts:
-        db.session.delete(post)
-        db.session.commit()
-        flash('Deletion successful: One home page post was successfully deleted')
-        return redirect(url_for('main.posting_home_page_articles',
-                                _anchor='delete'))
-    return render_template('posting_home_page_articles.html',
-                           title='Delete Home Page Articles'
-                           )
+# ------------------------------
+# Deleteing articles and project
+# ------------------------------
 
 
-# ---------------------------------------------------------------
-# Updating Articles in Blog
-# ---------------------------------------------------------------
+@bp.route('/delete-portfolio-page-projects')
+@login_required
+def delete_portfolio_page_projects():
+    pass
+
+
+@bp.route('/delete-home-page-articles/<id>')
+def delete_home_page_articles(id):
+    post = ArticlesList.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted article {post.id}')
+    return redirect(url_for('main.posting_home_page_articles',
+                            _anchor='delete'))
+
+# ------------------------------
+# Allowing articles and projects
+# ------------------------------
+
+
+@bp.route('/allow-home-page-article/<id>')
+def allow_home_page_articles(id):
+    post = ArticlesList.query.get(id)
+    post.allowed_article = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f'Article {post.id} allowed')
+    return redirect(url_for('main.posting_home_page_articles',
+                            _anchor='allow'))
+
+
+@bp.route('/allow-portfolio-page-project')
+def allow_portfolio_page_projects():
+    pass
+
+
+# ------------------
+# Anonymous Pages
+# ------------------
 
 
 @bp.route('/about-me')

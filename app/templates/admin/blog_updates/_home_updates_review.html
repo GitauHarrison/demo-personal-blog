@@ -1,0 +1,36 @@
+<div class="row updates">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xl-10">
+                <h4>{{ post.title }}</h4>
+            </div>                    
+            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                <p class="article-date"> {{ moment(post.date_posted).format('ll') }} </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-12 col-xl-12">
+                <p>
+                    {{ post.content | safe}}
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10 col-xl-10">
+                <p><a href="http://127.0.0.1:5000//{{ post.link }}">Learn More</a></p>  
+            </div>                    
+            <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2">
+                <span>
+                    <a class="delete" href=" {{ url_for('main.delete_home_page_articles', id=post.id) }} ">Delete</a>
+                </span>  |  
+                <span>
+                    {% if post.allowed_article == 0 %}
+                        <a class="allow" href=" {{ url_for('main.allow_home_page_articles', id=post.id) }} ">Allow</a>
+                    {% else %}
+                    <a class="allow" href=" # ">Allowed</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

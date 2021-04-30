@@ -2,6 +2,7 @@ from flask import Flask, current_app
 from config import Config
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
 from flask_migrate import Migrate
 from flask_moment import Moment
 import logging
@@ -16,8 +17,18 @@ from flask_mail import Mail
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+metadata = MetaData(
+  naming_convention={
+    'pk': 'pk_%(table_name)s',
+    'fk': 'fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s',
+    'ix': 'ix_%(table_name)s_%(column_0_name)s',
+    'uq': 'uq_%(table_name)s_%(column_0_name)s',
+    'ck': 'ck_%(table_name)s_%(constraint_name)s',
+    }
+)
+db = SQLAlchemy(metadata=metadata)
 bootstrap = Bootstrap()
-db = SQLAlchemy()
 migrate = Migrate()
 moment = Moment()
 babel = Babel()
@@ -41,7 +52,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     bootstrap.init_app(app)
     moment.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, render_as_batch=True)
     babel.init_app(app)
     pagedown.init_app(app)
     ckeditor.init_app(app)

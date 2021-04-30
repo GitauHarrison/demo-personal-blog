@@ -12,6 +12,10 @@ class Admin(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    articles = db.relationship('ArticlesList',
+                               backref='author',
+                               lazy='dynamic'
+                               )
 
     def __repr__(self):
         return f'Admin: {self.id} {self.username} {self.email}'
@@ -28,17 +32,14 @@ class Admin(UserMixin, db.Model):
             digest, size)
 
 
-@login.user_loader
-def load_user(id):
-    return Admin.query.get(int(id))
-
-
 class ArticlesList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140), index=True)
     date_posted = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     content = db.Column(db.String(), index=True)
     link = db.Column(db.String(140), index=True)
+    allowed_article = db.Column(db.Boolean, default=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
 
 
 class PortfolioList(db.Model):
@@ -916,3 +917,8 @@ db.event.listen(DatesAndTimePost.body,
 # -----------------------
 # End of Personal Blog
 # -----------------------
+
+
+@login.user_loader
+def load_user(id):
+    return Admin.query.get(int(id))
