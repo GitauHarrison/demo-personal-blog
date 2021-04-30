@@ -51,6 +51,7 @@ class PortfolioList(db.Model):
     contributor_link = db.Column(db.String(140), index=True)
     project_design_link = db.Column(db.String(300), index=True)
     live_project_link = db.Column(db.String(140), index=True)
+    allowed_project = db.Column(db.Boolean, default=False)
 
 
 class User(db.Model):

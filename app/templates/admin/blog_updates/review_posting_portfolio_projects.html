@@ -2,10 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <div class="row">
-        <h1>Update Home Page</h1>
-    </div>
-        
+        <h1>Update Portfolio Projects</h1>
 
         <!-- Flash Message -->
         {% include '_flash_message.html' %}
@@ -16,13 +13,12 @@
                         {{ wtf.quick_form(form) }}
                     </div>
                 </div><hr>
-
-                <div class="articles">
-                    <h3> All your articles ({{ total_articles }})</h3>
-                </div>
+        <div class="projects">
+            <h3>All your projects ({{ total_projects }})</h3>
+        </div>
         <!-- Actual Article -->
-        {% for post in posts %}
-            {% include 'admin/blog_updates/_home_updates_review.html' %}
+        {% for post in projects %}
+            {% include 'admin/blog_updates/_portfolio_updates_review.html' %}
         {% endfor %}
 
         <!-- Pagination Links -->
@@ -40,4 +36,5 @@
                 </li>
             </ul>
         </nav> 
+
 {% endblock %}

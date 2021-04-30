@@ -1,34 +1,35 @@
 <div class="container">
-    <!-- First Project -->
     <div class="row portfolio">
-        <!-- <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
-            <img src=" {{ url_for('static', filename = 'images/uploads/personal_blog.png') }} " class="img-fluid" style="max-width: 100%; height: auto;" alt="Chat App">
-        </div> -->
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <h3>{{ post.title }}</h3>
             <p>
                 {{ post.overview | safe }}
             </p>                                                
-            <!-- <p>
-                <a href="https://github.com/GitauHarrison/my-blog" target="_blank">Repo Link</a> | <a href="https://github.com/GitauHarrison" target="_blank">Contributors</a> | <a href="#" target="_blank">View Project</a>
-            </p> -->
             <p>
                 <div class="row">
-                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-center">
-                        <a href="{{ post.github_link }}" target="_blank">Repo Link</a>
-                    </div>
-                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-center">
-                        
-                            <span class="contributors-popup">
-                                <a href="#">Contributors</a>
-                            </span>
-                        
-                    </div>
-                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-center">
-                        <a href="{{ post.project_design_link }}" target="_blank">Project Design</a>
-                    </div>
-                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-center">
+                    <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10 col-xl-10"">
+                        <a href="{{ post.github_link }}" target="_blank">Repo Link</a>  |  
+
+                        <span class="contributors-popup">
+                            <a href="#">Contributors</a>
+                        </span>  |  
+
+                        <a href="{{ post.project_design_link }}" target="_blank">Project Design</a>  |  
+
                         <a href="{{ post.live_project_link }}" target="_blank">View Project</a>
+
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2">
+                        <span>
+                            <a class="delete" href=" {{ url_for('main.delete_portfolio_page_projects', id=post.id) }} ">Delete</a>
+                        </span>  |  
+                        <span>
+                            {% if post.allowed_project == 0 %}
+                                <a class="allow" href=" {{ url_for('main.allow_portfolio_page_projects', id=post.id) }} ">Allow</a>
+                            {% else %}
+                            <a class="allow" href=" # ">Allowed</a>
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
             </p>

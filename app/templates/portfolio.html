@@ -7,6 +7,11 @@
                 <h1>Portfolio</h1>                
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <p>{{ total_projects }} Available Projects</p>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -15,7 +20,7 @@
                 {% include '_flash_message.html' %}
 
                 <!-- Portfolio -->
-                {% for post in posts %}
+                {% for post in all_allowed_projects %}
                     {% include '_portfolio_updates.html' %}
                 {% endfor %}
 

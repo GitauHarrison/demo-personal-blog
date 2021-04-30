@@ -16,7 +16,7 @@ from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 from flask_login import login_required
-from app.models import Admin, ArticlesList
+from app.models import Admin, ArticlesList, PortfolioList
 
 
 @bp.route('/')
@@ -75,6 +75,8 @@ def delete_admin_account(username):
 @bp.route('/posting-portfolio-projects', methods=['GET', 'POST'])
 @login_required
 def posting_portfolio_projects():
+    projects = PortfolioList.query.all()
+    total_projects = len(projects)
     form = PortfolioForm()
     if form.validate_on_submit():
         post = PortfolioList(title=form.title.data,
@@ -85,31 +87,34 @@ def posting_portfolio_projects():
                              live_project_link=form.live_project_link.data)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
-        return redirect(url_for('main.portfolio'))
+        flash('Review your project, then take action!')
+        return redirect(url_for('main.posting_portfolio_projects'))
     page = request.args.get('page', 1, type=int)
-    posts = PortfolioList.query.order_by(
+    projects = PortfolioList.query.order_by(
         PortfolioList.date_posted.desc()).paginate(
         page, current_app.config['POSTS_PER_PAGE'], False
     )
-    next_url = url_for('main.portfolio',
-                       page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.portfolio',
-                       page=posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('admin/blog_updates/posting_portfolio_projects.html',
+    next_url = url_for('main.posting_portfolio_projects',
+                       page=projects.next_num) \
+        if projects.has_next else None
+    prev_url = url_for('main.posting_portfolio_projects',
+                       page=projects.prev_num) \
+        if projects.has_prev else None
+    return render_template('admin/blog_updates/review_posting_portfolio_projects.html',
                            title='Posting Portfolio Projects',
                            form=form,
-                           posts=posts.items,
+                           projects=projects.items,
                            next_url=next_url,
                            prev_url=prev_url,
+                           total_projects=total_projects
                            )
 
 
 @bp.route('/posting-home-page-articles', methods=['GET', 'POST'])
 @login_required
 def posting_home_page_articles():
+    articles = ArticlesList.query.all()
+    total_articles = len(articles)
     form = ArticlesForm()
     if form.validate_on_submit():
         post = ArticlesList(title=form.title.data, content=form.content.data,
@@ -133,7 +138,8 @@ def posting_home_page_articles():
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
-                           prev_url=prev_url
+                           prev_url=prev_url,
+                           total_articles=total_articles
                            )
 
 # ------------------------------
@@ -141,10 +147,15 @@ def posting_home_page_articles():
 # ------------------------------
 
 
-@bp.route('/delete-portfolio-page-projects')
+@bp.route('/delete-portfolio-page-projects/<id>')
 @login_required
-def delete_portfolio_page_projects():
-    pass
+def delete_portfolio_page_projects(id):
+    project = PortfolioList.query.get(id)
+    db.session.delete(project)
+    db.session.commit()
+    flash(f'Successfully deleted project {project.id}')
+    return redirect(url_for('main.posting_portfolio_projects',
+                            _anchor='projects'))
 
 
 @bp.route('/delete-home-page-articles/<id>')
@@ -154,7 +165,7 @@ def delete_home_page_articles(id):
     db.session.commit()
     flash(f'Successfully deleted article {post.id}')
     return redirect(url_for('main.posting_home_page_articles',
-                            _anchor='delete'))
+                            _anchor='articles'))
 
 # ------------------------------
 # Allowing articles and projects
@@ -167,14 +178,20 @@ def allow_home_page_articles(id):
     post.allowed_article = 1
     db.session.add(post)
     db.session.commit()
-    flash(f"Article {post.id} allowed")
+    flash(f"Article {post.id} allowed. See home page")
     return redirect(url_for('main.posting_home_page_articles',
-                            _anchor='allow'))
+                            _anchor='articles'))
 
 
-@bp.route('/allow-portfolio-page-project')
-def allow_portfolio_page_projects():
-    pass
+@bp.route('/allow-portfolio-page-project/<id>')
+def allow_portfolio_page_projects(id):
+    project = PortfolioList.query.get(id)
+    project.allowed_project = 1
+    db.session.add(project)
+    db.session.commit()
+    flash(f"Project {project.id} allowed. See portfolio page")
+    return redirect(url_for('main.posting_portfolio_projects',
+                            _anchor='projects'))
 
 
 # ------------------
@@ -252,20 +269,24 @@ def before_request():
 
 @bp.route('/portfolio')
 def portfolio():
+    all_allowed_projects = PortfolioList.query.filter_by(allowed_project=1).all()
     page = request.args.get('page', 1, type=int)
-    posts = PortfolioList.query.order_by(
+    projects = PortfolioList.query.order_by(
         PortfolioList.date_posted.desc()).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
         )
-    next_url = url_for('main.portfolio', page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.portfolio', page=posts.prev_num) \
-        if posts.has_prev else None
+    next_url = url_for('main.portfolio', page=projects.next_num) \
+        if projects.has_next else None
+    prev_url = url_for('main.portfolio', page=projects.prev_num) \
+        if projects.has_prev else None
+    total_projects = len(all_allowed_projects)
     return render_template('portfolio.html',
                            title='Portfolio',
-                           posts=posts.items,
+                           projects=projects.items,
                            next_url=next_url,
-                           prev_url=prev_url
+                           prev_url=prev_url,
+                           total_projects=total_projects,
+                           all_allowed_projects=all_allowed_projects
                            )
 
 
