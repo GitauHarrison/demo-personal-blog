@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>Enable Two-Factor Authentication</h1>
+            <p>Please enter your mobile number to activate two-factor authentication on your account</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Empty col -->
+        </div>
+        <div class="col-md-4 my-form">
+            {{ wtf.quick_form(form) }}
+        </div>
+        <div class="col-md-4">
+           <!-- Empty col -->
+        </div>
+    </div>
+{% endblock %}

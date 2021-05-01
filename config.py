@@ -48,3 +48,8 @@ class Config(object):
 
     # Heroku logs requirement
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
+
+    # 2fa
+    TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+    TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_ACCOUNT_TOKEN')
+    TWILIO_VERIFY_SERVICE_ID = os.environ.get('TWILIO_VERIFY_SERVICE_ID')

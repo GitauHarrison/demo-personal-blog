@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from app.models import Admin
+import phonenumbers
 
 
 class LoginForm(FlaskForm):
@@ -44,3 +45,27 @@ class RegistrationForm(FlaskForm):
         user = Admin.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address')
+
+
+# 2FA
+
+class Enable2faForm(FlaskForm):
+    verification_phone = StringField('Phone', validators=[DataRequired()])
+    submit = SubmitField('Enable 2FA')
+
+    def validate_verification_phone(self, verification_phone):
+        try:
+            p = phonenumbers.parse(verification_phone.data)
+            if not phonenumbers.is_valid_number(p):
+                raise ValueError()
+        except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
+            raise ValidationError('Invalid phone number')
+
+
+class Confirm2faForm(FlaskForm):
+    token = StringField('Token', validators=[DataRequired()])
+    submit = SubmitField('Verify')
+
+
+class Disable2faForm(FlaskForm):
+    submit = SubmitField('Disable 2FA')

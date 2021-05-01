@@ -15,6 +15,7 @@ class Admin(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    verification_phone = db.Column(db.String(16))
     articles = db.relationship('ArticlesList',
                                backref='author',
                                lazy='dynamic'
@@ -51,6 +52,9 @@ class Admin(UserMixin, db.Model):
         except:
             return
         return Admin.query.get(id)
+
+    def two_factor_enabled(self):
+        return self.verification_phone is not None
 
 
 class ArticlesList(db.Model):
