@@ -77,4 +77,4 @@ The `HTTP` value may be different from the one shown here because I am using the
 
 A personal blog side project sounds like a great idea. If you would like to learn how you can build your own blog from scratch using Python and Flask, something like the one here, [look here](https://github.com/GitauHarrison/notes/blob/master/web_development/personal_blog/personal_blog.md).
 
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/GitauHarrison/)
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/GitauHarrison/my-blog)
