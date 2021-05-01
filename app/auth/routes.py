@@ -57,14 +57,14 @@ def logout():
 @bp.route('/request-password-reset', methods=['GET', 'POST'])
 def request_password_reset():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('main.admin'))
     form = RequestPasswordResetForm()
     if form.validate_on_submit():
         admin = Admin.query.filter_by(email=form.email.data).first()
         if admin:
             send_password_reset_email(admin)
         flash('Check your email for instructions to reset your password')
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
     return render_template('admin/auth/request_password_reset.html',
                            title='Request Password Reset',
                            form=form
