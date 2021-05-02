@@ -63,7 +63,7 @@ def login():
 @bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('main.home'))
+    return redirect(url_for('auth.login'))
 
 
 @bp.route('/request-password-reset', methods=['GET', 'POST'])

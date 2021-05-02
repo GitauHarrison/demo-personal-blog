@@ -193,6 +193,71 @@ def allow_portfolio_page_projects(id):
     return redirect(url_for('main.posting_portfolio_projects',
                             _anchor='projects'))
 
+# ----------------------------
+# Comment Moderation: Articles
+# ----------------------------
+
+
+@bp.route('/admin/review-blog-comments')
+def review_comments():
+    return render_template('admin/comment_moderation/review_all_comments.html',
+                           title='Review Comment'
+                           )
+
+# Twilio SendGrid
+
+
+@bp.route('/admin/blog-review/twilio/sendgrid')
+def review_twilio_sendgrid_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = TwilioSendGridPost.query.order_by(
+        TwilioSendGridPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_twilio_sendgrid_comments', page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_twilio_sendgrid_comments', page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = TwilioSendGridPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_twilio_sendgrid.html',
+                           title='Review SendGrid',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+# --------------------------
+# Allow Comments on Articles
+# --------------------------
+
+
+@bp.route('/allow-twilio-sendgrid-comment/<id>')
+def allow_twilio_sendgrid_comment(id):
+    post = TwilioSendGridPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Twilio SendGrid article")
+    return redirect(url_for('main.review_twilio_sendgrid_comments'))
+
+# ---------------------------
+# Delete Comments on Articles
+# ---------------------------
+
+
+@bp.route('/delete-twilio-sendgrid-comment/<id>')
+def delete_twilio_sendgrid_comment(id):
+    post = TwilioSendGridPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id}')
+    return redirect(url_for('main.review_twilio_sendgrid_comments'))
+
+# ===================
+# END OF ADMIN ACTION
+# ===================
 
 # ------------------
 # Anonymous Pages
@@ -1317,11 +1382,12 @@ def twilio_sendgrid():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live')
         return redirect(url_for('main.twilio_sendgrid',
                                 _anchor='comments'
                                 )
                         )
+    all_allowed_comments = TwilioSendGridPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = TwilioSendGridPost.query.order_by(
         TwilioSendGridPost.timestamp.asc()).paginate(
@@ -1335,15 +1401,15 @@ def twilio_sendgrid():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = TwilioSendGridPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('twilio_sendgrid.html',
                            title='Twilio SendGrid',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 # -----------------------
