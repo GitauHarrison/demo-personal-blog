@@ -15,6 +15,7 @@ from app.auth.twilio_verify import request_verification_token,\
 
 
 @bp.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.admin'))
