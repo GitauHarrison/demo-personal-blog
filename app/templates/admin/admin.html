@@ -26,6 +26,9 @@
                               <a href="{{ url_for('auth.disable_2fa') }}">Disable two-factor authentication</a>
                           </p>
                       {% endif %}
+                      <p>
+                        <a href=" {{ url_for('main.delete_admin_account', username=current_user.username) }} " class="btn-delete">Delete Your Account</a>
+                      </p>
                   </td>                
               </tr>
           </table>
@@ -67,16 +70,5 @@
             </div>
         </div>
         <!-- More columns will appear here-->
-    </div> 
-    <div class="row danger_zone">
-      <div class="col-md-12">
-        <h3>Danger Zone</h3>
-        <p>
-          This action is permanent and cannot be reversed!
-        </p>
-        <p>
-          <a href=" {{ url_for('main.delete_admin_account', username=current_user.username) }} " class="btn-delete">Delete Your Account</a>
-        </p>
-      </div>
     </div>
 {% endblock %}
