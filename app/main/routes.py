@@ -17,6 +17,8 @@ from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 from flask_login import login_required
 from app.models import Admin, ArticlesList, PortfolioList
+from app.main.email import new_twilio_sendgrid_comment,\
+    send_live_twilio_sendgrid_email
 
 
 @bp.route('/')
@@ -199,6 +201,7 @@ def allow_portfolio_page_projects(id):
 
 
 @bp.route('/admin/review-blog-comments')
+@login_required
 def review_comments():
     return render_template('admin/comment_moderation/review_all_comments.html',
                            title='Review Comment'
@@ -208,6 +211,7 @@ def review_comments():
 
 
 @bp.route('/admin/blog-review/twilio/sendgrid')
+@login_required
 def review_twilio_sendgrid_comments():
     page = request.args.get('page', 1, type=int)
     comments = TwilioSendGridPost.query.order_by(
@@ -240,6 +244,9 @@ def allow_twilio_sendgrid_comment(id):
     db.session.add(post)
     db.session.commit()
     flash(f"Comment {post.id} allowed. See Twilio SendGrid article")
+    user = User.query.get(id)
+    if user:
+        send_live_twilio_sendgrid_email(user)
     return redirect(url_for('main.review_twilio_sendgrid_comments'))
 
 # ---------------------------
@@ -1383,6 +1390,9 @@ def twilio_sendgrid():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_twilio_sendgrid_comment(admin)
         return redirect(url_for('main.twilio_sendgrid',
                                 _anchor='comments'
                                 )
