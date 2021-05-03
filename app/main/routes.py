@@ -1510,8 +1510,8 @@ def totp_2fa():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = TOTP2faPost.query.all()
-    total = len(all_posts)
+    #all_posts = TOTP2faPost.query.all()
+    total = len(all_allowed_comments)
     return render_template('2fa/totp.html',
                            title='TOTP 2fa',
                            form=form,
