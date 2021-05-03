@@ -1,7 +1,7 @@
 from app import db, stripe_keys
 from flask import render_template, url_for, flash, redirect, request, \
     jsonify, g, current_app
-from app.models import User, ArticlesList, PersonalBlogPost, VagrantPost, \
+from app.models import Admin, User, ArticlesList, PersonalBlogPost, VagrantPost, \
     VirtualenvwrapperPost, reCaptchaPost, richTextPost, ngrokPost, \
     installDocker, HerokuDeployment, WebDevelopmentPost, HelloWorldPost, \
     FlaskTemplatesPost, FlaskWebFormsPost, FlaskDatabasePost, \
@@ -16,7 +16,6 @@ from flask_babel import get_locale
 from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 from flask_login import login_required
-from app.models import Admin, ArticlesList, PortfolioList
 from app.main.email import new_twilio_sendgrid_comment,\
     send_live_twilio_sendgrid_email
 
@@ -232,6 +231,30 @@ def review_twilio_sendgrid_comments():
                            total_comments=total_comments
                            )
 
+
+@bp.route('/admin/blog-review/2fa/totp')
+@login_required
+def review_totp_2fa_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = TOTP2faPost.query.order_by(
+        TOTP2faPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_totp_2fa_comments', page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_totp_2fa_comments', page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = TOTP2faPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_totp_2fa.html',
+                           title='Review TOTP',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -249,6 +272,19 @@ def allow_twilio_sendgrid_comment(id):
         send_live_twilio_sendgrid_email(user)
     return redirect(url_for('main.review_twilio_sendgrid_comments'))
 
+
+@bp.route('/allow-totp_2fa-comment/<id>')
+def allow_totp_2fa_comment(id):
+    post = TOTP2faPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See TOTP article")
+    user = User.query.get(id)
+    if user:
+        send_live_twilio_sendgrid_email(user)
+    return redirect(url_for('main.review_totp_2fa_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -261,6 +297,15 @@ def delete_twilio_sendgrid_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id}')
     return redirect(url_for('main.review_twilio_sendgrid_comments'))
+
+
+@bp.route('/delete-totp-2fa-comment/<id>')
+def delete_totp_2fa_comment(id):
+    post = TOTP2faPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id}')
+    return redirect(url_for('main.review_totp_2fa_comments'))
 
 # ===================
 # END OF ADMIN ACTION

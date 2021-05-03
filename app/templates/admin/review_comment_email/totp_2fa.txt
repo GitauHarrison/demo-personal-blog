@@ -2,7 +2,7 @@ Dear {{ admin.username }},
 
 You have a new comment. To review it, click on the following link:
 
-{{ url_for('main.review_twilio_sendgrid_comments', _external=True) }}
+{{ url_for('main.review_totp_2fa_comments', _external=True) }}
 
 Sincerely,
 
