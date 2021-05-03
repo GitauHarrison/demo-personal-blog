@@ -1,0 +1,11 @@
+<p>Dear {{ user.username }},</p>
+<p>
+    You have a new comment. To review it, 
+    <a href="{{ url_for('main.totp_2fa', _external=True) }}">
+        click here
+    </a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('main.totp_2fa', _external=True) }}</p>
+<p>Sincerely,</p>
+<p>Personal Blog Admin</p>

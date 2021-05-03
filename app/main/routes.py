@@ -17,7 +17,8 @@ from app.main.forms import CommentForm, ArticlesForm, PortfolioForm
 from app.main import bp
 from flask_login import login_required
 from app.main.email import new_twilio_sendgrid_comment,\
-    send_live_twilio_sendgrid_email
+    send_live_twilio_sendgrid_email, new_totp_2fa_comment,\
+    send_live_totp_2fa_email
 
 
 @bp.route('/')
@@ -282,7 +283,7 @@ def allow_totp_2fa_comment(id):
     flash(f"Comment {post.id} allowed. See TOTP article")
     user = User.query.get(id)
     if user:
-        send_live_twilio_sendgrid_email(user)
+        send_live_totp_2fa_email(user)
     return redirect(url_for('main.review_totp_2fa_comments'))
 
 # ---------------------------
@@ -1488,10 +1489,14 @@ def totp_2fa():
         db.session.add(post)
         db.session.commit()
         flash('Your comment is now live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_totp_2fa_comment(admin)
         return redirect(url_for('main.totp_2fa',
                                 _anchor='comments'
                                 )
                         )
+    all_allowed_comments = TOTP2faPost.query.filter_by(allowed_comment=1).all()                    
     page = request.args.get('page', 1, type=int)
     posts = TOTP2faPost.query.order_by(
         TOTP2faPost.timestamp.asc()).paginate(
@@ -1513,7 +1518,8 @@ def totp_2fa():
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 

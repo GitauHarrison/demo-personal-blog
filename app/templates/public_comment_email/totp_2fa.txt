@@ -2,7 +2,7 @@ Dear {{ user.username }},
 
 You have a new comment. To review it, click on the following link:
 
-{{ url_for('main.twilio_sendgrid', _external=True) }}
+{{ url_for('main.totp_2fa', _external=True) }}
 
 Sincerely,
 
