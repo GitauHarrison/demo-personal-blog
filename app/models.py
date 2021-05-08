@@ -20,10 +20,11 @@ class Admin(UserMixin, db.Model):
                                backref='author',
                                lazy='dynamic'
                                )
-    protfolio_projects = db.relationship('PortfolioList',
+    portfolio_projects = db.relationship('PortfolioList',
                                          backref='author',
                                          lazy='dynamic'
                                          )
+
 
     def __repr__(self):
         return f'Admin: {self.id} {self.username} {self.email}'
@@ -458,6 +459,7 @@ class WebDevelopmentPost(db.Model):
     body_html = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     language = db.Column(db.String(5))
+    allowed_comment = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     @staticmethod

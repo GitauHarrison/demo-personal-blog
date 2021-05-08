@@ -1,11 +1,11 @@
-<p>Dear {{ admin.username }},</p>
+<p>Dear {{ user.username }},</p>
 <p>
     You have a new comment. To review it, 
-    <a href="{{ url_for('main.review_twilio_sendgrid_comments', _external=True) }}">
+    <a href="{{ url_for('main.getting_started', _external=True) }}">
         click here
     </a>.
 </p>
 <p>Alternatively, you can paste the following link in your browser's address bar:</p>
-<p>{{ url_for('main.review_twilio_sendgrid_comments', _external=True) }}</p>
+<p>{{ url_for('main.getting_started', _external=True) }}</p>
 <p>Sincerely,</p>
 <p>Gitau Harrison Blog Admin</p>

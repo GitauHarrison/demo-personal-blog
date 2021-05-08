@@ -1,8 +1,8 @@
-Dear {{ user.username }},
+Dear {{ admin.username }},
 
 You have a new comment. To review it, click on the following link:
 
-{{ url_for('main.twilio_sendgrid', _external=True) }}
+{{ url_for('main.review_getting_started_comments', _external=True) }}
 
 Sincerely,
 
