@@ -32,7 +32,7 @@ class PortfolioForm(FlaskForm):
     github_link = StringField('GitHub Project Link',
                               validators=[DataRequired()],
                               render_kw={"placeholder": "Use GitHub URL"})
-    contributor_link = StringField('Contributor', validators=[DataRequired()],
+    contributor_link = StringField('Contributors', validators=[DataRequired()],
                                    render_kw={"placeholder": "Use URL"})
     project_design_link = StringField('Project Design',
                                       validators=[DataRequired()],
