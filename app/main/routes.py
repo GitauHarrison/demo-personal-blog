@@ -1251,7 +1251,7 @@ def install_elasticsearch():
                            )
 
 
-@bp.route('/github_ssh', methods=['GET', 'POST'])
+@bp.route('/github-ssh', methods=['GET', 'POST'])
 def github_ssh():
     form = CommentForm()
     if form.validate_on_submit():
