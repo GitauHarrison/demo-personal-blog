@@ -11,14 +11,16 @@ This is my blog, where I note all the projects I am involved in, my personal int
 Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog-Portfolio?node-id=1%3A2&scaling=min-zoom) of the blog. I used Figma for prototyping and regular reference during its development.
 
 ### Features
-* Ability to post comments
+* Anonymous user can post comments (even multiple times using the same credentials)
 * Realtime Date and Time
-* Payment
+* Payment Integration
 * Live Language Translation
 * Consultation Scheduling
 * Database Management
 * Markdown Form Editing
 * Link Popups
+* Comment Moderation
+* Two-factor authentication for Admin
 
 ### Tools Used
 
@@ -35,6 +37,7 @@ Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Pe
 * JQuery for Mobile Responsiveness
 * Ngrok for Localhost Testing
 * Flask PageDown for form editing
+* Twilio Verify
 
 ## Application Design
 
