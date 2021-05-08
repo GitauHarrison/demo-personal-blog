@@ -155,7 +155,7 @@ def delete_portfolio_page_projects(id):
     project = PortfolioList.query.get(id)
     db.session.delete(project)
     db.session.commit()
-    flash(f'Successfully deleted project {project.id}')
+    flash(f'Successfully deleted project {project.id} from portfolio page')
     return redirect(url_for('main.posting_portfolio_projects',
                             _anchor='projects'))
 
@@ -165,7 +165,7 @@ def delete_home_page_articles(id):
     post = ArticlesList.query.get(id)
     db.session.delete(post)
     db.session.commit()
-    flash(f'Successfully deleted article {post.id}')
+    flash(f'Successfully deleted article {post.id} from home page')
     return redirect(url_for('main.posting_home_page_articles',
                             _anchor='articles'))
 
@@ -296,7 +296,7 @@ def delete_twilio_sendgrid_comment(id):
     post = TwilioSendGridPost.query.get(id)
     db.session.delete(post)
     db.session.commit()
-    flash(f'Successfully deleted comment {post.id}')
+    flash(f'Successfully deleted comment {post.id} in Twilio SendGrid article')
     return redirect(url_for('main.review_twilio_sendgrid_comments'))
 
 
@@ -305,7 +305,7 @@ def delete_totp_2fa_comment(id):
     post = TOTP2faPost.query.get(id)
     db.session.delete(post)
     db.session.commit()
-    flash(f'Successfully deleted comment {post.id}')
+    flash(f'Successfully deleted comment {post.id} TOTP 2FA article')
     return redirect(url_for('main.review_totp_2fa_comments'))
 
 # ===================
@@ -1510,7 +1510,6 @@ def totp_2fa():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    #all_posts = TOTP2faPost.query.all()
     total = len(all_allowed_comments)
     return render_template('2fa/totp.html',
                            title='TOTP 2fa',
