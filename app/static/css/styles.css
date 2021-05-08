@@ -224,9 +224,12 @@ blockquote{
     padding:5px;
     text-align: center;
     margin: 5px;
+    margin-bottom: 15px;
+    box-shadow: 5px 10px 18px #ebeae9;
+
 }
 .card:hover{
-    box-shadow: 5px 10px 18px #ebe6e3;
+    box-shadow: 5px 5px 10px 18px #f8f6f3;
 }
 /* ------------------------------------------ */
 /* LINKS */
