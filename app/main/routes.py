@@ -353,7 +353,7 @@ def getting_started():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.getting_started', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = WebDevelopmentPost.query.order_by(
@@ -539,7 +539,7 @@ def personal_blog():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.personal_blog', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = PersonalBlogPost.query.order_by(
@@ -580,7 +580,7 @@ def hello_world():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.hello_world', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = HelloWorldPost.query.order_by(
@@ -622,7 +622,7 @@ def flask_templates():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.flask_templates', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = FlaskTemplatesPost.query.order_by(
@@ -664,7 +664,7 @@ def flask_web_forms():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.flask_web_forms', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = FlaskWebFormsPost.query.order_by(
@@ -705,7 +705,7 @@ def flask_database():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.flask_database', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = FlaskDatabasePost.query.order_by(
@@ -747,7 +747,7 @@ def user_comments():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.user_comments', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = UserCommentsPost.query.order_by(
@@ -788,7 +788,7 @@ def flask_bootstrap():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.flask_bootstrap', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = FlaskBootstrapPost.query.order_by(
@@ -829,7 +829,7 @@ def dates_and_time():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.dates_and_time', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = DatesAndTimePost.query.order_by(
@@ -874,7 +874,7 @@ def virtualenvwrapper():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.virtualenvwrapper', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = VirtualenvwrapperPost.query.order_by(
@@ -914,7 +914,7 @@ def vagrant():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.vagrant', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = VagrantPost.query.order_by(
@@ -956,7 +956,7 @@ def reCaptcha():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.reCaptcha', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = reCaptchaPost.query.order_by(
@@ -998,7 +998,7 @@ def rich_text():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.rich_text', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = richTextPost.query.order_by(
@@ -1039,7 +1039,7 @@ def ngrok():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.ngrok', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = ngrokPost.query.order_by(
@@ -1081,7 +1081,7 @@ def install_docker():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.install_docker', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = installDocker.query.order_by(
@@ -1123,7 +1123,7 @@ def heroku_deployment():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.heroku_deployment', _anchor='comments'))
     page = request.args.get('page', 1, type=int)
     posts = HerokuDeployment.query.order_by(
@@ -1165,7 +1165,7 @@ def install_elasticsearch():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.install_elasticsearch',
                                 _anchor='comments'
                                 )
@@ -1210,7 +1210,7 @@ def github_ssh():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.github_ssh',
                                 _anchor='comments'
                                 )
@@ -1255,7 +1255,7 @@ def install_git():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.install_git',
                                 _anchor='comments'
                                 )
@@ -1300,7 +1300,7 @@ def file_uploads():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.file_uploads',
                                 _anchor='comments'
                                 )
@@ -1345,7 +1345,7 @@ def stripe_in_flask():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.stripe_in_flask',
                                 _anchor='comments'
                                 )
@@ -1390,7 +1390,7 @@ def whatsapp_chatbot():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.whatsapp_chatbot',
                                 _anchor='comments'
                                 )
@@ -1488,7 +1488,7 @@ def totp_2fa():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         admins = Admin.query.all()
         for admin in admins:
             new_totp_2fa_comment(admin)
@@ -1538,7 +1538,7 @@ def twilio_verify():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.twilio_verify',
                                 _anchor='comments'
                                 )
@@ -1583,7 +1583,7 @@ def twilio_authy():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.twilio_authy',
                                 _anchor='comments'
                                 )
@@ -1636,7 +1636,7 @@ def simple_video_app():
         db.session.add(user)
         db.session.add(post)
         db.session.commit()
-        flash('Your comment is now live!')
+        flash('You will receive an email when your comment is live!')
         return redirect(url_for('main.simple_video_app',
                                 _anchor='comments'
                                 )
