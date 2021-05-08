@@ -20,6 +20,10 @@ class Admin(UserMixin, db.Model):
                                backref='author',
                                lazy='dynamic'
                                )
+    protfolio_projects = db.relationship('PortfolioList',
+                                         backref='author',
+                                         lazy='dynamic'
+                                         )
 
     def __repr__(self):
         return f'Admin: {self.id} {self.username} {self.email}'
@@ -77,6 +81,7 @@ class PortfolioList(db.Model):
     project_design_link = db.Column(db.String(300), index=True)
     live_project_link = db.Column(db.String(140), index=True)
     allowed_project = db.Column(db.Boolean, default=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
 
 
 class User(db.Model):
