@@ -1,0 +1,51 @@
+<table class="table table-hover">
+    <tr valign='top'>
+        <td width='70px'>
+            <img src=" {{ post.author.avatar(36) }} ">
+        </td>
+        <td>
+            <span style="color: #6a8af5;">
+                {{ single_post }} {{ post.author.username }}
+            </span>
+            said
+            <span class="my_timestamp">
+            {{ moment(post.timestamp).fromNow() }}
+            </span><br>
+            <span id="post {{ post.id }}"> 
+                {% if post.body_html %}
+                    {{ post.body_html | safe }}
+                {% else %}
+                    {{ post.body }}     
+                {% endif %}                
+            </span><br>
+            <div class="row">
+                <div class="col-md-4">
+                    {% if post.language and post.language != g.locale %}
+                        <span id="translation{{ post.id }}">
+                            <a href="javascript:translate(
+                                        '#post{{ post.id }}',
+                                        '#translation{{ post.id }}',
+                                        '{{ post.language }}');
+                                        '{{ g.locale }}');">Translate</a>
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <!-- Empyt col -->
+                </div>
+                <div class="col-md-4 text-center">
+                    <span>
+                        <a class="delete" href=" {{ url_for('main.delete_github_ssh_comment', id=post.id) }} ">Delete</a>
+                    </span>  |  
+                    <span>
+                        {% if post.allowed_comment == 0 %}
+                            <a class="allow" href=" {{ url_for('main.allow_github_ssh_comment', id=post.id) }} ">Allow</a>
+                        {% else %}
+                        <a class="allow" href=" # ">Allowed</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
