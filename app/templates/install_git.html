@@ -10,31 +10,31 @@
 <h1 id="how-to-install-and-configure-git-in-ubuntu">How to Install and Configure Git in Ubuntu</h1>
 <p>It is best to install <code>git</code> from the Ubuntu Software repository. This tutorial is based on Ubuntu 20.04. Run the following commands in your terminal following the order below:
 <br></p>
-<h4 id="installation">Installation</h4>
-<h5 id="procedure-1-">Procedure 1:</h5>
+<h3 id="installation">Installation</h3>
+<h4 id="procedure-1-">Procedure 1:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt update
 <span style="color: #ff8080; ">$</span> sudo apt upgrade
 </pre>
 <p>It is important to always update and upgrage your <a href="https://guide.ubuntu-fr.org/server/apt.html#:~:text=The%20apt%20command%20is%20a,upgrading%20the%20entire%20Ubuntu%20system.">APT</a>. Since your are running as root, you will be asked to enter your password. Do so and the installation will continue.</p>
-<h5 id="procedure-2-">Procedure 2:</h5>
+<h4 id="procedure-2-">Procedure 2:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install git
 </pre>
 <p>This downloads and installs <code>git</code> on your system.</p>
-<h5 id="procedure-3-">Procedure 3:</h5>
+<h4 id="procedure-3-">Procedure 3:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git <span style="color: #333333">--</span>version
 </pre>
 <p>Check what version of git has been installed in your system.
 <br></p>
-<h4 id="configuration">Configuration</h4>
+<h3 id="configuration">Configuration</h3>
 <p>We will use the terminal to configure <code>git</code>. You will need to provide your <em>username</em> and <em>email address</em>.</p>
-<h5 id="procedure-1-">Procedure 1:</h5>
+<h4 id="procedure-1-">Procedure 1:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #008800; font-weight: bold">global</span> user<span style="color: #333333">.</span>username <span style="background-color: #fff0f0">&quot;&lt;put here your username&gt;&quot;</span>
 </pre>
 <p>This will set your global username</p>
-<h5 id="procedure-2-">Procedure 2:</h5>
+<h4 id="procedure-2-">Procedure 2:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #008800; font-weight: bold">global</span> user<span style="color: #333333">.</span>email <span style="background-color: #fff0f0">&quot;&lt;put here your email@example.com&gt;&quot;</span>
 </pre>
-<h5 id="procedure-3-">Procedure 3:</h5>
+<h4 id="procedure-3-">Procedure 3:</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git config <span style="color: #333333">--</span><span style="color: #007020">list</span>
 </pre>
 <p>This step confirms all the changes you just made in the <code>git</code> configuration file. If at any point you want to edit your changes, run <code>$ git config</code></p>
