@@ -2,6 +2,32 @@ from flask import render_template, current_app
 from app.email import send_email
 
 
+# Install Git Email
+
+def new_install_git_comment(admin):
+    send_email(
+        '[New Comment] Install Git Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/install_git.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/install_git.html',
+                                  admin=admin)
+    )
+
+
+def send_live_install_git_email(user):
+    send_email(
+        '[Your Comment is Live] Install Git Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/install_git.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/install_git.html',
+                                  user=user)
+    )
+
+
 # Getting Started Email
 
 def new_getting_started_comment(admin):
