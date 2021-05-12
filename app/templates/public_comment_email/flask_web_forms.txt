@@ -1,0 +1,9 @@
+Dear {{ user.username }},
+
+You have a new comment. To review it, click on the following link:
+
+{{ url_for('main.flask_web_forms', _external=True) }}
+
+Sincerely,
+
+Gitau Harrison Blog Admin

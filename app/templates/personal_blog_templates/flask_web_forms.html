@@ -322,7 +322,7 @@ app<span style="color: #333333">.</span>config<span style="color: #333333">.</sp
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 
