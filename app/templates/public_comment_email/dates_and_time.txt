@@ -2,7 +2,7 @@ Dear {{ user.username }},
 
 Your comment is live! To view it, click on the following link:
 
-{{ url_for('main.totp_2fa', _external=True) }}
+{{ url_for('main.dates_and_time', _external=True) }}
 
 Sincerely,
 

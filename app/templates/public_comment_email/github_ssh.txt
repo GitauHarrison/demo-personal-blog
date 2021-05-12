@@ -1,6 +1,6 @@
 Dear {{ user.username }},
 
-You have a new comment. To review it, click on the following link:
+Your comment is live! To view it, click on the following link:
 
 {{ url_for('main.github_ssh', _external=True) }}
 

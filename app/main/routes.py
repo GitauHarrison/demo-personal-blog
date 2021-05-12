@@ -28,7 +28,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_flask_web_forms_email, new_flask_database_comment,\
     send_live_flask_database_email, new_user_comments_comment,\
     send_live_user_comments_email, new_flask_bootstrap_comment,\
-    send_live_flask_bootstrap_email
+    send_live_flask_bootstrap_email, new_dates_and_time_comment,\
+    send_live_dates_and_time_email
 
 
 @bp.route('/')
@@ -381,6 +382,31 @@ def review_flask_bootstrap_comments():
                            total_comments=total_comments
                            )
 
+
+@bp.route('/admin/blog-review/personal-blog/chapter-7/dates-and-time')
+@login_required
+def review_dates_and_time_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = DatesAndTimePost.query.order_by(
+        DatesAndTimePost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_dates_and_time_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_dates_and_time_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = DatesAndTimePost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_dates_and_time.html',
+                           title='Review Dates and Time',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
 # Twilio SendGrid
 
 
@@ -630,6 +656,18 @@ def allow_flask_bootstrap_comment(id):
     return redirect(url_for('main.review_flask_bootstrap_comments'))
 
 
+@bp.route('/allow-dates-and-time-comment/<id>')
+def allow_dates_and_time_comment(id):
+    post = DatesAndTimePost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Dates and Time article")
+    user = User.query.get(id)
+    if user:
+        send_live_dates_and_time_email(user)
+    return redirect(url_for('main.review_dates_and_time_comments'))
+
 # ---
 # End of Personal Blog Articles
 # ---
@@ -774,6 +812,14 @@ def delete_flask_bootstrap_comment(id):
     flash(f'Successfully deleted comment {post.id} in Flask Bootstrap article')
     return redirect(url_for('main.review_flask_bootstrap_comments'))
 
+
+@bp.route('/delete-dates-and-time-comment/<id>')
+def delete_dates_and_time_comment(id):
+    post = DatesAndTimePost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Dates and Time article')
+    return redirect(url_for('main.review_dates_and_time_comments'))
 
 # ---
 # End of Personal Blog Articles
@@ -1349,7 +1395,11 @@ def dates_and_time():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_dates_and_time_comment(admin)
         return redirect(url_for('main.dates_and_time', _anchor='comments'))
+    all_allowed_comments = DatesAndTimePost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = DatesAndTimePost.query.order_by(
             DatesAndTimePost.timestamp.asc()).paginate(
@@ -1362,15 +1412,15 @@ def dates_and_time():
     prev_url = url_for('main.dates_and_time',
                        _anchor='comments', page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = DatesAndTimePost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('personal_blog_templates/dates_and_time.html',
                            title='Date And Time',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 # ---------------------------------------------------

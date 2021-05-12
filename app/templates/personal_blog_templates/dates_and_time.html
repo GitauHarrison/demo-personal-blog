@@ -219,7 +219,7 @@ moment(<span style="background-color: #fff0f0">&#39;2020-11-22T10:10:10Z&#39;</s
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 

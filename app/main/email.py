@@ -158,6 +158,32 @@ def send_live_flask_bootstrap_email(user):
     )
 
 
+# Dates and Time
+
+def new_dates_and_time_comment(admin):
+    send_email(
+        '[New Comment] Dates and Time Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/dates_and_time.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/dates_and_time.html',
+                                  admin=admin)
+    )
+
+
+def send_live_dates_and_time_email(user):
+    send_email(
+        '[Your Comment is Live] Dates and Time Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/dates_and_time.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/dates_and_time.html',
+                                  user=user)
+    )
+
+
 # Virtualeenvwrapper
 
 def new_virtualenvwrapper_comment(admin):
