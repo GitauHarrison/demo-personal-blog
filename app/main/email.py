@@ -131,6 +131,33 @@ def send_live_user_comments_email(user):
                                   user=user)
     )
 
+
+# Flask Bootstrap
+
+def new_flask_bootstrap_comment(admin):
+    send_email(
+        '[New Comment] Flask Bootstrap Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/flask_bootstrap.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/flask_bootstrap.html',
+                                  admin=admin)
+    )
+
+
+def send_live_flask_bootstrap_email(user):
+    send_email(
+        '[Your Comment is Live] Flask Bootstrap Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/flask_bootstrap.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/flask_bootstrap.html',
+                                  user=user)
+    )
+
+
 # Virtualeenvwrapper
 
 def new_virtualenvwrapper_comment(admin):
