@@ -2,6 +2,32 @@ from flask import render_template, current_app
 from app.email import send_email
 
 
+# Hello World
+
+def new_hello_world_comment(admin):
+    send_email(
+        '[New Comment] Hello World Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/hello_world.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/hello_world.html',
+                                  admin=admin)
+    )
+
+
+def send_live_hello_world_email(user):
+    send_email(
+        '[Your Comment is Live] Hello World Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/hello_world.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/hello_world.html',
+                                  user=user)
+    )
+
+
 # Virtualeenvwrapper
 
 def new_virtualenvwrapper_comment(admin):

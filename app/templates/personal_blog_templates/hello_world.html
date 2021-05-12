@@ -70,7 +70,7 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 <li class="has-line-data" data-line-start="79" data-line-end="80">Manual way</li>
 <li class="has-line-data" data-line-start="80" data-line-end="82">Using virtualenv wrapper</li>
 </ol>
-<h5 class="code-line" data-line-start=82 data-line-end=83 ><a id="Manual_way_82"></a>Manual way</h5>
+<h4 class="code-line" data-line-start=82 data-line-end=83 ><a id="Manual_way_82"></a>Manual way</h4>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> python3 <span style="color: #333333">-</span>m venv venv
 </pre>
 <p class="has-line-data" data-line-start="88" data-line-end="89">Here, we are asking Python to run the <code>venv</code> package which creates virtual environment called <code>venv</code>.</p>
@@ -82,7 +82,7 @@ Type <span style="background-color: #fff0f0">&quot;help&quot;</span>, <span styl
 <span style="color: #888888"># your terminal will change to something like:</span>
 (venv) <span style="color: #ff8080; ">$</span> <span style="color: #333333">...</span>
 </pre>
-<h5 class="code-line" data-line-start=103 data-line-end=104 ><a id="Using_Virtual_Environment_Wrappers_103"></a>Using Virtual Environment Wrappers</h5>
+<h4 class="code-line" data-line-start=103 data-line-end=104 ><a id="Using_Virtual_Environment_Wrappers_103"></a>Using Virtual Environment Wrappers</h4>
 <p class="has-line-data" data-line-start="105" data-line-end="106"><a href="https://virtualenvwrapper.readthedocs.io/en/latest/"><code>virtualenvwrapper</code></a> is a set of extensions to <code>virtualenv</code> tool. The extensions include wrappers for creating and deleting virtual environments and otherwise managing our development workflow, making it easier to work on more than one project at a time without introducing conflicts in their dependencies.</p>
 <p class="has-line-data" data-line-start="107" data-line-end="108">I personally prefer using <code>virtualenvwrapper</code> due to how easy it is to use. During creation of virtual environments, it not only creates but it also activates it automatically.</p>
 <p class="has-line-data" data-line-start="109" data-line-end="110">For example, to create a virtual environment called <em>venv</em>, all I need to do is run the <code>mkvirtualenv</code> command to create and activate the new environment:</p>
@@ -215,7 +215,7 @@ app <span style="color: #333333">=</span> Flask(__name__)
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 

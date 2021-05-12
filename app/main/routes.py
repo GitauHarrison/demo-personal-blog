@@ -22,7 +22,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_getting_started_email, new_install_git_comment,\
     send_live_install_git_email, new_github_ssh_comment, \
     send_live_github_ssh_email, new_virtualenvwrapper_comment,\
-    send_live_virtualenvwrapper_email
+    send_live_virtualenvwrapper_email, new_hello_world_comment,\
+    send_live_hello_world_email
 
 
 @bp.route('/')
@@ -211,6 +212,35 @@ def review_comments():
                            title='Review Comment'
                            )
 
+
+# Hello World
+
+
+@bp.route('/admin/blog-review/personal-blog/chapter-1/hello-world')
+@login_required
+def review_hello_world_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = HelloWorldPost.query.order_by(
+        HelloWorldPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_hello_world_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_hello_world_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = HelloWorldPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_hello_world.html',
+                           title='Review Hello World',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # Twilio SendGrid
 
 
@@ -377,6 +407,28 @@ def review_virtualenvwrapper_comments():
 # Allow Comments on Articles
 # --------------------------
 
+# ---
+# Personal Blog Articles
+# ---
+
+
+@bp.route('/allow-hello-world-comment/<id>')
+def allow_hello_world_comment(id):
+    post = HelloWorldPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Hello World article")
+    user = User.query.get(id)
+    if user:
+        send_live_hello_world_email(user)
+    return redirect(url_for('main.review_hello_world_comments'))
+
+
+# ---
+# End of Personal Blog Articles
+# ---
+
 
 @bp.route('/allow-twilio-sendgrid-comment/<id>')
 def allow_twilio_sendgrid_comment(id):
@@ -458,6 +510,23 @@ def allow_virtualenvwrapper_comment(id):
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
+
+# ---
+# Personal Blog Articles
+# ---
+
+
+@bp.route('/delete-hello-world-comment/<id>')
+def delete_hello_world_comment(id):
+    post = HelloWorldPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Hello World article')
+    return redirect(url_for('main.review_hello_world_comments'))
+
+# ---
+# End of Personal Blog Articles
+# ---
 
 
 @bp.route('/delete-twilio-sendgrid-comment/<id>')
@@ -735,42 +804,8 @@ def translate_text():
 
 @bp.route('/personal-blog', methods=['GET', 'POST'])
 def personal_blog():
-    form = CommentForm()
-    if form.validate_on_submit():
-        language = guess_language(form.comment.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        user = User(username=form.username.data, email=form.email.data)
-        post = PersonalBlogPost(body=form.comment.data,
-                                author=user,
-                                language=language
-                                )
-        db.session.add(user)
-        db.session.add(post)
-        db.session.commit()
-        flash('You will receive an email when your comment is live!')
-        return redirect(url_for('main.personal_blog', _anchor='comments'))
-    page = request.args.get('page', 1, type=int)
-    posts = PersonalBlogPost.query.order_by(
-        PersonalBlogPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
-        )
-    next_url = url_for('main.personal_blog',
-                       _anchor='comments',
-                       page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.personal_blog',
-                       _anchor='comments',
-                       page=posts.prev_num) \
-        if posts.has_prev else None
-    all_posts = PersonalBlogPost.query.all()
-    total = len(all_posts)
     return render_template('personal_blog_templates/personal_blog.html',
-                           title='Personal Blog',
-                           form=form, posts=posts.items,
-                           next_url=next_url,
-                           prev_url=prev_url,
-                           total=total
+                           title='Personal Blog'
                            )
 
 
@@ -790,7 +825,11 @@ def hello_world():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_hello_world_comment(admin)
         return redirect(url_for('main.hello_world', _anchor='comments'))
+    all_allowed_comments = HelloWorldPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = HelloWorldPost.query.order_by(
         HelloWorldPost.timestamp.asc()).paginate(
@@ -804,15 +843,15 @@ def hello_world():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = HelloWorldPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('personal_blog_templates/hello_world.html',
                            title='Hello World',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
