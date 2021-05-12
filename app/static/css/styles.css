@@ -231,6 +231,9 @@ blockquote{
 .card:hover{
     box-shadow: 5px 5px 10px 18px #f8f6f3;
 }
+.personal-blog-project {
+    box-shadow: 5px 10px 18px #ab7dac;
+}
 /* ------------------------------------------ */
 /* LINKS */
 /* ------------------------------------------ */
