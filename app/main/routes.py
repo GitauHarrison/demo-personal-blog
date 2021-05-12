@@ -76,6 +76,22 @@ def admin():
                            )
 
 
+@bp.route('/admin/home-page-comments')
+@login_required
+def home_page_comments():
+    return render_template('admin/home_page_comments.html',
+                           title='Home Page Comments'
+                           )
+
+
+@bp.route('/admin/personal-blog-comments')
+@login_required
+def personal_blog_comments():
+    return render_template('admin/personal_blog_comments.html',
+                           title='Personal Blog Comments'
+                           )
+
+
 @bp.route('/admin/<username>/delete-account')
 def delete_admin_account(username):
     admin = Admin.query.filter_by(username=username).first()

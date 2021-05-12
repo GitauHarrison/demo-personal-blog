@@ -10,256 +10,38 @@
             <h1>Review All Blog Comments</h1>            
         </div> 
     </div>
-    <!-- Row 1 Cards -->
     <div class="row">
-      <div class="col-md-3">
-        <!-- Card 1 -->
+      <div class="col-md-4">
+        <!-- Home page card -->
         <div class="card-deck">
           <div class="card">
             <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
             <div class="card-body">
-              <h4 class="card-title">Getting Started</h4><hr>
+              <h4 class="card-title">Home Page Comments</h4><hr>
               <p class="card-text">
-                Review Getting Started Comments
+                Review All Comments In Home Page Articles
               </p>
-              <a href=" {{ url_for('main.review_getting_started_comments') }} " class="btn">Take Action</a>
+              <a href=" {{ url_for('main.home_page_comments') }} " class="btn">See All Comments</a>
             </div>            
           </div>
           <!-- End of card 1 -->
         </div>
       </div>
-      <div class="col-md-3">
-          <!-- Card 2 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Install Git</h4><hr>
-                <p class="card-text">
-                  Review Git Installation Comments
-                </p>
-                <a href=" {{ url_for('main.review_install_git_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 2 -->
-          </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 3 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">GitHub SSH</h4><hr>
-                <p class="card-text">
-                  Review All GitHub SSH Comments
-                </p>
-                <a href=" {{ url_for('main.review_github_ssh_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 3 -->
-          </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 4 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Virtualenvwrapper</h4><hr>
-                <p class="card-text">
-                  Review Virtualenvwrapper Comments
-                </p>
-                <a href=" {{ url_for('main.review_virtualenvwrapper_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 4 -->
-          </div>
-      </div>
-  </div>
-    <!-- Row 2 Cards -->
-    <div class="row">
-        <div class="col-md-3">
-          <!-- Card 1 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-                <p class="card-text">
-                  Review All Hello World Comments
-                </p>
-                <a href=" {{ url_for('main.review_hello_world_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 1 -->
-          </div>
-        </div>
-        <div class="col-md-3">
-            <!-- Card 2 -->
-            <div class="card-deck">
-              <div class="card">
-                <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-                <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-                <p class="card-text">
-                  Review All Flask Templates Comments
-                </p>
-                  <a href=" {{ url_for('main.review_flask_templates_comments') }} " class="btn">Take Action</a>
-                </div>            
-              </div>
-              <!-- End of card 2 -->
-            </div>
-        </div>
-        <div class="col-md-3">
-            <!-- Card 3 -->
-            <div class="card-deck">
-              <div class="card">
-                <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-                <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-                <p class="card-text">
-                  Review All Flask Web Forms Comments
-                </p>
-                  <a href=" {{ url_for('main.review_flask_web_forms_comments') }} " class="btn">Take Action</a>
-                </div>            
-              </div>
-              <!-- End of card 3 -->
-            </div>
-        </div>
-        <div class="col-md-3">
-            <!-- Card 4 -->
-            <div class="card-deck">
-              <div class="card">
-                <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-                <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-                <p class="card-text">
-                  Review All Flask Database Comments
-                </p>
-                  <a href=" {{ url_for('main.review_flask_database_comments') }} " class="btn">Take Action</a>
-                </div>            
-              </div>
-              <!-- End of card 4 -->
-            </div>
-        </div>
-    </div>
-    <!-- Row 3 Cards -->
-    <div class="row">
-      <div class="col-md-3">
-        <!-- Card 1 -->
+      <div class="col-md-4">
+        <!-- Personal Blog Card -->
         <div class="card-deck">
           <div class="card">
             <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
             <div class="card-body">
-              <h4 class="card-title">Personal Blog Project</h4><hr>
+              <h4>Personal Blog Comments</h4><hr>
               <p class="card-text">
-                Review All Comments in User Comments Article
+                Review All Comments on Personal Blog Project
               </p>
-              <a href=" {{ url_for('main.review_user_comments_comments') }} " class="btn">Take Action</a>
+              <a href=" {{ url_for('main.personal_blog_comments') }} " class="btn">See All Comments</a>
             </div>            
           </div>
           <!-- End of card 1 -->
         </div>
       </div>
-      <div class="col-md-3">
-          <!-- Card 2 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-              <p class="card-text">
-                Review All Flask Bootstrap Comments
-              </p>
-                <a href=" {{ url_for('main.review_flask_bootstrap_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 2 -->
-          </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 3 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid personal-blog-project" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Personal Blog Project</h4><hr>
-                <p class="card-text">
-                  Review Dates and Time Comments
-                </p>
-                <a href=" {{ url_for('main.review_dates_and_time_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 3 -->
-          </div>
-      </div>
-  </div>
-    <!-- Row 4 Cards -->
-    <div class="row">
-      <div class="col-md-3">
-        <!-- Card 1 -->
-        <div class="card-deck">
-          <div class="card">
-            <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-            <div class="card-body">
-              <h4 class="card-title">Twilio SendGrid</h4><hr>
-              <p class="card-text">
-                Review Twilio SendGrid Comments
-              </p>
-              <a href=" {{ url_for('main.review_twilio_sendgrid_comments') }} " class="btn">Take Action</a>
-            </div>            
-          </div>
-          <!-- End of card 1 -->
-        </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 2 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">TOTP Blog</h4><hr>
-                <p class="card-text">
-                  Review All TOTP 2FA Comments
-                </p>
-                <a href=" {{ url_for('main.review_totp_2fa_comments') }} " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 2 -->
-          </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 3 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Blog 3</h4><hr>
-                <p class="card-text">
-                  Review Blog 3 Comments
-                </p>
-                <a href=" # " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 3 -->
-          </div>
-      </div>
-      <div class="col-md-3">
-          <!-- Card 4 -->
-          <div class="card-deck">
-            <div class="card">
-              <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/comment_moderation.svg')}}" class="card-img-top web-dev" alt="Article">
-              <div class="card-body">
-                <h4 class="card-title">Blog 4</h4><hr>
-                <p class="card-text">
-                  Review Blog 4 Comments
-                </p>
-                <a href=" # " class="btn">Take Action</a>
-              </div>            
-            </div>
-            <!-- End of card 4 -->
-          </div>
-      </div>
-  </div>
+    </div>
 {% endblock %}
