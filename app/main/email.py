@@ -28,6 +28,32 @@ def send_live_hello_world_email(user):
     )
 
 
+# Flask Templates
+
+def new_flask_templates_comment(admin):
+    send_email(
+        '[New Comment] Flask Templates Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/flask_templates.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/flask_templates.html',
+                                  admin=admin)
+    )
+
+
+def send_live_flask_templates_email(user):
+    send_email(
+        '[Your Comment is Live] Flask Templates Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/flask_templates.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/flask_templates.html',
+                                  user=user)
+    )
+
+
 # Virtualeenvwrapper
 
 def new_virtualenvwrapper_comment(admin):

@@ -23,7 +23,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_install_git_email, new_github_ssh_comment, \
     send_live_github_ssh_email, new_virtualenvwrapper_comment,\
     send_live_virtualenvwrapper_email, new_hello_world_comment,\
-    send_live_hello_world_email
+    send_live_hello_world_email, new_flask_templates_comment,\
+    send_live_flask_templates_email
 
 
 @bp.route('/')
@@ -241,6 +242,34 @@ def review_hello_world_comments():
                            )
 
 
+# Flask Templates
+
+
+@bp.route('/admin/blog-review/personal-blog/chapter-2/flask-templates')
+@login_required
+def review_flask_templates_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = FlaskTemplatesPost.query.order_by(
+        FlaskTemplatesPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_flask_templates_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_flask_templates_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = FlaskTemplatesPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_flask_templates.html',
+                           title='Review Flask Templates',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # Twilio SendGrid
 
 
@@ -425,6 +454,19 @@ def allow_hello_world_comment(id):
     return redirect(url_for('main.review_hello_world_comments'))
 
 
+@bp.route('/allow-flask-templates-comment/<id>')
+def allow_flask_templates_comment(id):
+    post = FlaskTemplatesPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Flask Templates article")
+    user = User.query.get(id)
+    if user:
+        send_live_flask_templates_email(user)
+    return redirect(url_for('main.review_flask_templates_comments'))
+
+
 # ---
 # End of Personal Blog Articles
 # ---
@@ -523,6 +565,15 @@ def delete_hello_world_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in Hello World article')
     return redirect(url_for('main.review_hello_world_comments'))
+
+
+@bp.route('/delete-flask-templates-comment/<id>')
+def delete_flask_templates_comment(id):
+    post = FlaskTemplatesPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Flask Templates article')
+    return redirect(url_for('main.review_flask_templates_comments'))
 
 # ---
 # End of Personal Blog Articles
@@ -871,7 +922,11 @@ def flask_templates():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_flask_templates_comment(admin)
         return redirect(url_for('main.flask_templates', _anchor='comments'))
+    all_allowed_comments = FlaskTemplatesPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = FlaskTemplatesPost.query.order_by(
         FlaskTemplatesPost.timestamp.asc()).paginate(
@@ -885,15 +940,15 @@ def flask_templates():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = FlaskTemplatesPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('personal_blog_templates/flask_templates.html',
                            title='Flask Templates',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
