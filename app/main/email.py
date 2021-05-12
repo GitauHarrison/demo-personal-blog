@@ -80,6 +80,32 @@ def send_live_flask_web_forms_email(user):
     )
 
 
+# Flask Database
+
+def new_flask_database_comment(admin):
+    send_email(
+        '[New Comment] Flask Database Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/flask_database.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/flask_database.html',
+                                  admin=admin)
+    )
+
+
+def send_live_flask_database_email(user):
+    send_email(
+        '[Your Comment is Live] Flask Database Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/flask_database.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/flask_database.html',
+                                  user=user)
+    )
+
+
 # Virtualeenvwrapper
 
 def new_virtualenvwrapper_comment(admin):
