@@ -13,9 +13,9 @@
 <li class="has-line-data" data-line-start="8" data-line-end="9">Install <code>virtualenvwrapper</code></li>
 <li class="has-line-data" data-line-start="9" data-line-end="11">Edit <code>.bashrc/</code> file or <code>.bash_profile</code> file, or both</li>
 </ul>
-<h5 class="code-line" data-line-start=11 data-line-end=12 ><a id="Prerequisites_11"></a>Prerequisites</h5>
+<h3 class="code-line" data-line-start=11 data-line-end=12 ><a id="Prerequisites_11"></a>Prerequisites</h3>
 <p class="has-line-data" data-line-start="13" data-line-end="14">We will use <code>pip3</code>, the default python package installer for Python3.</p>
-<h5 class="code-line" data-line-start=15 data-line-end=16 ><a id="Setting_Up_a_Virtual_Environment_15"></a>Setting Up a Virtual Environment</h5>
+<h3 class="code-line" data-line-start=15 data-line-end=16 ><a id="Setting_Up_a_Virtual_Environment_15"></a>Setting Up a Virtual Environment</h3>
 <p class="has-line-data" data-line-start="17" data-line-end="18">Open your terminal in your home directory (or any other directory you may choose).First, you need to create a special directory which will be hidden that will store all your virtual environments</p>
 <p class="has-line-data" data-line-start="19" data-line-end="20">Create a hidden virtual environments folder:</p>
 <pre style="margin: 30; line-height: 125%">mkdir <span style="color: #333333">.</span>virtualenv <span style="color: #888888"># the dot(.) denotes that the file is hidden</span>
@@ -46,7 +46,7 @@
 <li class="has-line-data" data-line-start="64" data-line-end="66">How to save and quit</li>
 </ul>
 <p class="has-line-data" data-line-start="66" data-line-end="67">Now that your editor is open, we need to start making changes. Scroll to the bottom of the file by pressing the down arrow key. At the very bottom of your editor, press the letter <em>i</em> to enter into <em>insert</em> mode (<em>i</em> could mean ‘insert’).</p>
-<h5 class="code-line" data-line-start=68 data-line-end=69 ><a id="Insert_Mode_68"></a>Insert Mode</h5>
+<h3 class="code-line" data-line-start=68 data-line-end=69 ><a id="Insert_Mode_68"></a>Insert Mode</h3>
 <p class="has-line-data" data-line-start="69" data-line-end="70">Add these rows:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #888888">#Virtualenvwrapper settings:</span>
 export VIRTUALENVWRAPPER_PYTHON<span style="color: #333333">=/</span>usr<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>python3
@@ -61,10 +61,10 @@ source <span style="color: #333333">~/.</span>local<span style="color: #333333">
 <p class="has-line-data" data-line-start="84" data-line-end="85">with your computer name:</p>
 <pre style="margin: 30; line-height: 125%">export VIRTUALENVWRAPPER_VIRTUALENV<span style="color: #333333">=/</span>home<span style="color: #333333">/&lt;</span>your<span style="color: #333333">-</span>computer<span style="color: #333333">-</span>name<span style="color: #333333">&gt;/.</span>local<span style="color: #333333">/</span><span style="color: #007020">bin</span><span style="color: #333333">/</span>virtualenv
 </pre>
-<h5 class="code-line" data-line-start=90 data-line-end=91 ><a id="Save_and_Quit_90"></a>Save and Quit</h5>
+<h3 class="code-line" data-line-start=90 data-line-end=91 ><a id="Save_and_Quit_90"></a>Save and Quit</h3>
 <p class="has-line-data" data-line-start="92" data-line-end="93">Type <code>:wq</code> and press <code>Enter</code> This will allow you to save your changes and quit the editor. Close your terminal and reopen it.</p>
 <p class="has-line-data" data-line-start="94" data-line-end="95">You have completed setting up your virtual environment.</p>
-<h5 class="code-line" data-line-start=96 data-line-end=97 ><a id="Create_Your_Virtual_Environment_96"></a>Create Your Virtual Environment</h5>
+<h3 class="code-line" data-line-start=96 data-line-end=97 ><a id="Create_Your_Virtual_Environment_96"></a>Create Your Virtual Environment</h3>
 <p class="has-line-data" data-line-start="98" data-line-end="99"><code>virtualenvwrapper</code> allows you to create and activate your virtual environment at the same time. To create your virtual environment, use the command <code>mkvirtualenv</code>:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080;">$</span> mkvirtualenv <span style="color: #333333">&lt;</span>name<span style="color: #333333">-</span>of<span style="color: #333333">-</span>your<span style="color: #333333">-</span>virtual<span style="color: #333333">-</span>environment<span style="color: #333333">&gt;</span> <span style="color: #888888"># for example mkvirtualenv chatapp</span>
 </pre>
@@ -77,18 +77,18 @@ source <span style="color: #333333">~/.</span>local<span style="color: #333333">
 <p class="has-line-data" data-line-start="113" data-line-end="114">To deactivate your virtual environment, run:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color:  #ff8080;">$</span> deactivate
 </pre>
-<h5 class="code-line" data-line-start=118 data-line-end=119 ><a id="Reactivate_Your_Virtual_Environment_118"></a>Reactivate Your Virtual Environment</h5>
+<h3 class="code-line" data-line-start=118 data-line-end=119 ><a id="Reactivate_Your_Virtual_Environment_118"></a>Reactivate Your Virtual Environment</h3>
 <p class="has-line-data" data-line-start="119" data-line-end="120">If you want to activate the virtual evironment you just created, run:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080;">$</span> workon chatapp
 </pre>
 <p class="has-line-data" data-line-start="125" data-line-end="126"><code>workon</code> command allows you to activate an already created virtualenvironment. You can also use the same command to list all available virtual environments in your system by running:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080;">$</span> workon
 </pre>
-<h5 class="code-line" data-line-start=131 data-line-end=132 ><a id="Remove_Your_Virtual_Environment_131"></a>Remove Your Virtual Environment</h5>
+<h3 class="code-line" data-line-start=131 data-line-end=132 ><a id="Remove_Your_Virtual_Environment_131"></a>Remove Your Virtual Environment</h3>
 <p class="has-line-data" data-line-start="133" data-line-end="134">At some point, if you want to delete your virtual environment, simply use the <code>rmvirtualenv</code> command:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080;">$</span> rmvirtualenv chatapp
 </pre>
-<h5 class="code-line" data-line-start=139 data-line-end=140 ><a id="Copy_Your_Virtual_Environment_139"></a>Copy Your Virtual Environment</h5>
+<h3 class="code-line" data-line-start=139 data-line-end=140 ><a id="Copy_Your_Virtual_Environment_139"></a>Copy Your Virtual Environment</h3>
 <p class="has-line-data" data-line-start="141" data-line-end="142">To copy an existing virtualevironment, use <code>cpvirtualenv</code>:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080;">$</span> cpvirtualenv chatapp
 </pre>
@@ -104,7 +104,7 @@ source <span style="color: #333333">~/.</span>local<span style="color: #333333">
                 {% include '_flash_message.html' %}
 
                 <!-- Comments Go Here -->
-                {% for post in posts %}
+                {% for post in all_allowed_comments %}
                     {% include '_comments.html' %}
                 {% endfor %}                
 

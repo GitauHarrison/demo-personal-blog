@@ -21,7 +21,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_totp_2fa_email, new_getting_started_comment,\
     send_live_getting_started_email, new_install_git_comment,\
     send_live_install_git_email, new_github_ssh_comment, \
-    send_live_github_ssh_email
+    send_live_github_ssh_email, new_virtualenvwrapper_comment,\
+    send_live_virtualenvwrapper_email
 
 
 @bp.route('/')
@@ -344,6 +345,34 @@ def review_github_ssh_comments():
                            total_comments=total_comments
                            )
 
+
+# Virtualenvwrapeer
+
+
+@bp.route('/admin/blog-review/virtualenvwrapper')
+@login_required
+def review_virtualenvwrapper_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = VirtualenvwrapperPost.query.order_by(
+        VirtualenvwrapperPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_virtualenvwrapper_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_virtualenvwrapper_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = VirtualenvwrapperPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_virtualenvwrapper.html',
+                           title='Review Virtualenvwrapper Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -413,6 +442,19 @@ def allow_github_ssh_comment(id):
         send_live_github_ssh_email(user)
     return redirect(url_for('main.review_github_ssh_comments'))
 
+
+@bp.route('/allow-virtualenvwrapper-comment/<id>')
+def allow_virtualenvwrapper_comment(id):
+    post = VirtualenvwrapperPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Virtualenvwrapper article")
+    user = User.query.get(id)
+    if user:
+        send_live_virtualenvwrapper_email(user)
+    return redirect(url_for('main.review_virtualenvwrapper_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -461,6 +503,15 @@ def delete_github_ssh_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in GitHub SSH article')
     return redirect(url_for('main.review_github_ssh_comments'))
+
+
+@bp.route('/delete-virtualenvwrapper-comment/<id>')
+def delete_virtualenvwrapper_comment(id):
+    post = VirtualenvwrapperPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Virtualenvwrapper article')
+    return redirect(url_for('main.review_virtualenvwrapper_comments'))
 
 # ===================
 # END OF ADMIN ACTION
@@ -1033,7 +1084,11 @@ def virtualenvwrapper():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_virtualenvwrapper_comment(admin)
         return redirect(url_for('main.virtualenvwrapper', _anchor='comments'))
+    all_allowed_comments = VirtualenvwrapperPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = VirtualenvwrapperPost.query.order_by(
         VirtualenvwrapperPost.timestamp.asc()).paginate(
@@ -1045,15 +1100,15 @@ def virtualenvwrapper():
     prev_url = url_for('main.virtualenvwrapper',
                        _anchor='comments', page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = VirtualenvwrapperPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('virtualenvwrapper.html',
                            title='Virtualenvwrapper Tutorial',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
