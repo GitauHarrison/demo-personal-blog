@@ -77,21 +77,6 @@ def admin():
                            )
 
 
-@bp.route('/admin/home-page-comments')
-@login_required
-def home_page_comments():
-    return render_template('admin/home_page_comments.html',
-                           title='Home Page Comments'
-                           )
-
-
-@bp.route('/admin/personal-blog-comments')
-@login_required
-def personal_blog_comments():
-    return render_template('admin/personal_blog_comments.html',
-                           title='Personal Blog Comments'
-                           )
-
 
 @bp.route('/admin/<username>/delete-account')
 def delete_admin_account(username):
@@ -227,6 +212,21 @@ def allow_portfolio_page_projects(id):
 # Comment Moderation: Articles
 # ----------------------------
 
+@bp.route('/admin/review/home-page-comments')
+@login_required
+def home_page_comments():
+    return render_template('admin/comment_moderation/review_home_page_comments.html',
+                           title='Home Page Comments'
+                           )
+
+
+@bp.route('/admin/review/personal-blog-comments')
+@login_required
+def personal_blog_comments():
+    return render_template('admin/comment_moderation/review_personal_blog_comments.html',
+                           title='Personal Blog Comments'
+                           )
+
 
 @bp.route('/admin/review-blog-comments')
 @login_required
@@ -255,7 +255,7 @@ def review_hello_world_comments():
         if comments.has_prev else None
     all_comments = HelloWorldPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_hello_world.html',
+    return render_template('admin/comment_moderation/personal_blog/review_hello_world.html',
                            title='Review Hello World',
                            comments=comments.items,
                            next_url=next_url,
@@ -283,7 +283,7 @@ def review_flask_templates_comments():
         if comments.has_prev else None
     all_comments = FlaskTemplatesPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_flask_templates.html',
+    return render_template('admin/comment_moderation/personal_blog/review_flask_templates.html',
                            title='Review Flask Templates',
                            comments=comments.items,
                            next_url=next_url,
@@ -311,7 +311,7 @@ def review_flask_web_forms_comments():
         if comments.has_prev else None
     all_comments = FlaskWebFormsPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_flask_web_forms.html',
+    return render_template('admin/comment_moderation/personal_blog/review_flask_web_forms.html',
                            title='Review Flask Web Forms',
                            comments=comments.items,
                            next_url=next_url,
@@ -339,7 +339,7 @@ def review_flask_database_comments():
         if comments.has_prev else None
     all_comments = FlaskDatabasePost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_flask_database.html',
+    return render_template('admin/comment_moderation/personal_blog/review_flask_database.html',
                            title='Review Flask Database',
                            comments=comments.items,
                            next_url=next_url,
@@ -366,7 +366,7 @@ def review_user_comments_comments():
         if comments.has_prev else None
     all_comments = UserCommentsPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_user_comments.html',
+    return render_template('admin/comment_moderation/personal_blog/review_user_comments.html',
                            title='Review User Comments',
                            comments=comments.items,
                            next_url=next_url,
@@ -391,7 +391,7 @@ def review_flask_bootstrap_comments():
         if comments.has_prev else None
     all_comments = FlaskBootstrapPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_flask_bootstrap.html',
+    return render_template('admin/comment_moderation/personal_blog/review_flask_bootstrap.html',
                            title='Review Flask Bootstrap',
                            comments=comments.items,
                            next_url=next_url,
@@ -416,7 +416,7 @@ def review_dates_and_time_comments():
         if comments.has_prev else None
     all_comments = DatesAndTimePost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_dates_and_time.html',
+    return render_template('admin/comment_moderation/personal_blog/review_dates_and_time.html',
                            title='Review Dates and Time',
                            comments=comments.items,
                            next_url=next_url,
@@ -441,7 +441,7 @@ def review_twilio_sendgrid_comments():
         if comments.has_prev else None
     all_comments = TwilioSendGridPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_twilio_sendgrid.html',
+    return render_template('admin/comment_moderation/twilio/review_twilio_sendgrid.html',
                            title='Review SendGrid',
                            comments=comments.items,
                            next_url=next_url,
@@ -466,7 +466,7 @@ def review_totp_2fa_comments():
         if comments.has_prev else None
     all_comments = TOTP2faPost.query.all()
     total_comments = len(all_comments)
-    return render_template('admin/comment_moderation/review_totp_2fa.html',
+    return render_template('admin/comment_moderation/2fa/review_totp_2fa.html',
                            title='Review TOTP',
                            comments=comments.items,
                            next_url=next_url,

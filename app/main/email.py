@@ -9,9 +9,9 @@ def new_hello_world_comment(admin):
         '[New Comment] Hello World Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/hello_world.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/hello_world.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/hello_world.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/hello_world.html',
                                   admin=admin)
     )
 
@@ -21,9 +21,9 @@ def send_live_hello_world_email(user):
         '[Your Comment is Live] Hello World Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/hello_world.txt',
+        text_body=render_template('public_comment_email/personal_blog/hello_world.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/hello_world.html',
+        html_body=render_template('public_comment_email/personal_blog/hello_world.html',
                                   user=user)
     )
 
@@ -35,9 +35,9 @@ def new_flask_templates_comment(admin):
         '[New Comment] Flask Templates Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/flask_templates.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/flask_templates.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/flask_templates.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/flask_templates.html',
                                   admin=admin)
     )
 
@@ -47,9 +47,9 @@ def send_live_flask_templates_email(user):
         '[Your Comment is Live] Flask Templates Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/flask_templates.txt',
+        text_body=render_template('public_comment_email/personal_blog/flask_templates.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/flask_templates.html',
+        html_body=render_template('public_comment_email/personal_blog/flask_templates.html',
                                   user=user)
     )
 
@@ -61,9 +61,9 @@ def new_flask_web_forms_comment(admin):
         '[New Comment] Flask Web Forms Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/flask_web_forms.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/flask_web_forms.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/flask_web_forms.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/flask_web_forms.html',
                                   admin=admin)
     )
 
@@ -73,9 +73,9 @@ def send_live_flask_web_forms_email(user):
         '[Your Comment is Live] Flask Web Forms Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/flask_web_forms.txt',
+        text_body=render_template('public_comment_email/personal_blog/flask_web_forms.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/flask_web_forms.html',
+        html_body=render_template('public_comment_email/personal_blog/flask_web_forms.html',
                                   user=user)
     )
 
@@ -87,9 +87,9 @@ def new_flask_database_comment(admin):
         '[New Comment] Flask Database Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/flask_database.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/flask_database.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/flask_database.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/flask_database.html',
                                   admin=admin)
     )
 
@@ -99,9 +99,9 @@ def send_live_flask_database_email(user):
         '[Your Comment is Live] Flask Database Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/flask_database.txt',
+        text_body=render_template('public_comment_email/personal_blog/flask_database.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/flask_database.html',
+        html_body=render_template('public_comment_email/personal_blog/.html',
                                   user=user)
     )
 
@@ -113,9 +113,9 @@ def new_user_comments_comment(admin):
         '[New Comment] User Comment Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/user_comments.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/user_comments.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/user_comments.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/user_comments.html',
                                   admin=admin)
     )
 
@@ -125,9 +125,9 @@ def send_live_user_comments_email(user):
         '[Your Comment is Live] User Comments Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/user_comments.txt',
+        text_body=render_template('public_comment_email/personal_blog/user_comments.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/user_comments.html',
+        html_body=render_template('public_comment_email/personal_blog/user_comments.html',
                                   user=user)
     )
 
@@ -139,9 +139,9 @@ def new_flask_bootstrap_comment(admin):
         '[New Comment] Flask Bootstrap Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/flask_bootstrap.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/flask_bootstrap.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/flask_bootstrap.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/flask_bootstrap.html',
                                   admin=admin)
     )
 
@@ -151,9 +151,9 @@ def send_live_flask_bootstrap_email(user):
         '[Your Comment is Live] Flask Bootstrap Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/flask_bootstrap.txt',
+        text_body=render_template('public_comment_email/personal_blog/flask_bootstrap.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/flask_bootstrap.html',
+        html_body=render_template('public_comment_email/personal_blog/flask_bootstrap.html',
                                   user=user)
     )
 
@@ -165,9 +165,9 @@ def new_dates_and_time_comment(admin):
         '[New Comment] Dates and Time Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/dates_and_time.txt',
+        text_body=render_template('admin/review_comment_email/personal_blog/dates_and_time.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/dates_and_time.html',
+        html_body=render_template('admin/review_comment_email/personal_blog/dates_and_time.html',
                                   admin=admin)
     )
 
@@ -177,9 +177,9 @@ def send_live_dates_and_time_email(user):
         '[Your Comment is Live] Dates and Time Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/dates_and_time.txt',
+        text_body=render_template('public_comment_email/personal_blog/dates_and_time.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/dates_and_time.html',
+        html_body=render_template('public_comment_email/personal_blog/dates_and_time.html',
                                   user=user)
     )
 
@@ -295,9 +295,9 @@ def new_twilio_sendgrid_comment(admin):
         '[New Comment] Twilio SendGrid Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/twilio_sendgrid.txt',
+        text_body=render_template('admin/review_comment_email/twilio/twilio_sendgrid.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/twilio_sendgrid.html',
+        html_body=render_template('admin/review_comment_email/twilio/twilio_sendgrid.html',
                                   admin=admin)
     )
 
@@ -307,9 +307,9 @@ def send_live_twilio_sendgrid_email(user):
         '[Your Comment is Live] Twilio SendGrid Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/twilio_sendgrid.txt',
+        text_body=render_template('public_comment_email/twilio/twilio_sendgrid.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/twilio_sendgrid.html',
+        html_body=render_template('public_comment_email/twilio/twilio_sendgrid.html',
                                   user=user)
     )
 
@@ -321,9 +321,9 @@ def new_totp_2fa_comment(admin):
         '[New Comment] TOTP 2FA Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[admin.email],
-        text_body=render_template('admin/review_comment_email/totp_2fa.txt',
+        text_body=render_template('admin/review_comment_email/2fa/totp_2fa.txt',
                                   admin=admin),
-        html_body=render_template('admin/review_comment_email/totp_2fa.html',
+        html_body=render_template('admin/review_comment_email/2fa/totp_2fa.html',
                                   admin=admin)
     )
 
@@ -333,9 +333,9 @@ def send_live_totp_2fa_email(user):
         '[Your Comment is Live] TOTP 2FA Article',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('public_comment_email/totp_2fa.txt',
+        text_body=render_template('public_comment_email/2fa/totp_2fa.txt',
                                   user=user),
-        html_body=render_template('public_comment_email/totp_2fa.html',
+        html_body=render_template('public_comment_email/2fa/totp_2fa.html',
                                   user=user)
     )
 

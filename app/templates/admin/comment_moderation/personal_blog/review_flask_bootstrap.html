@@ -3,14 +3,14 @@
 {% block app_content %}
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                <h1>Hello World Comments ({{ total_comments }})</h1>                
+                <h1>Flask Bootstrap Comments ({{ total_comments }})</h1>                
             </div>
         </div>
 
 
         <!-- Actual Article -->
         {% for post in comments %}
-            {% include 'admin/comment_moderation/_review_hello_world_comments.html' %}
+            {% include 'admin/comment_moderation/personal_blog/_review_flask_bootstrap_comments.html' %}
         {% endfor %}
 
 

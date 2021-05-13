@@ -3,14 +3,14 @@
 {% block app_content %}
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                <h1>Flask Database Comments ({{ total_comments }})</h1>                
+                <h1>Twilio SendGrid Comments ({{ total_comments }})</h1>                
             </div>
         </div>
 
 
         <!-- Actual Article -->
         {% for post in comments %}
-            {% include 'admin/comment_moderation/_review_flask_database_comments.html' %}
+            {% include 'admin/comment_moderation/twilio/_review_twilio_sendgrid_comments.html' %}
         {% endfor %}
 
 
