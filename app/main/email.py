@@ -338,3 +338,29 @@ def send_live_totp_2fa_email(user):
         html_body=render_template('public_comment_email/totp_2fa.html',
                                   user=user)
     )
+
+
+# Vargrant
+
+def new_vagrant_comment(admin):
+    send_email(
+        '[New Comment] Vagrant Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/vagrant.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/vagrant.html',
+                                  admin=admin)
+    )
+
+
+def send_live_vagrant_email(user):
+    send_email(
+        '[Your Comment is Live] Vagrant Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/vagrant.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/vagrant.html',
+                                  user=user)
+    )

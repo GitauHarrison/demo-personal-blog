@@ -29,7 +29,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_flask_database_email, new_user_comments_comment,\
     send_live_user_comments_email, new_flask_bootstrap_comment,\
     send_live_flask_bootstrap_email, new_dates_and_time_comment,\
-    send_live_dates_and_time_email
+    send_live_dates_and_time_email, new_vagrant_comment,\
+    send_live_vagrant_email
 
 
 @bp.route('/')
@@ -558,7 +559,7 @@ def review_github_ssh_comments():
                            )
 
 
-# Virtualenvwrapeer
+# Virtualenvwraper
 
 
 @bp.route('/admin/blog-review/virtualenvwrapper')
@@ -579,6 +580,34 @@ def review_virtualenvwrapper_comments():
     total_comments = len(all_comments)
     return render_template('admin/comment_moderation/review_virtualenvwrapper.html',
                            title='Review Virtualenvwrapper Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
+# Vagrant
+
+
+@bp.route('/admin/blog-review/vagrant')
+@login_required
+def review_vagrant_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = VagrantPost.query.order_by(
+        VagrantPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_vagrant_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_vagrant_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = VagrantPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_vagrant.html',
+                           title='Review Vagrant Comments',
                            comments=comments.items,
                            next_url=next_url,
                            prev_url=prev_url,
@@ -766,6 +795,19 @@ def allow_virtualenvwrapper_comment(id):
         send_live_virtualenvwrapper_email(user)
     return redirect(url_for('main.review_virtualenvwrapper_comments'))
 
+
+@bp.route('/allow-vagrant-comment/<id>')
+def allow_vagrant_comment(id):
+    post = VagrantPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Vagrant article")
+    user = User.query.get(id)
+    if user:
+        send_live_vagrant_email(user)
+    return redirect(url_for('main.review_vagrant_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -894,6 +936,15 @@ def delete_virtualenvwrapper_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in Virtualenvwrapper article')
     return redirect(url_for('main.review_virtualenvwrapper_comments'))
+
+
+@bp.route('/delete-vagrant-comment/<id>')
+def delete_vagrant_comment(id):
+    post = VagrantPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Vagrant article')
+    return redirect(url_for('main.review_vagrant_comments'))
 
 # ===================
 # END OF ADMIN ACTION
@@ -1504,7 +1555,11 @@ def vagrant():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_vagrant_comment(admin)
         return redirect(url_for('main.vagrant', _anchor='comments'))
+    all_allowed_comments = VagrantPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = VagrantPost.query.order_by(
         VagrantPost.timestamp.asc()).paginate(
@@ -1518,15 +1573,15 @@ def vagrant():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = VagrantPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('vagrant.html',
                            title='Vagrant Tutorial',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
