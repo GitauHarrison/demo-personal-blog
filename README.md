@@ -8,7 +8,7 @@
 This is my blog, where I note all the projects I am involved in, my personal interests and other aspects of life I am engaged in.
 
 ### Design
-Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog-Portfolio?node-id=1%3A2&scaling=min-zoom) of the blog. I used Figma for prototyping and regular reference during its development.
+Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog%2FPortfolio?node-id=1%3A2&scaling=min-zoom&page-id=0%3A1) of the blog. I used Figma for prototyping and regular reference during its development.
 
 ### Features
 * Anonymous user can post comments (even multiple times using the same credentials)
