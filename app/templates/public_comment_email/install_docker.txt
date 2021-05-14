@@ -1,0 +1,9 @@
+Dear {{ user.username }},
+
+Your comment is live! To view it, click on the following link:
+
+{{ url_for('main.install_docker', _external=True) }}
+
+Sincerely,
+
+Gitau Harrison Blog Admin

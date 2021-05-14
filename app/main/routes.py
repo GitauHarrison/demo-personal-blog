@@ -30,7 +30,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_user_comments_email, new_flask_bootstrap_comment,\
     send_live_flask_bootstrap_email, new_dates_and_time_comment,\
     send_live_dates_and_time_email, new_vagrant_comment,\
-    send_live_vagrant_email
+    send_live_vagrant_email, new_install_docker_comment,\
+    send_live_install_docker_email
 
 
 @bp.route('/')
@@ -614,6 +615,32 @@ def review_vagrant_comments():
                            total_comments=total_comments
                            )
 
+
+@bp.route('/admin/blog-review/install-docker')
+@login_required
+def review_install_docker_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = installDocker.query.order_by(
+        installDocker.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_install_docker_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_install_docker_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = installDocker.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_install_docker.html',
+                           title='Review Docker Installation Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -808,6 +835,19 @@ def allow_vagrant_comment(id):
         send_live_vagrant_email(user)
     return redirect(url_for('main.review_vagrant_comments'))
 
+
+@bp.route('/allow-install-docker-comment/<id>')
+def allow_install_docker_comment(id):
+    post = installDocker.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Install Docker article")
+    user = User.query.get(id)
+    if user:
+        send_live_install_docker_email(user)
+    return redirect(url_for('main.review_install_docker_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -945,6 +985,15 @@ def delete_vagrant_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in Vagrant article')
     return redirect(url_for('main.review_vagrant_comments'))
+
+
+@bp.route('/delete-install-docker-comment/<id>')
+def delete_install_docker_comment(id):
+    post = installDocker.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Install Docker article')
+    return redirect(url_for('main.review_install_docker_comments'))
 
 # ===================
 # END OF ADMIN ACTION
@@ -1726,7 +1775,11 @@ def install_docker():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_install_docker_comment(admin)
         return redirect(url_for('main.install_docker', _anchor='comments'))
+    all_allowed_comments = installDocker.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = installDocker.query.order_by(
         installDocker.timestamp.asc()).paginate(
@@ -1740,15 +1793,15 @@ def install_docker():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = installDocker.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('install_docker.html',
                            title='Install Docker',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 

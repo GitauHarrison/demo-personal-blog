@@ -364,3 +364,29 @@ def send_live_vagrant_email(user):
         html_body=render_template('public_comment_email/vagrant.html',
                                   user=user)
     )
+
+
+# Install Docker
+
+def new_install_docker_comment(admin):
+    send_email(
+        '[New Comment] Install Docker Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/install_docker.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/install_docker.html',
+                                  admin=admin)
+    )
+
+
+def send_live_install_docker_email(user):
+    send_email(
+        '[Your Comment is Live] Install Docker Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/install_docker.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/install_docker.html',
+                                  user=user)
+    )
