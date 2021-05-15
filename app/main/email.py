@@ -390,3 +390,29 @@ def send_live_install_docker_email(user):
         html_body=render_template('public_comment_email/install_docker.html',
                                   user=user)
     )
+
+
+# Elasticsearch
+
+def new_elasticsearch_comment(admin):
+    send_email(
+        '[New Comment] Elasticsearch Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/elasticsearch.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/elasticsearch.html',
+                                  admin=admin)
+    )
+
+
+def send_live_elasticsearch_email(user):
+    send_email(
+        '[Your Comment is Live] Elasticsearch Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/elasticsearch.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/elasticsearch.html',
+                                  user=user)
+    )
