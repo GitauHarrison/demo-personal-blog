@@ -416,3 +416,29 @@ def send_live_elasticsearch_email(user):
         html_body=render_template('public_comment_email/elasticsearch.html',
                                   user=user)
     )
+
+
+# Ngrok
+
+def new_ngrok_comment(admin):
+    send_email(
+        '[New Comment] Ngrok Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/ngrok.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/ngrok.html',
+                                  admin=admin)
+    )
+
+
+def send_live_ngrok_email(user):
+    send_email(
+        '[Your Comment is Live] Ngrok Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/ngrok.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/ngrok.html',
+                                  user=user)
+    )

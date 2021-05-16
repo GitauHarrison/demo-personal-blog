@@ -32,7 +32,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_dates_and_time_email, new_vagrant_comment,\
     send_live_vagrant_email, new_install_docker_comment,\
     send_live_install_docker_email, new_elasticsearch_comment,\
-    send_live_elasticsearch_email
+    send_live_elasticsearch_email, new_ngrok_comment,\
+    send_live_ngrok_email
 
 
 @bp.route('/')
@@ -671,6 +672,34 @@ def review_elasticsearch_comments():
                            )
 
 
+# Ngrok
+
+
+@bp.route('/admin/blog-review/ngrok')
+@login_required
+def review_ngrok_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = ngrokPost.query.order_by(
+        ngrokPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_ngrok_comments',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_ngrok_comments',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = ngrokPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_ngrok.html',
+                           title='Review Ngrok Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -891,6 +920,18 @@ def allow_elasticsearch_comment(id):
         send_live_elasticsearch_email(user)
     return redirect(url_for('main.review_elasticsearch_comments'))
 
+
+@bp.route('/allow-ngrok-comment/<id>')
+def allow_ngrok_comment(id):
+    post = ngrokPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Ngrok article")
+    user = User.query.get(id)
+    if user:
+        send_live_ngrok_email(user)
+    return redirect(url_for('main.review_ngrok_comments'))
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -1046,6 +1087,15 @@ def delete_elasticsearch_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in Elasticsearch article')
     return redirect(url_for('main.review_elasticsearch_comments'))
+
+
+@bp.route('/delete-ngrok-comment/<id>')
+def delete_ngrok_comment(id):
+    post = ngrokPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Ngrok article')
+    return redirect(url_for('main.review_ngrok_comments'))
 
 
 # ===================
@@ -1786,7 +1836,11 @@ def ngrok():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_ngrok_comment(admin)
         return redirect(url_for('main.ngrok', _anchor='comments'))
+    all_allowed_comments = ngrokPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = ngrokPost.query.order_by(
         ngrokPost.timestamp.asc()).paginate(
@@ -1800,15 +1854,15 @@ def ngrok():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = ngrokPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('ngrok_tutorial.html',
                            title='Ngrok Tutorial',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
