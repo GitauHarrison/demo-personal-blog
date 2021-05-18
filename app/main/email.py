@@ -468,3 +468,29 @@ def send_live_reCaptcha_email(user):
         html_body=render_template('public_comment_email/reCaptcha.html',
                                   user=user)
     )
+
+
+# Rich Text
+
+def new_rich_text_comment(admin):
+    send_email(
+        '[New Comment] Rich Text Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/rich_text.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/rich_text.html',
+                                  admin=admin)
+    )
+
+
+def send_live_rich_text_email(user):
+    send_email(
+        '[Your Comment is Live] Rich Text Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/rich_text.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/rich_text.html',
+                                  user=user)
+    )
