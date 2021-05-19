@@ -1,0 +1,11 @@
+<p>Dear {{ user.username }},</p>
+<p>
+    Your comment is live! To view it,  
+    <a href="{{ url_for('main.heroku_deployment', _external=True) }}">
+        click here
+    </a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('main.heroku_deployment', _external=True) }}</p>
+<p>Sincerely,</p>
+<p>Gitau Harrison Blog Admin</p>

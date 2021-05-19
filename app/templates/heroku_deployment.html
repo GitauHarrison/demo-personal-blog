@@ -7,13 +7,13 @@
 
 
 <h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="How_to_Deploy_Your_Flask_App_to_Heroku_0"></a>How to Deploy Your Flask App to Heroku</h1>
-<h6 class="code-line" data-line-start=2 data-line-end=3 ><a id="Things_to_know_beforehand_2"></a>Things to know beforehand</h6>
+<h3 class="code-line" data-line-start=2 data-line-end=3 ><a id="Things_to_know_beforehand_2"></a>Things to know beforehand</h3>
 <ul>
 <li class="has-line-data" data-line-start="3" data-line-end="4"><code>git</code>: Deploying to Heroku is done through <code>git</code> version control tool</li>
 <li class="has-line-data" data-line-start="4" data-line-end="5"><code>Procfile</code>: Heroku looks for a file called <code>Procfile</code> in the application’s root directory for instructions on how to start the application</li>
 <li class="has-line-data" data-line-start="5" data-line-end="6"><code>requirements.txt</code>: For python projects(initially, Heroku was built for Ruby related projects), you will need a <code>requirements.txt</code> which lists all the packages that are required to build and run your application.</li>
 </ul>
-<h6 class="code-line" data-line-start=8 data-line-end=9 ><a id="Procedure_8"></a>Procedure:</h6>
+<h3 class="code-line" data-line-start=8 data-line-end=9 ><a id="Procedure_8"></a>Procedure:</h3>
 <ol>
 <li class="has-line-data" data-line-start="10" data-line-end="11">Create an account at <a href="https://www.heroku.com/">Heroku</a>. It is free.</li>
 <li class="has-line-data" data-line-start="11" data-line-end="12">Install the <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku CLI</a></li>
@@ -22,10 +22,10 @@
 <li class="has-line-data" data-line-start="14" data-line-end="15">Deploy Your Application</li>
 <li class="has-line-data" data-line-start="15" data-line-end="16">Deploy Application Updates</li>
 </ol><br>
-<h4 class="code-line" data-line-start=18 data-line-end=19 ><a id="Create_Heroku_account_18"></a>Create Heroku account</h4>
+<h3 class="code-line" data-line-start=18 data-line-end=19 ><a id="Create_Heroku_account_18"></a>Create Heroku account</h3>
 <p class="has-line-data" data-line-start="20" data-line-end="21">Before you can deploy your application to Heroku, you will need to have an account with them. Visit <a href="https://www.heroku.com/">heroku.com</a> and sign up for free. Your applications will be listed on your dashboard whenever you log in.</p>
 <br>
-<h4 class="code-line" data-line-start=22 data-line-end=23 ><a id="Install_Heroku_CLI_22"></a>Install Heroku CLI</h4>
+<h3 class="code-line" data-line-start=22 data-line-end=23 ><a id="Install_Heroku_CLI_22"></a>Install Heroku CLI</h3>
 <p class="has-line-data" data-line-start="24" data-line-end="25">To interact with Heroku services, you will need to use their commandline tool called <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku CLI</a>. It is available for Linux, Mac OS X and Windows.</p>
 <p class="has-line-data" data-line-start="26" data-line-end="27">To install it, run the command below:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo snap install <span style="color: #333333">--</span>classic heroku
@@ -35,7 +35,7 @@
 </pre>
 <p class="has-line-data" data-line-start="37" data-line-end="38">Heroku CLI will open in your default browser and ask you to enter your email address and your account password. Your authentication details will be remembered in subsequent commands.</p>
 <br>
-<h4 class="code-line" data-line-start=39 data-line-end=40 ><a id="Setting_Up_Git_39"></a>Setting Up Git</h4>
+<h3 class="code-line" data-line-start=39 data-line-end=40 ><a id="Setting_Up_Git_39"></a>Setting Up Git</h3>
 <p class="has-line-data" data-line-start="41" data-line-end="42"><code>git</code> is core to the deployment of your applications to Heroku. You will need to install it on your system. Learn how to install it <a href="./install_git.md">here</a></p>
 <p class="has-line-data" data-line-start="43" data-line-end="44">The reason why you need <code>git</code> is because Heroku expects your project to be in a git repository. If you had your project on <a href="https://github.com/">GitHub</a>, clone it to your local machine:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git clone git<span style="color: #555555; font-weight: bold">@github</span><span style="color: #333333">.</span>com:GitauHarrison<span style="color: #333333">/</span>work_gossip_chat_app<span style="color: #333333">.</span>git
@@ -50,7 +50,7 @@
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install <span style="color: #333333">-</span>r requirements<span style="color: #333333">.</span>txt
 </pre>
 <br>
-<h4 class="code-line" data-line-start=63 data-line-end=64 ><a id="Create_a_Heroku_Application_63"></a>Create a Heroku Application</h4>
+<h3 class="code-line" data-line-start=63 data-line-end=64 ><a id="Create_a_Heroku_Application_63"></a>Create a Heroku Application</h3>
 <p class="has-line-data" data-line-start="65" data-line-end="66">Heroku uses the command <code>apps:create</code> to register new applications. You will need to run the command below from the root directory of your application.</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku apps:create work<span style="color: #333333">-</span>gossip<span style="color: #333333">-</span>chat<span style="color: #333333">-</span>app
 </pre>
@@ -59,7 +59,7 @@
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git remote <span style="color: #333333">-</span>v
 </pre>
 <br>
-<h4 class="code-line" data-line-start=78 data-line-end=79 ><a id="Postgres_Database_for_Heroku_78"></a>Postgres Database for Heroku</h4>
+<h3 class="code-line" data-line-start=78 data-line-end=79 ><a id="Postgres_Database_for_Heroku_78"></a>Postgres Database for Heroku</h3>
 <p class="has-line-data" data-line-start="80" data-line-end="81">Heroku’s database offering is based on the Postgres database. You interact with it using its CLI tool.</p>
 <p class="has-line-data" data-line-start="82" data-line-end="83">First, we will begin by creating a database on the free version account:</p>
 <pre style="margin: 30; line-height: 125%">heroku addons:add heroku<span style="color: #333333">-</span>postgresql:hobby<span style="color: #333333">-</span>dev
@@ -94,7 +94,7 @@ Continuous Protection: Off
 Add<span style="color: #333333">-</span>on:                postgresql<span style="color: #333333">-</span>solid<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">77130</span>
 </pre>
 <br>
-<h4 class="code-line" data-line-start=122 data-line-end=123 ><a id="Logging_to_stdout_122"></a>Logging to <code>stdout</code></h4>
+<h3 class="code-line" data-line-start=122 data-line-end=123 ><a id="Logging_to_stdout_122"></a>Logging to <code>stdout</code></h3>
 <p class="has-line-data" data-line-start="124" data-line-end="125">Logging allows for the writing of status messages to a file or any other output streams. The log files contain all the information on which part the code is executed and what problems may have arisen. Learn more on Python logging <a href="https://realpython.com/python-logging/">here</a>.</p>
 <p class="has-line-data" data-line-start="126" data-line-end="127">Heroku expects applications to log directly to <code>stdout</code>. Every time you want to check your application logs, you can type the command below to see all the details:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku logs <span style="color: #333333">--</span>tail
@@ -135,7 +135,7 @@ Add<span style="color: #333333">-</span>on:                postgresql<span style
 </pre>
 <p class="has-line-data" data-line-start="170" data-line-end="171">This variable is set to <code>1</code> and it will be used at runtime.</p>
 <br>
-<h4 class="code-line" data-line-start=172 data-line-end=173 ><a id="Adding_Search_functionality_in_Heroku_172"></a>Adding Search functionality in Heroku</h4>
+<h3 class="code-line" data-line-start=172 data-line-end=173 ><a id="Adding_Search_functionality_in_Heroku_172"></a>Adding Search functionality in Heroku</h3>
 <p class="has-line-data" data-line-start="174" data-line-end="175">Unlike Postgres which is provided by Heroku, a service such as Elasticsearch is provided by third parties that partner with Heroku to provide add-ons. There are a number of search addons you can choose from. Find more <a href="https://elements.heroku.com/addons">addons here</a>.</p>
 <p class="has-line-data" data-line-start="176" data-line-end="177"><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename = 'images/heroku_search_providers.png') }}" alt="Search Providers"></p>
 <p class="has-line-data" data-line-start="179" data-line-end="180">Let us try <a href="https://elements.heroku.com/addons/searchbox">SearchBox</a></p>
@@ -160,13 +160,13 @@ Use heroku addons:docs searchbox to view documentation
 <p class="has-line-data" data-line-start="211" data-line-end="213"><strong>Note:</strong><br>
 If you are using <code>SEARCHBOX_SSL_URL</code>, then you should not have the trouble of indices not being created automatically by the server.</p>
 <br>
-<h4 class="code-line" data-line-start=216 data-line-end=217 ><a id="Updating_your_Dependancies_216"></a>Updating your Dependancies</h4>
+<h3 class="code-line" data-line-start=216 data-line-end=217 ><a id="Updating_your_Dependancies_216"></a>Updating your Dependancies</h3>
 <p class="has-line-data" data-line-start="218" data-line-end="219">Heroku will use the listed dependancies to run your application. Additionally, it will need you to add 2 more dependancies to the <code>requirements.txt</code> file.</p>
-<h5 class="code-line" data-line-start=220 data-line-end=221 ><a id="gunicorn_220"></a><code>gunicorn</code></h5>
+<h3 class="code-line" data-line-start=220 data-line-end=221 ><a id="gunicorn_220"></a><code>gunicorn</code></h3>
 <p class="has-line-data" data-line-start="222" data-line-end="223">Since Flask’s development server is not robust enough for use in production, you will need to add this server which is recommended by Heroku for Python applications:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install gunicorn
 </pre>
-<h6 class="code-line" data-line-start=227 data-line-end=228 ><a id="psycopg2_227"></a><code>psycopg2</code></h6>
+<h3 class="code-line" data-line-start=227 data-line-end=228 ><a id="psycopg2_227"></a><code>psycopg2</code></h3>
 <p class="has-line-data" data-line-start="229" data-line-end="230">Our application will also be connecting to a Postgres database, and for that it requires this package to be installed.</p>
 <p class="has-line-data" data-line-start="231" data-line-end="232"><code>psycopg2</code> library is built as a wrapper around <code>libpq</code>. It requires some <code>PostgreSQL</code> binaries and headers requried for building 3rd-party applications for <code>PostgreSQL</code>.</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> sudo apt install python3<span style="color: #333333">-</span>dev libpq<span style="color: #333333">-</span>dev
@@ -175,7 +175,7 @@ If you are using <code>SEARCHBOX_SSL_URL</code>, then you should not have the tr
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 install psycopg2
 </pre>
 <br>
-<h4 class="code-line" data-line-start=243 data-line-end=244 ><a id="The_Procfile_243"></a>The Procfile</h4>
+<h3 class="code-line" data-line-start=243 data-line-end=244 ><a id="The_Procfile_243"></a>The Procfile</h3>
 <p class="has-line-data" data-line-start="245" data-line-end="246">Heroku needs to know how to execute your application. For that, you need a <code>Procfile</code> which is created in the root directory. So, fo ahead and create an empty <code>Procfile</code> file:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> touch Procfile
 </pre>
@@ -195,7 +195,7 @@ If you are using <code>SEARCHBOX_SSL_URL</code>, then you should not have the tr
 </pre>
 <p class="has-line-data" data-line-start="271" data-line-end="272"><strong>Our application has other environment variables listed in our <code>config.py</code> file. Configure them with Heroku as shown above.</strong></p>
 <br>
-<h4 class="code-line" data-line-start=273 data-line-end=274 ><a id="How_to_generate_good_secret_keys_273"></a>How to generate good secret keys</h4>
+<h3 class="code-line" data-line-start=273 data-line-end=274 ><a id="How_to_generate_good_secret_keys_273"></a>How to generate good secret keys</h3>
 <p class="has-line-data" data-line-start="275" data-line-end="276">One of the variables you will need to add to heroku is <code>SECRET_KEY</code>. Our <code>SECRET_KEY</code> value is the message authentication code used to sign the cookies. If the value is known to the public, then someone can spoof a valid signature, which makes our app a lot less secure. The <code>SECRET_KEY</code> needs to be known only to the application even if the source code is published online. The solution to this is to generate a random <code>SECRET_KEY</code>.</p>
 <blockquote>
 <p class="has-line-data" data-line-start="277" data-line-end="278">A <em>secret key</em> should be as random as possible. Your operating system has ways to generate pretty random data based on a cryptographic random generator. Use the following command to quickly generate a value for <code>Flask.secret_key</code> (or <code>SECRET_KEY</code>):</p>
@@ -206,7 +206,7 @@ If you are using <code>SEARCHBOX_SSL_URL</code>, then you should not have the tr
 b<span style="background-color: #fff0f0">&#39;_5#y2L&quot;F4Q8z</span><span style="color: #666666; font-weight: bold; background-color: #fff0f0">\n\xec</span><span style="background-color: #fff0f0">]/&#39;</span>
 </pre>
 <br>
-<h4 class="code-line" data-line-start=286 data-line-end=287 ><a id="Deploying_Application_286"></a>Deploying Application</h4>
+<h3 class="code-line" data-line-start=286 data-line-end=287 ><a id="Deploying_Application_286"></a>Deploying Application</h3>
 <p class="has-line-data" data-line-start="288" data-line-end="289"><code>git push</code> is used to deploy the application to Heroku’s servers, similarly to how you would push changes from your local git repository to GitHub or any other remote server.</p>
 <p class="has-line-data" data-line-start="290" data-line-end="291">First, you need to save your changes and commit them:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git commit <span style="color: #333333">-</span>a <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;Make changes for heroku deployment&#39;</span>
@@ -249,7 +249,7 @@ To https:<span style="color: #333333">//</span>git<span style="color: #333333">.
 <p class="has-line-data" data-line-start="333" data-line-end="334">If you want to see the log entries for your application, run the command:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku logs <span style="color: #333333">--</span>tail
 </pre>
-<h6 class="code-line" data-line-start=339 data-line-end=340 ><a id="Database_Error_339"></a>Database Error</h6>
+<h3 class="code-line" data-line-start=339 data-line-end=340 ><a id="Database_Error_339"></a>Database Error</h3>
 <p class="has-line-data" data-line-start="341" data-line-end="342">Chances are that when you try to log into your app or even try to register a new user you will come across an error such as:</p>
 <pre style="margin: 30; line-height: 125%">sqlalchemy<span style="color: #333333">.</span>exc<span style="color: #333333">.</span>ProgrammingError: (psycopg2<span style="color: #333333">.</span>errors<span style="color: #333333">.</span>UndefinedTable) relation <span style="background-color: #fff0f0">&quot;user&quot;</span> does <span style="color: #000000; font-weight: bold">not</span> exist
 LINE <span style="color: #0000DD; font-weight: bold">2</span>: FROM <span style="background-color: #fff0f0">&quot;user&quot;</span>
@@ -279,13 +279,13 @@ Add<span style="color: #333333">-</span>on:                postgresql<span style
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku run flask db upgrade <span style="color: #888888"># add heroku run</span>
 </pre>
 <br>
-<h4 class="code-line" data-line-start=380 data-line-end=381 ><a id="Application_Updates_380"></a>Application Updates</h4>
+<h3 class="code-line" data-line-start=380 data-line-end=381 ><a id="Application_Updates_380"></a>Application Updates</h3>
 <p class="has-line-data" data-line-start="382" data-line-end="383">Make changes to your applicatin and save it. You will need to <code>add</code> and <code>commit</code> them using <code>git</code>. Push the changes to Heroku:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> git add <span style="color: #333333">.</span>
 <span style="color: #ff8080; ">$</span> git commit <span style="color: #333333">-</span>a <span style="color: #333333">-</span>m <span style="background-color: #fff0f0">&#39;Message about your new changes&#39;</span>
 <span style="color: #ff8080; ">$</span> git push heroku master
 </pre><br>
-<h4 class="code-line" data-line-start=390 data-line-end=391 ><a id="Removing_addons_and_variables_in_Heroku_390"></a>Removing addons and variables in Heroku</h4>
+<h3 class="code-line" data-line-start=390 data-line-end=391 ><a id="Removing_addons_and_variables_in_Heroku_390"></a>Removing addons and variables in Heroku</h3>
 <p class="has-line-data" data-line-start="392" data-line-end="393">If at some point you would like to remove a config var, consider running:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> heroku config:unset <span style="color: #333333">&lt;</span>VAR_NAME<span style="color: #333333">&gt;=&lt;</span>value<span style="color: #333333">&gt;</span>
 </pre>
@@ -309,7 +309,7 @@ Add<span style="color: #333333">-</span>on:                postgresql<span style
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 
