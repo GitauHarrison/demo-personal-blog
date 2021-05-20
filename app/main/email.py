@@ -520,3 +520,29 @@ def send_live_heroku_deployment_email(user):
         html_body=render_template('public_comment_email/heroku_deployement.html',
                                   user=user)
     )
+
+
+# Stripe
+
+def new_stripe_comment(admin):
+    send_email(
+        '[New Comment] Stripe Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/stripe.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/stripe.html',
+                                  admin=admin)
+    )
+
+
+def send_live_stripe_email(user):
+    send_email(
+        '[Your Comment is Live] Stripe Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/stripe.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/stripe.html',
+                                  user=user)
+    )

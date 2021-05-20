@@ -14,12 +14,12 @@
 <li><a href="https://stripe.com/payments/checkout">Stripe Checkout</a> (We will focus on this)</li>
 <li><a href="https://stripe.com/docs/payments/payment-intents">Payments Intents API</a> </li>
 </ol>
-<h5 id="which-strategy-should-you-use-">Which strategy should you use?</h5>
+<h3 id="which-strategy-should-you-use-">Which strategy should you use?</h3>
 <ul>
 <li>Use <em>Stripe Checkout</em> if you want to get up and running fast. It provides a number of powerful features out-of-the-box, supports multiple languages, and can even be used for <a href="https://stripe.com/docs/billing/subscriptions/fixed-price">recurring payments</a>. Most importantly, Checkout manages the entire payment process for you, so you can begin accepting payments without even having to add a single form!</li>
 <li>Use the Payment Intents API (along with Elements) if you want to customize the payment experience for your end users.</li>
 </ul>
-<h5 id="workflow">Workflow</h5>
+<h3 id="workflow">Workflow</h3>
 <ol>
 <li>Create a project structure to hold all your project resources</li>
 <li>Create a virtual environment and install <code>flask</code></li>
@@ -32,7 +32,7 @@
 <li>Confirm payment with Stripe Webhooks</li>
 </ol>
 <img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_flask_demo.gif') }}" alt="Stripe Flask Demo">
-<h4 id="initial-setup">Initial SetUp</h4>
+<h3 id="initial-setup">Initial SetUp</h3>
 <p>You need to create your project directory and move into it. It is important that you activate your <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a> before installing <code>Flask</code>. </p>
 <p>Create your project folder and move into it:</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> mkdir flask<span style="color: #333333">-</span>stripe<span style="color: #333333">-</span>checkout <span style="color: #333333">&amp;&amp;</span> cd flask<span style="color: #333333">-</span>stripe<span style="color: #333333">-</span>checkout
@@ -47,7 +47,7 @@
 <p>Save your app requirements in a <code>requirements.txt</code> file as shown below</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #ff8080; ">$</span> pip3 freeze <span style="color: #333333">&gt;</span> requirements<span style="color: #333333">.</span>txt
 </pre>
-<h5 id="simple-flask-app-structure">Simple Flask App Structure</h5>
+<h3 id="simple-flask-app-structure">Simple Flask App Structure</h3>
 <p>So far, we already have our project folder created and it holds the <code>requirements.txt</code> file. We will add the following empty files to complete the structure for our simple app.</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_project_structure.svg') }}" alt="Python Project Structure"></p>
 <pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> mkdir app
@@ -79,7 +79,7 @@ app <span style="color: #333333">=</span> Flask(__name__)
 <p class="code-title">app.py</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">app</span> <span style="color: #008800; font-weight: bold">import</span> app
 </pre>
-<h5 id="fire-up-your-server">Fire Up Your Server</h5>
+<h3 id="fire-up-your-server">Fire Up Your Server</h3>
 <p>There are two ways you can start your Flask server:</p>
 <p><strong>Method #1:</strong></p>
 <p>Our app is set up and we need to fire our server to display <em>Hello, world!</em>. Let us set up <code>FLASK_APP</code> environment variable to import our flask app:</p>
@@ -101,7 +101,7 @@ app <span style="color: #333333">=</span> Flask(__name__)
 <pre style="margin: 30; line-height: 125%">FLASK_APP<span style="color: #333333">=</span>app<span style="color: #333333">.</span>py
 </pre>
 <p>Now, all you need to do as run <code>flask run</code> and you will be able to see the output in your browser.</p>
-<h4 id="adding-stripe">Adding Stripe</h4>
+<h3 id="adding-stripe">Adding Stripe</h3>
 <p>Start by installing <code>stripe</code>:</p>
 <pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> pip3 install stripe
 </pre>
@@ -144,12 +144,12 @@ stripe_keys <span style="color: #333333">=</span> {
 </pre>
 <p>Finally, you will need to add an account name. Click on the top-left sidebar where it says <em>Add account name</em>. You can change the details later in your <em>Account settings</em>.</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/account_name.png') }}" alt="Account name"></p>
-<h4 id="create-a-product">Create a Product</h4>
+<h3 id="create-a-product">Create a Product</h3>
 <p>We need to create a product to sell. Click <em>Products</em> on the left sidebar in your dashboard and <em>+Add Product</em></p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/add_stripe_product.png') }}" alt="Add Stripe Product"></p>
 <p>Add a product name, enter your price and select <em>One time</em>, then click on <em>Save Product</em> on the top-right corner:</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/new_product.png') }}" alt="New Product"></p>
-<h4 id="get-publishable-key">Get Publishable Key</h4>
+<h3 id="get-publishable-key">Get Publishable Key</h3>
 <p>We will use <em>Javascript</em>. We will add a static folder which will hold our <code>.js</code> files.</p>
 <pre style="margin: 30; line-height: 125%">(stripe<span style="color: #333333">-</span>project)<span style="color: #ff8080; ">$</span> mkdir app<span style="color: #333333">/</span>static <span style="color: #333333">&amp;&amp;</span> mkdir app<span style="color: #333333">/</span>static<span style="color: #333333">/</span>js 
 <span style="color: #888888"># this will create a js sub-folder in static</span>
@@ -233,7 +233,7 @@ stripe_keys <span style="color: #333333">=</span> {
     stripe_config <span style="color: #333333">=</span> {<span style="background-color: #fff0f0">&quot;publicKey&quot;</span>: stripe_keys[<span style="background-color: #fff0f0">&quot;publishable_key&quot;</span>]}
     <span style="color: #008800; font-weight: bold">return</span> jsonify(stripe_config)
 </pre>
-<h5 id="create-an-ajax-request">Create an AJAX request</h5>
+<h3 id="create-an-ajax-request">Create an AJAX request</h3>
 <p>We will use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">Fetch API</a> to make an AJAX request to the new route <code>/config</code> endpoint.</p>
 <p class="code-title">app/static/main.js</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #333333">//</span> previous code
@@ -248,7 +248,7 @@ fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
 </pre>
 <p>A reposnse from a <code>fetch</code> request is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream">ReadableStream</a>. <code>result.json</code> returns a promise, which we resolve to a Javascript object such as <code>data</code>. We use dot notation to access the <code>publicKey</code> in order to obtain the publishable key.</p>
 <p>Now, after the page load, a call will be made to <code>/config</code>, which will respond with the Stripe publishable key. We&#39;ll then use this key to create a new instance of Stripe.js.</p>
-<h4 id="create-checkout-session">Create Checkout Session</h4>
+<h3 id="create-checkout-session">Create Checkout Session</h3>
 <p>We need to attach an event handler to the button&#39;s click event which will send another AJAX request to the server to generate a new Checkout session ID.</p>
 <p class="code-title">app/routes.py</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #555555; font-weight: bold">@app.route</span>(<span style="background-color: #fff0f0">&quot;/create-checkout-session&quot;</span>)
@@ -332,7 +332,7 @@ fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
     <li>Enter a random postal code and billing address</li>
 </ul>
 <p>If all goes well, the payment should be processed. Nothing will happen after a successful process because we have not set a <code>/success</code> redirect yet. So, below that is what we will do.</p>
-<h4 id="redirecting-user-appropriately">Redirecting User Appropriately</h4>
+<h3 id="redirecting-user-appropriately">Redirecting User Appropriately</h3>
 <p>Let's create two templates that will have a link to redirect our users:</p>
 <p class="code-title">app/templates/success.html</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #333333">&lt;</span><span style="color: #ff8080; ">!</span><span style="color: #333333">--</span> Remove the back slashes <span style="color: #333333">--&gt;</span>
@@ -377,7 +377,7 @@ fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/successful_stripe_payment.png') }}" alt="Successful Stripe Payment"></p>
 <p>You can test out <code>/cancel</code> by clicking on the back arrow in the Stripe payment form. You should be redirected appropriately.</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/stripe_payment_form.png') }}" alt="Stripe Payment Form"></p>
-<h4 id="configure-payments-with-stripe-webhooks">Configure Payments with Stripe Webhooks</h4>
+<h3 id="configure-payments-with-stripe-webhooks">Configure Payments with Stripe Webhooks</h3>
 <p>Our app works well at this point, but we still can&#39;t programmatically confirm payments and perhaps run some code if a payment was successful. We already redirected the user to the success page after they check out, but we can&#39;t rely on that page alone since payment confirmation happens asynchronously.</p>
 <p>One of the easiest ways to get notified when the payment goes through is to use a callback called <a href="https://stripe.com/docs/webhooks">Stripe webhook</a>. We&#39;ll need to create a simple endpoint in our application, which Stripe will call whenever an event occurs (i.e., when a user buys an Arduino). By using webhooks, we can be absolutely sure the payment went through successfully.</p>
 <blockquote>
@@ -389,7 +389,7 @@ fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
 <li>Test the endpoint using the <a href="https://stripe.com/docs/stripe-cli">Stripe CLI</a></li>
 <li>Register the endpoint with Stripe</li>
 </ol>
-<h5 id="endpoint">Endpoint</h5>
+<h3 id="endpoint">Endpoint</h3>
 <p>Whenever a payment goes through successfully, we will print a message.</p>
 <p class="code-title">app/routes.py</p>
 <pre style="margin: 30; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">flask</span> <span style="color: #008800; font-weight: bold">import</span> request
@@ -420,7 +420,7 @@ fetch(<span style="background-color: #fff0f0">&quot;/config&quot;</span>)
     <span style="color: #008800; font-weight: bold">return</span> <span style="background-color: #fff0f0">&quot;Success&quot;</span>, <span style="color: #0000DD; font-weight: bold">200</span>
 </pre>
 <p><code>stripe_webhook</code> function now serves our webhook endpoint. Here, we are only looking for <code>checkout.session.completed</code> events which are called whenever a checkout is successful. You can use the same pattern for other <a href="https://stripe.com/docs/api/events">Stripe Events</a>.</p>
-<h5 id="test-your-webhook">Test Your Webhook</h5>
+<h3 id="test-your-webhook">Test Your Webhook</h3>
 <p>We will use the Stripe CLI to test our webhook. First, install the Stripe CLI:</p>
 <ul>
 <li>Download the latest <code>linux</code> tar.gz file release from  <a href="https://github.com/stripe/stripe-cli/releases/latest">https://github.com/stripe/stripe-cli/releases/latest</a></li>
@@ -461,7 +461,7 @@ Please note: this key will expire after <span style="color: #0000DD; font-weight
 </pre>
 <p>Stripe will now forward events to our endpoint. Once again, test for a successful payment. You should see the message <code>Payment was successful</code></p>
 <p>At this point, you can stop the <code>stripe listen --forward-to localhost:5000/webhook</code> process.</p>
-<h5 id="register-your-endpoint">Register Your Endpoint</h5>
+<h3 id="register-your-endpoint">Register Your Endpoint</h3>
 <p>After deploying your app, you can register your endpoint in the stripe dashboard under <em>Developer &gt; Webhooks</em>. Click on the button <em>Add Enpoint</em>.</p>
 <p><img class="img-fluid" style="max-width: 100%; height: auto;" src="{{ url_for('static', filename='images/stripe_in_flask/register_webhook.png') }}" alt="Register Webhook"></p>
 <p>In production, you&#39;ll need to have HTTPS so your connection is secure. You&#39;ll probably want to store the domain_url as an environment variable as well. Finally, it&#39;s a good idea to confirm that the correct product and price are being used in the <code>/create-checkout-session</code> route before creating a Checkout Session:</p>
@@ -487,7 +487,7 @@ Please note: this key will expire after <span style="color: #0000DD; font-weight
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 

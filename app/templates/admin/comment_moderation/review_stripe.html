@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block app_content %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1>Stripe Comments ({{ total_comments }})</h1>                
+            </div>
+        </div>
+
+
+        <!-- Actual Article -->
+        {% for post in comments %}
+            {% include 'admin/comment_moderation/_review_stripe_comments.html' %}
+        {% endfor %}
+
+
+        <!-- Pagination Links -->
+        <nav aria-label="...">
+            <ul class="pager">
+                <li class="previous{% if not prev_url %} disabled{% endif %}">
+                    <a href="{{ prev_url or '#' }}">
+                        <span aria-hidden="true">&larr;</span> Newer Posts
+                    </a>
+                </li>
+                <li class="next{% if not next_url %} disabled{% endif %}">
+                    <a href="{{ next_url or '#' }}">
+                        Older Posts <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav> 
+{% endblock %}

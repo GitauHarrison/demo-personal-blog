@@ -235,11 +235,11 @@
             <div class="card">
               <img class="img img-fluid" style="max-width: 50%; height: auto;" src="{{url_for('static', filename = 'images/admin/update_blog.svg')}}" class="card-img-top web-dev" alt="Article">
               <div class="card-body">
-              <h4 class="card-title">Blog</h4><hr>
+              <h4 class="card-title">Stripe</h4><hr>
               <p class="card-text">
-                Review Blog Comments
+                Review All Comments In Flask Article
               </p>
-              <a href=" # " class="btn">Take Action</a>
+              <a href=" {{ url_for('main.review_stripe_comments') }} " class="btn">Take Action</a>
               </div>            
             </div>
             <!-- End of card 2 -->

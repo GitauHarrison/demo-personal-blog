@@ -35,7 +35,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_elasticsearch_email, new_ngrok_comment,\
     send_live_ngrok_email, new_reCaptcha_comment, send_live_reCaptcha_email,\
     new_rich_text_comment, send_live_rich_text_email,\
-    new_heroku_deployment_comment, send_live_heroku_deployment_email
+    new_heroku_deployment_comment, send_live_heroku_deployment_email,\
+    new_stripe_comment, send_live_stripe_email
 
 
 @bp.route('/')
@@ -379,6 +380,8 @@ def review_user_comments_comments():
                            total_comments=total_comments
                            )
 
+# Flask Bootstrap
+
 
 @bp.route('/admin/blog-review/personal-blog/chapter-6/flask-bootstrap')
 @login_required
@@ -403,6 +406,8 @@ def review_flask_bootstrap_comments():
                            prev_url=prev_url,
                            total_comments=total_comments
                            )
+
+# Dates and Time
 
 
 @bp.route('/admin/blog-review/personal-blog/chapter-7/dates-and-time')
@@ -786,6 +791,34 @@ def review_heroku_deployment_comments():
                            )
 
 
+# Stripe
+
+
+@bp.route('/admin/blog-review/stripe')
+@login_required
+def review_stripe_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = StripeInFlaskPost.query.order_by(
+        StripeInFlaskPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_stripe_comments():',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_stripe_comments():',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = StripeInFlaskPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_stripe.html',
+                           title='Review Stripe Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -1058,6 +1091,19 @@ def allow_heroku_deployment_comment(id):
         send_live_heroku_deployment_email(user)
     return redirect(url_for('main.review_heroku_deployment_comments'))
 
+
+@bp.route('/allow-stripe-comment/<id>')
+def allow_stripe_comment(id):
+    post = StripeInFlaskPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Stripe article")
+    user = User.query.get(id)
+    if user:
+        send_live_stripe_email(user)
+    return redirect(url_for('main.review_stripe_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -1250,6 +1296,14 @@ def delete_heroku_deployment_comment(id):
     flash(f'Successfully deleted comment {post.id} in Heroku Deployment article')
     return redirect(url_for('main.review_heroku_deployment_comments'))
 
+
+@bp.route('/delete-stripe-comment/<id>')
+def delete_stripe_comment(id):
+    post = StripeInFlaskPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Stripe article')
+    return redirect(url_for('main.review_stripe_comments'))
 
 # ===================
 # END OF ADMIN ACTION
@@ -2327,10 +2381,14 @@ def stripe_in_flask():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_stripe_comment(admin)
         return redirect(url_for('main.stripe_in_flask',
                                 _anchor='comments'
                                 )
                         )
+    all_allowed_comments = StripeInFlaskPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = StripeInFlaskPost.query.order_by(
         StripeInFlaskPost.timestamp.asc()).paginate(
@@ -2344,15 +2402,15 @@ def stripe_in_flask():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = StripeInFlaskPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('stripe_in_flask.html',
                            title='Stripe In Flask',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 
