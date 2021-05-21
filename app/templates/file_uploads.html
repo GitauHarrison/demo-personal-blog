@@ -478,7 +478,7 @@ FLASK_DEBUG<span style="color: #333333">=</span><span style="color: #007020">Tru
             {% include '_flash_message.html' %}
 
             <!-- Comments Go Here -->
-            {% for post in posts %}
+            {% for post in all_allowed_comments %}
                 {% include '_comments.html' %}
             {% endfor %}
 

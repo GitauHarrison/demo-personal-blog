@@ -36,7 +36,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     send_live_ngrok_email, new_reCaptcha_comment, send_live_reCaptcha_email,\
     new_rich_text_comment, send_live_rich_text_email,\
     new_heroku_deployment_comment, send_live_heroku_deployment_email,\
-    new_stripe_comment, send_live_stripe_email
+    new_stripe_comment, send_live_stripe_email, new_file_uploads_comment,\
+    send_live_file_uploads_email
 
 
 @bp.route('/')
@@ -819,6 +820,34 @@ def review_stripe_comments():
                            )
 
 
+# File Uploads
+
+
+@bp.route('/admin/blog-review/file-uploads')
+@login_required
+def review_file_uploads_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = FileUploadsPost.query.order_by(
+        FileUploadsPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_file_uploads_comments():',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_file_uploads_comments():',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = FileUploadsPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_file_uploads.html',
+                           title='Review File Uploads Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -1104,6 +1133,19 @@ def allow_stripe_comment(id):
         send_live_stripe_email(user)
     return redirect(url_for('main.review_stripe_comments'))
 
+
+@bp.route('/allow-file-uploads-comment/<id>')
+def allow_file_uploads_comment(id):
+    post = FileUploadsPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See File Uploads article")
+    user = User.query.get(id)
+    if user:
+        send_live_file_uploads_email(user)
+    return redirect(url_for('main.review_file_uploads_comments'))
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -1304,6 +1346,15 @@ def delete_stripe_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in Stripe article')
     return redirect(url_for('main.review_stripe_comments'))
+
+
+@bp.route('/delete-file-uploads-comment/<id>')
+def delete_file_uploads_comment(id):
+    post = FileUploadsPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in File Uploads article')
+    return redirect(url_for('main.review_file_uploads_comments'))
 
 # ===================
 # END OF ADMIN ACTION
@@ -2336,10 +2387,14 @@ def file_uploads():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_file_uploads_comment(admin)
         return redirect(url_for('main.file_uploads',
                                 _anchor='comments'
                                 )
                         )
+    all_allowed_comments = FileUploadsPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = FileUploadsPost.query.order_by(
         FileUploadsPost.timestamp.asc()).paginate(
@@ -2353,15 +2408,15 @@ def file_uploads():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = FileUploadsPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('file_uploads.html',
                            title='File Uploads',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 

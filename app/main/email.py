@@ -546,3 +546,29 @@ def send_live_stripe_email(user):
         html_body=render_template('public_comment_email/stripe.html',
                                   user=user)
     )
+
+
+# File Uploads
+
+def new_file_uploads_comment(admin):
+    send_email(
+        '[New Comment] File Uploads Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/file_uploads.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/file_uploads.html',
+                                  admin=admin)
+    )
+
+
+def send_live_file_uploads_email(user):
+    send_email(
+        '[Your Comment is Live] File Uploads Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/file_uploads.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/file_uploads.html',
+                                  user=user)
+    )
