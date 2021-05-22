@@ -37,7 +37,8 @@ from app.main.email import new_twilio_sendgrid_comment,\
     new_rich_text_comment, send_live_rich_text_email,\
     new_heroku_deployment_comment, send_live_heroku_deployment_email,\
     new_stripe_comment, send_live_stripe_email, new_file_uploads_comment,\
-    send_live_file_uploads_email
+    send_live_file_uploads_email, new_simple_whatsapp_comment,\
+    send_live_simple_whatsapp_email
 
 
 @bp.route('/')
@@ -848,6 +849,34 @@ def review_file_uploads_comments():
                            )
 
 
+# Simple WhatsApp Chatbot
+
+
+@bp.route('/admin/blog-review/simple-whatsapp-chatbot')
+@login_required
+def review_simple_whatsapp_comments():
+    page = request.args.get('page', 1, type=int)
+    comments = WhatsappChatbotPost.query.order_by(
+        WhatsappChatbotPost.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+        )
+    next_url = url_for('main.review_simple_whatsapp_comments():',
+                       page=comments.next_num) \
+        if comments.has_next else None
+    prev_url = url_for('main.review_simple_whatsapp_comments():',
+                       page=comments.prev_num) \
+        if comments.has_prev else None
+    all_comments = WhatsappChatbotPost.query.all()
+    total_comments = len(all_comments)
+    return render_template('admin/comment_moderation/review_simple_whatsapp.html',
+                           title='Review Simple WhatsApp Chatbot Comments',
+                           comments=comments.items,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           total_comments=total_comments
+                           )
+
+
 # --------------------------
 # Allow Comments on Articles
 # --------------------------
@@ -1146,6 +1175,20 @@ def allow_file_uploads_comment(id):
         send_live_file_uploads_email(user)
     return redirect(url_for('main.review_file_uploads_comments'))
 
+
+@bp.route('/allow-simple-whatsapp-comment/<id>')
+def allow_simple_whatsapp_comment(id):
+    post = WhatsappChatbotPost.query.get(id)
+    post.allowed_comment = 1
+    db.session.add(post)
+    db.session.commit()
+    flash(f"Comment {post.id} allowed. See Simple WhatsApp article")
+    user = User.query.get(id)
+    if user:
+        send_live_simple_whatsapp_email(user)
+    return redirect(url_for('main.review_simple_whatsapp_comments'))
+
+
 # ---------------------------
 # Delete Comments on Articles
 # ---------------------------
@@ -1355,6 +1398,16 @@ def delete_file_uploads_comment(id):
     db.session.commit()
     flash(f'Successfully deleted comment {post.id} in File Uploads article')
     return redirect(url_for('main.review_file_uploads_comments'))
+
+
+@bp.route('/delete-simple-whatsapp-comment/<id>')
+def delete_simple_whatsapp_comment(id):
+    post = WhatsappChatbotPost.query.get(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'Successfully deleted comment {post.id} in Simple Whatsapp article')
+    return redirect(url_for('main.review_simple_whatsapp_comments'))
+
 
 # ===================
 # END OF ADMIN ACTION
@@ -2485,10 +2538,14 @@ def whatsapp_chatbot():
         db.session.add(post)
         db.session.commit()
         flash('You will receive an email when your comment is live!')
+        admins = Admin.query.all()
+        for admin in admins:
+            new_simple_whatsapp_comment(admin)
         return redirect(url_for('main.whatsapp_chatbot',
                                 _anchor='comments'
                                 )
                         )
+    all_allowed_comments = WhatsappChatbotPost.query.filter_by(allowed_comment=1).all()
     page = request.args.get('page', 1, type=int)
     posts = WhatsappChatbotPost.query.order_by(
         WhatsappChatbotPost.timestamp.asc()).paginate(
@@ -2502,15 +2559,15 @@ def whatsapp_chatbot():
                        _anchor='comments',
                        page=posts.prev_num) \
         if posts.has_prev else None
-    all_posts = WhatsappChatbotPost.query.all()
-    total = len(all_posts)
+    total = len(all_allowed_comments)
     return render_template('chatbot/simple_chatbot.html',
                            title='WhatsApp Chatbot',
                            form=form,
                            posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
-                           total=total
+                           total=total,
+                           all_allowed_comments=all_allowed_comments
                            )
 
 

@@ -572,3 +572,29 @@ def send_live_file_uploads_email(user):
         html_body=render_template('public_comment_email/file_uploads.html',
                                   user=user)
     )
+
+
+# Simple WhatsApp Chatbot
+
+def new_simple_whatsapp_comment(admin):
+    send_email(
+        '[New Comment] Simple WhatsApp Chatbot Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[admin.email],
+        text_body=render_template('admin/review_comment_email/simple_whatsapp.txt',
+                                  admin=admin),
+        html_body=render_template('admin/review_comment_email/simple_whatsapp.html',
+                                  admin=admin)
+    )
+
+
+def send_live_simple_whatsapp_email(user):
+    send_email(
+        '[Your Comment is Live] Simple WhatsApp Chatbot Article',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('public_comment_email/simple_whatsapp.txt',
+                                  user=user),
+        html_body=render_template('public_comment_email/simple_whatsapp.html',
+                                  user=user)
+    )
