@@ -1,11 +1,11 @@
-# Personal Blog
+# Personal Blog (Demo)
 
 ![GitHub Open Issues](https://img.shields.io/github/issues/GitauHarrison/my-blog) ![GitHub Closed Issues](https://img.shields.io/github/issues-closed/GitauHarrison/my-blog) ![GitHub Pull Request Open](https://img.shields.io/github/issues-pr/GitauHarrison/my-blog) ![GitHub Pull Request Closed](https://img.shields.io/github/issues-pr-closed/GitauHarrison/my-blog) ![GitHub forks](https://img.shields.io/github/forks/GitauHarrison/my-blog) ![GitHub Stars](https://img.shields.io/github/stars/GitauHarrison/my-blog)
 
 ![Personal Blog](app/static/images/personal_blog.gif)
 
 ### Overview
-This is a demo personal blog. I used it to learn how to create a simple flask website from scratch, where I took a note all the projects I was learning by building. It served as a starting point for my learning journey. I now have [my official peronal website](https://gitauharrison.com).
+This is a demo personal blog. I used it to learn how to create a simple flask website from scratch, where I took a note all the projects I was learning by building. It served as a starting point for my learning journey. I now have [my official personal website](https://gitauharrison.com).
 
 ### Design
 Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog%2FPortfolio?node-id=1%3A2&scaling=min-zoom&page-id=0%3A1) of the blog. I used Figma for prototyping and regular reference during its development.
