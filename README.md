@@ -5,7 +5,7 @@
 ![Personal Blog](app/static/images/personal_blog.gif)
 
 ### Overview
-This is my blog, where I note all the projects I am involved in, my personal interests and other aspects of life I am engaged in.
+This is a demo personal blog. I used it to learn how to create a simple flask website from scratch, where I took a note all the projects I was learning by building. It served as a starting point for my learning journey. I now have [my official peronal website](https://gitauharrison.com).
 
 ### Design
 Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Personal-Blog%2FPortfolio?node-id=1%3A2&scaling=min-zoom&page-id=0%3A1) of the blog. I used Figma for prototyping and regular reference during its development.
