@@ -17,7 +17,7 @@ class Config(object):
     # Form security
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
-    POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE'))
+    POSTS_PER_PAGE = int(os.environ.get('POSTS_PER_PAGE') or 5)
 
     # Email configuration
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
