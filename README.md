@@ -50,6 +50,7 @@ Here is the  [full design](https://www.figma.com/proto/7crZ9XsIKbcptPwzuCxwDJ/Pe
 
 ### Deployed Application
 * [Gitau Harrison Blog](https://gitauharrison-blog.herokuapp.com/home)  on Heroku
+* [Demo Personal Blog](https://demo-personal-blog.onrender.com) - Render
 
 ### Testing
 To test the project out, you can clone this repo to your local machine:
