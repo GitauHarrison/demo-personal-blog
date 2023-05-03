@@ -6,9 +6,9 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 
 class Config(object):
-    # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1) or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+    # Database: defaulting to SQLite
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(os.path.dirname(__file__), 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Localhost testing

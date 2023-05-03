@@ -1,6 +1,6 @@
 from flask import current_app
-from twilio.rest import Client, TwilioException
-
+# from twilio.rest import Client, TwilioException
+from twilio.rest import Client
 
 def _get_twilio_verify_client():
     return Client(
@@ -13,7 +13,9 @@ def request_verification_token(phone):
     verify = _get_twilio_verify_client()
     try:
         verify.verifications.create(to=phone, channel='sms')
-    except TwilioException:
+    # except TwilioException:
+    #     verify.verifications.create(to=phone, channel='call')
+    except:
         verify.verifications.create(to=phone, channel='call')
 
 
@@ -21,6 +23,8 @@ def check_verification_token(phone, token):
     verify = _get_twilio_verify_client()
     try:
         result = verify.verification_checks.create(to=phone, code=token)
-    except TwilioException:
+    # except TwilioException:
+    #     return False
+    except:
         return False
     return result.status == 'approved'

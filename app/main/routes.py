@@ -48,7 +48,7 @@ def home():
     page = request.args.get('page', 1, type=int)
     posts = ArticlesList.query.order_by(
         ArticlesList.date_posted.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.home', page=posts.next_num) \
         if posts.has_next else None
@@ -115,7 +115,7 @@ def posting_portfolio_projects():
     page = request.args.get('page', 1, type=int)
     projects = PortfolioList.query.order_by(
         PortfolioList.date_posted.desc()).paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False
+        page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
     )
     next_url = url_for('main.posting_portfolio_projects',
                        page=projects.next_num) \
@@ -150,7 +150,7 @@ def posting_home_page_articles():
     page = request.args.get('page', 1, type=int)
     posts = ArticlesList.query.order_by(
         ArticlesList.date_posted.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
     )
     next_url = url_for('main.posting_home_page_articles', page=posts.next_num)\
         if posts.has_next else None
@@ -253,7 +253,7 @@ def review_hello_world_comments():
     page = request.args.get('page', 1, type=int)
     comments = HelloWorldPost.query.order_by(
         HelloWorldPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_hello_world_comments',
                        page=comments.next_num) \
@@ -281,7 +281,7 @@ def review_flask_templates_comments():
     page = request.args.get('page', 1, type=int)
     comments = FlaskTemplatesPost.query.order_by(
         FlaskTemplatesPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_flask_templates_comments',
                        page=comments.next_num) \
@@ -309,7 +309,7 @@ def review_flask_web_forms_comments():
     page = request.args.get('page', 1, type=int)
     comments = FlaskWebFormsPost.query.order_by(
         FlaskWebFormsPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_flask_web_forms_comments',
                        page=comments.next_num) \
@@ -337,7 +337,7 @@ def review_flask_database_comments():
     page = request.args.get('page', 1, type=int)
     comments = FlaskDatabasePost.query.order_by(
         FlaskDatabasePost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_flask_database_comments',
                        page=comments.next_num) \
@@ -364,7 +364,7 @@ def review_user_comments_comments():
     page = request.args.get('page', 1, type=int)
     comments = UserCommentsPost.query.order_by(
         UserCommentsPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_user_comments_comments',
                        page=comments.next_num) \
@@ -391,7 +391,7 @@ def review_flask_bootstrap_comments():
     page = request.args.get('page', 1, type=int)
     comments = FlaskBootstrapPost.query.order_by(
         FlaskBootstrapPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_flask_bootstrap_comments',
                        page=comments.next_num) \
@@ -418,7 +418,7 @@ def review_dates_and_time_comments():
     page = request.args.get('page', 1, type=int)
     comments = DatesAndTimePost.query.order_by(
         DatesAndTimePost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_dates_and_time_comments',
                        page=comments.next_num) \
@@ -445,7 +445,7 @@ def review_twilio_sendgrid_comments():
     page = request.args.get('page', 1, type=int)
     comments = TwilioSendGridPost.query.order_by(
         TwilioSendGridPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_twilio_sendgrid_comments', page=comments.next_num) \
         if comments.has_next else None
@@ -470,7 +470,7 @@ def review_totp_2fa_comments():
     page = request.args.get('page', 1, type=int)
     comments = TOTP2faPost.query.order_by(
         TOTP2faPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_totp_2fa_comments', page=comments.next_num) \
         if comments.has_next else None
@@ -496,7 +496,7 @@ def review_getting_started_comments():
     page = request.args.get('page', 1, type=int)
     comments = WebDevelopmentPost.query.order_by(
         WebDevelopmentPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_getting_started_comments',
                        page=comments.next_num) \
@@ -524,7 +524,7 @@ def review_install_git_comments():
     page = request.args.get('page', 1, type=int)
     comments = InstallGitPost.query.order_by(
         InstallGitPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_install_git_comments',
                        page=comments.next_num) \
@@ -552,7 +552,7 @@ def review_github_ssh_comments():
     page = request.args.get('page', 1, type=int)
     comments = GithubSSHPost.query.order_by(
         GithubSSHPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_github_ssh_comments',
                        page=comments.next_num) \
@@ -580,7 +580,7 @@ def review_virtualenvwrapper_comments():
     page = request.args.get('page', 1, type=int)
     comments = VirtualenvwrapperPost.query.order_by(
         VirtualenvwrapperPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_virtualenvwrapper_comments',
                        page=comments.next_num) \
@@ -608,7 +608,7 @@ def review_vagrant_comments():
     page = request.args.get('page', 1, type=int)
     comments = VagrantPost.query.order_by(
         VagrantPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_vagrant_comments',
                        page=comments.next_num) \
@@ -635,7 +635,7 @@ def review_install_docker_comments():
     page = request.args.get('page', 1, type=int)
     comments = installDocker.query.order_by(
         installDocker.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_install_docker_comments',
                        page=comments.next_num) \
@@ -662,7 +662,7 @@ def review_elasticsearch_comments():
     page = request.args.get('page', 1, type=int)
     comments = ElasticsearchPost.query.order_by(
         ElasticsearchPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_elasticsearch_comments',
                        page=comments.next_num) \
@@ -690,7 +690,7 @@ def review_ngrok_comments():
     page = request.args.get('page', 1, type=int)
     comments = ngrokPost.query.order_by(
         ngrokPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_ngrok_comments',
                        page=comments.next_num) \
@@ -718,7 +718,7 @@ def review_reCaptcha_comments():
     page = request.args.get('page', 1, type=int)
     comments = reCaptchaPost.query.order_by(
         reCaptchaPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_reCaptcha_comments',
                        page=comments.next_num) \
@@ -746,7 +746,7 @@ def review_rich_text_comments():
     page = request.args.get('page', 1, type=int)
     comments = richTextPost.query.order_by(
         richTextPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_rich_text_comments',
                        page=comments.next_num) \
@@ -774,7 +774,7 @@ def review_heroku_deployment_comments():
     page = request.args.get('page', 1, type=int)
     comments = HerokuDeployment.query.order_by(
         HerokuDeployment.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_heroku_deployment_comments',
                        page=comments.next_num) \
@@ -802,7 +802,7 @@ def review_stripe_comments():
     page = request.args.get('page', 1, type=int)
     comments = StripeInFlaskPost.query.order_by(
         StripeInFlaskPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_stripe_comments():',
                        page=comments.next_num) \
@@ -830,7 +830,7 @@ def review_file_uploads_comments():
     page = request.args.get('page', 1, type=int)
     comments = FileUploadsPost.query.order_by(
         FileUploadsPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_file_uploads_comments():',
                        page=comments.next_num) \
@@ -858,7 +858,7 @@ def review_simple_whatsapp_comments():
     page = request.args.get('page', 1, type=int)
     comments = WhatsappChatbotPost.query.order_by(
         WhatsappChatbotPost.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.review_simple_whatsapp_comments():',
                        page=comments.next_num) \
@@ -1463,7 +1463,7 @@ def getting_started():
     page = request.args.get('page', 1, type=int)
     posts = WebDevelopmentPost.query.order_by(
         WebDevelopmentPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.getting_started',
                        _anchor='comments',
@@ -1496,7 +1496,7 @@ def portfolio():
     page = request.args.get('page', 1, type=int)
     projects = PortfolioList.query.order_by(
         PortfolioList.date_posted.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.portfolio', page=projects.next_num) \
         if projects.has_next else None
@@ -1660,7 +1660,7 @@ def hello_world():
     page = request.args.get('page', 1, type=int)
     posts = HelloWorldPost.query.order_by(
         HelloWorldPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.hello_world',
                        _anchor='comments',
@@ -1706,7 +1706,7 @@ def flask_templates():
     page = request.args.get('page', 1, type=int)
     posts = FlaskTemplatesPost.query.order_by(
         FlaskTemplatesPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.flask_templates',
                        _anchor='comments',
@@ -1752,7 +1752,7 @@ def flask_web_forms():
     page = request.args.get('page', 1, type=int)
     posts = FlaskWebFormsPost.query.order_by(
         FlaskWebFormsPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.flask_web_forms',
                        _anchor='comments',
@@ -1797,7 +1797,7 @@ def flask_database():
     page = request.args.get('page', 1, type=int)
     posts = FlaskDatabasePost.query.order_by(
         FlaskDatabasePost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.flask_database',
                        _anchor='comments',
@@ -1843,7 +1843,7 @@ def user_comments():
     page = request.args.get('page', 1, type=int)
     posts = UserCommentsPost.query.order_by(
         UserCommentsPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.user_comments',
                        _anchor='comments',
@@ -1888,7 +1888,7 @@ def flask_bootstrap():
     page = request.args.get('page', 1, type=int)
     posts = FlaskBootstrapPost.query.order_by(
         FlaskBootstrapPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.flask_bootstrap',
                        _anchor='comments',
@@ -1933,7 +1933,7 @@ def dates_and_time():
     page = request.args.get('page', 1, type=int)
     posts = DatesAndTimePost.query.order_by(
             DatesAndTimePost.timestamp.asc()).paginate(
-                page, current_app.config['POSTS_PER_PAGE'], False
+                page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.dates_and_time',
                        _anchor='comments',
@@ -1982,7 +1982,7 @@ def virtualenvwrapper():
     page = request.args.get('page', 1, type=int)
     posts = VirtualenvwrapperPost.query.order_by(
         VirtualenvwrapperPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.virtualenvwrapper', _anchor='comments',
                        page=posts.next_num) \
@@ -2026,7 +2026,7 @@ def vagrant():
     page = request.args.get('page', 1, type=int)
     posts = VagrantPost.query.order_by(
         VagrantPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.vagrant',
                        _anchor='comments',
@@ -2072,7 +2072,7 @@ def reCaptcha():
     page = request.args.get('page', 1, type=int)
     posts = reCaptchaPost.query.order_by(
         reCaptchaPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.reCaptcha',
                        _anchor='comments',
@@ -2118,7 +2118,7 @@ def rich_text():
     page = request.args.get('page', 1, type=int)
     posts = richTextPost.query.order_by(
         richTextPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.rich_text', _anchor='comments',
                        page=posts.next_num) \
@@ -2163,7 +2163,7 @@ def ngrok():
     page = request.args.get('page', 1, type=int)
     posts = ngrokPost.query.order_by(
         ngrokPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.ngrok',
                        _anchor='comments',
@@ -2209,7 +2209,7 @@ def install_docker():
     page = request.args.get('page', 1, type=int)
     posts = installDocker.query.order_by(
         installDocker.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.install_docker',
                        _anchor='comments',
@@ -2255,7 +2255,7 @@ def heroku_deployment():
     page = request.args.get('page', 1, type=int)
     posts = HerokuDeployment.query.order_by(
         HerokuDeployment.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.heroku_deployment',
                        _anchor='comments',
@@ -2304,7 +2304,7 @@ def install_elasticsearch():
     page = request.args.get('page', 1, type=int)
     posts = ElasticsearchPost.query.order_by(
         ElasticsearchPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.install_elasticsearch',
                        _anchor='comments',
@@ -2353,7 +2353,7 @@ def github_ssh():
     page = request.args.get('page', 1, type=int)
     posts = GithubSSHPost.query.order_by(
         GithubSSHPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.github_ssh',
                        _anchor='comments',
@@ -2402,7 +2402,7 @@ def install_git():
     page = request.args.get('page', 1, type=int)
     posts = InstallGitPost.query.order_by(
         InstallGitPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.install_git',
                        _anchor='comments',
@@ -2451,7 +2451,7 @@ def file_uploads():
     page = request.args.get('page', 1, type=int)
     posts = FileUploadsPost.query.order_by(
         FileUploadsPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.file_uploads',
                        _anchor='comments',
@@ -2500,7 +2500,7 @@ def stripe_in_flask():
     page = request.args.get('page', 1, type=int)
     posts = StripeInFlaskPost.query.order_by(
         StripeInFlaskPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.stripe_in_flask',
                        _anchor='comments',
@@ -2549,7 +2549,7 @@ def whatsapp_chatbot():
     page = request.args.get('page', 1, type=int)
     posts = WhatsappChatbotPost.query.order_by(
         WhatsappChatbotPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.whatsapp_chatbot',
                        _anchor='comments',
@@ -2598,7 +2598,7 @@ def twilio_sendgrid():
     page = request.args.get('page', 1, type=int)
     posts = TwilioSendGridPost.query.order_by(
         TwilioSendGridPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.twilio_sendgrid',
                        _anchor='comments',
@@ -2651,7 +2651,7 @@ def totp_2fa():
     page = request.args.get('page', 1, type=int)
     posts = TOTP2faPost.query.order_by(
         TOTP2faPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.totp_2fa',
                        _anchor='comments',
@@ -2696,7 +2696,7 @@ def twilio_verify():
     page = request.args.get('page', 1, type=int)
     posts = TwilioVerifyPost.query.order_by(
         TwilioVerifyPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.twilio_verify',
                        _anchor='comments',
@@ -2741,7 +2741,7 @@ def twilio_authy():
     page = request.args.get('page', 1, type=int)
     posts = TwilioAuthyPost.query.order_by(
         TwilioAuthyPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.twilio_authy',
                        _anchor='comments',
@@ -2794,7 +2794,7 @@ def simple_video_app():
     page = request.args.get('page', 1, type=int)
     posts = SimpleVideoAppPost.query.order_by(
         SimpleVideoAppPost.timestamp.asc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
+            page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False
         )
     next_url = url_for('main.simple_video_app',
                        _anchor='comments',
