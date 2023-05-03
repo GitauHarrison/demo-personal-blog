@@ -99,17 +99,17 @@ def create_app(config_class=Config):
 
         # Heroku logs
 
-        # if app.config['LOG_TO_STDOUT']:
-        #     stream_handler = logging.StreamHandler()
-        #     stream_handler.setLevel(logging.INFO)
-        #     app.logger.addHandler(stream_handler)
+        if app.config['LOG_TO_STDOUT']:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setLevel(logging.INFO)
+            app.logger.addHandler(stream_handler)
 
         # Render logs
 
-        if app.config['LOG_WITH_GUNICORN']:
-            gunicorn_error_logger = logging.getLogger('gunicorn.error')
-            app.logger.handlers.extend(gunicorn_error_logger.handlers)
-            app.logger.setLevel(logging.DEBUG)
+        # if app.config['LOG_WITH_GUNICORN']:
+        #     gunicorn_error_logger = logging.getLogger('gunicorn.error')
+        #     app.logger.handlers.extend(gunicorn_error_logger.handlers)
+        #     app.logger.setLevel(logging.DEBUG)
         else:
             if not os.path.exists('logs'):
                 os.mkdir('logs')
